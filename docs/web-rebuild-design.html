@@ -227,8 +227,8 @@
           </tr>
           <tr>
             <td><b>Save &amp; share</b></td>
-            <td>local autosave · QR · share-link · JSON file (any combination)</td>
-            <td><b>All of them</b>, with autosave as the always-on base. Local-only storage is <em>clearly communicated</em>. Share-link is designed-in but its URL-size ceiling is verified after MVP.</td>
+            <td>local autosave · JSON file · share-link · QR <span class="small">(latter three cut)</span></td>
+            <td><b>Local autosave + the official PDF.</b> Autosave (always-on, clearly <em>device-only</em>) for convenience; the filled regulation PDF is the single backup-and-share artifact — the format the ABF community already exchanges. JSON files, share-links and QR codes were considered and dropped as unlikely to work well (URL/QR size limits, clunky file-shuffling).</td>
           </tr>
           <tr>
             <td><b>Legacy import</b></td>
@@ -241,7 +241,7 @@
 
     <div class="call insight">
       <span class="lab">The one rule everything hangs off</span>
-      <p>A single typed <code>Card</code> object is the only source of truth. The screen, the PDF, the JSON file, the share-link and the QR code are all <em>projections</em> of it. The rich rendering (suits, colour, formatting) is <strong>derived, never stored</strong> — similary to the &ldquo;editable value + regenerable display twin&rdquo; the original form used.</p>
+      <p>A single typed <code>Card</code> object is the only source of truth. The on-screen card and the exported PDF are both <em>projections</em> of it. The rich rendering (suits, colour, formatting) is <strong>derived, never stored</strong> — similarly to the &ldquo;editable value + regenerable display twin&rdquo; the original form used.</p>
     </div>
    </div>
   </section>
@@ -250,7 +250,7 @@
   <section id="shape">
    <div class="col">
     <h2><span class="num">02</span>System shape</h2>
-    <div class="h2title">One model, three projections, two foreign formats</div>
+    <div class="h2title">One model, two projections, two import formats</div>
 
     <div class="flow">                 ┌──────────────── Card (typed model) ────────────────┐
                  │ ~295 logical fields · responses[opening][bid] grid  │
@@ -259,13 +259,12 @@
                  └───────────────┬─────────────────────────────────────┘
             zustand store  +  idb (IndexedDB) autosave, debounced  ── LOCAL ONLY
                                  │
-   ┌──────────────┬─────────────┼───────────────┬──────────────────┐
-   ▼              ▼             ▼               ▼                  ▼
- SCREEN        EXPORT pdf     EXPORT json     SHARE link/QR       IMPORT
- React form    fill blank     canonical       fflate → #frag      legacy PDF / FDF
- live render   ABF_Card_FORM  interchange     + QR (qrcode)       / our json / our pdf
- §8 grid       /V + D_ /RV+/AP                                    pdf-lib read → gRtFL
- (table↔stack) (renders w/o JS)                                   rename → Card</div>
+   ┌────────────────────────────┼────────────────────────┐
+   ▼                            ▼                         ▼
+ SCREEN                     EXPORT pdf                  IMPORT
+ React form / live render   fill blank ABF_Card_FORM    legacy PDF / FDF / our pdf
+ §8 grid (table↔stack)      /V + D_ /RV+/AP             pdf-lib read → gRtFL → Card
+                            (renders without JS)        + app-state stamp (our files)</div>
 
     <p>Three layers do the work. They are deliberately decoupled so the pure logic is trivially testable and the foreign-format mess is quarantined.</p>
 
@@ -277,7 +276,7 @@
       </div>
       <div class="tier">
         <div class="t-h"><span class="pill">Edges</span><b><code>io/</code> + <code>state/</code></b><span class="when">all foreign formats live here</span></div>
-        <p>pdf-lib is touched in exactly one directory behind a two-function adapter. FDF parsing, share-link encode/decode, JSON, and the zustand store + IndexedDB persistence sit beside it. Card identity / import-resolution logic lives in <code>state/identity.ts</code>.</p>
+        <p>pdf-lib is touched in exactly one directory behind a two-function adapter. FDF parsing and the zustand store + IndexedDB persistence sit beside it. Card identity / import-resolution logic lives in <code>state/identity.ts</code>.</p>
         <span class="arrow">▼</span>
       </div>
       <div class="tier">
@@ -424,9 +423,9 @@
   <section id="import">
    <div class="col">
     <h2><span class="num">05</span>Import pipeline</h2>
-    <div class="h2title">Legacy PDF, FDF, and our own files — all converging on one Card</div>
+    <div class="h2title">Legacy PDF, FDF, and our own PDF — all converging on one Card</div>
 
-    <p>Import is read-only and entirely client-side. Four sources in two tiers: a <strong>fast path</strong> for files we wrote (our JSON, our PDF&rsquo;s embedded marker), and a <strong>legacy path</strong> for filled ABF PDFs and FDF. All converge through one pipeline:</p>
+    <p>Import is read-only and entirely client-side. Three sources in two tiers: a <strong>fast path</strong> for our own exported PDF (it carries an embedded app-state stamp), and a <strong>legacy path</strong> for filled ABF PDFs and FDF files. All converge through one pipeline:</p>
 
     <div class="flow">bytes ─▶ load ─▶ read fields ─▶ normalizeName (gRtFL) ─▶ drop machinery ─▶ mapToLogical ─▶ Card
                                                                               │
@@ -458,8 +457,8 @@ UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pr
       <p>Hierarchical fields (the entire §8 grid) appear in FDF as nested <code>/Kids</code> dictionaries — <code>&lt;&lt;/T(Resp1C)/Kids[&lt;&lt;/T(_1D)/V(…)&gt;&gt; …]&gt;&gt;</code> — <strong>not</strong> flat <code>/T(Resp1C._1D)/V(…)</code> pairs. A flat <code>/T(…)/V(…)</code> regex misses every grid cell (the parent has <code>/T</code> but no <code>/V</code>; children lose the parent name). Walk the dict structure, tracking the parent <code>/T</code> while descending <code>Kids</code>. Also handle hex-string names (<code>/T&lt;48…&gt;</code>) and <code>/V</code>-before-<code>/T</code> ordering. The original&rsquo;s console-dump whitespace tokens (<code>&lt;&lt;R&gt;&gt;</code> etc.) only matter for that hack, but a cheap reverse pass lets us also ingest a file saved straight from the console.</p>
     </div>
 
-    <h3>Our own files (fast path)</h3>
-    <p>Our JSON is the canonical <code>Card</code> serialization — no rename, no family-dropping, just a <code>schemaVersion</code> check and the identity branch. Our exported PDF carries an embedded marker (UUID + schemaVersion + revision) so re-open is lossless and instant; absent the marker we fall back to field-by-field reading. Always try the marker first.</p>
+    <h3>Our own exported PDF (fast path)</h3>
+    <p>Our export is still a filled ABF form, so its card content round-trips through the same field reader. What the AcroForm can&rsquo;t carry — our <code>id</code>, <code>schemaVersion</code>, <code>revision</code> and display <code>settings</code> — rides in a small <strong>app-state stamp</strong> embedded in the file (hidden field + XMP). On import we read that stamp first, so identity/version resolution works and re-open is lossless; absent it we fall back to field-by-field reading and mint a fresh <code>id</code>. There is no separate JSON file, share-link or QR — the PDF is the only interchange.</p>
    </div>
   </section>
 
@@ -469,9 +468,9 @@ UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pr
     <h2><span class="num">06</span>Export pipeline</h2>
     <div class="h2title">Fill the original blank — and the one hard spike that makes it print</div>
 
-    <p>Everything leaves through four exporters. Three are trivial serializations of the in-memory <code>Card</code> (JSON, share-link, QR). The fourth — the regulation PDF — is the only hard one, and the only one with a genuine decision point.</p>
+    <p>There is one user-facing exporter — the regulation PDF — backed by the always-on local autosave. It&rsquo;s the only hard piece, and the only one with a genuine decision point.</p>
 
-    <h3>1 · &ldquo;Export official card&rdquo; — fill the blank</h3>
+    <h3>&ldquo;Export official card&rdquo; — fill the blank</h3>
     <p>We ship <code>abf/ABF_Card_FORM.pdf</code> (<strong>535 KB</strong>, blank, fields + embedded JS intact) as a static asset, fetch it at export time, and write our values into its existing fields by name (mapping our logical keys back through the same <code>gRtFL</code> table). The output <em>is</em> the regulated form — it re-opens in Adobe/Foxit <em>and</em> in our own importer. We never reproduce the layout.</p>
 
     <div class="tablewrap">
@@ -496,23 +495,9 @@ UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pr
 
     <p><strong>Provenance is dropped for free:</strong> we never write <code>I_LastSave</code>/<code>A_JN</code>, so our export leaks no name, OS, reader or login — a real privacy win over the original, at zero cost. The only stamp is the model&rsquo;s <code>{schemaVersion, savedAt}</code>.</p>
 
-    <h3>2 · JSON, share-link, QR</h3>
-    <p>JSON is the compact, lossless, diffable interchange (store the raw <code>!</code>-code source per field; round-trip JSON→JSON must be identity). Share-link: <code>JSON</code> → <code>fflate</code> raw-deflate → base64url → URL <strong>fragment</strong> (<code>#</code>, never sent to a server). QR is generated from that same URL.</p>
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th>Card</th><th>JSON</th><th>deflate</th><th>base64url</th><th>URL</th></tr></thead>
-        <tbody>
-          <tr><td>Typical / sparse</td><td>~1.9 KB</td><td>~0.5 KB</td><td>~660</td><td>~700</td></tr>
-          <tr><td>Heavy (full grid + many fields)</td><td>~15 KB</td><td>~1.3 KB</td><td>~1,698</td><td>~1,722</td></tr>
-          <tr><td>Pathological (long pasted notes)</td><td>—</td><td>—</td><td>~1,900</td><td><b class="cost">~1,931</b></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>Compression is ~10:1 (repeated codes + stock phrases). Even a heavy card sits under the conservative ~2 KB URL ceiling, so share-link is viable for the overwhelming majority of cards — but free-text notes are the failure mode. <strong>Set the fallback trigger at ~1,800 chars</strong> (degrade to JSON-file / QR-of-a-short-card, never truncate), and <strong>verify against real payloads after MVP</strong>. QR has a tighter real ceiling (~800 chars to stay scannable on paper), so offer QR only below that bound.</p>
-
     <div class="call note">
-      <span class="lab">Embedded marker caveat</span>
-      <p>The lossless re-open marker needs a home that survives. <code>Z_AppState</code> doesn&rsquo;t exist in the form — we&rsquo;d <code>addField</code> it, which works in <em>our</em> output (pdf-lib writes it directly, no reader-JS needed) but isn&rsquo;t &ldquo;guaranteed&rdquo; through third-party re-saves. Store the marker JSON in <strong>both</strong> a custom XMP/Info key <em>and</em> a hidden text field, and treat absence gracefully (fall back to field-by-field import).</p>
+      <span class="lab">The embedded app-state stamp</span>
+      <p>Card content round-trips through the AcroForm fields, but our <code>id</code>/<code>schemaVersion</code>/<code>revision</code>/<code>settings</code> have no form field (the original deliberately dropped provenance). Stamp them into the export in <strong>both</strong> a custom XMP/Info key <em>and</em> a hidden text field; a field we add at export time persists in our own output via pdf-lib. Treat absence gracefully — a third-party flatten/sign drops it, and the importer falls back to field-by-field reading with a fresh <code>id</code>.</p>
     </div>
    </div>
   </section>
@@ -535,7 +520,7 @@ UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pr
 
     <div class="call insight">
       <span class="lab">Flow 1 · &ldquo;Autosave is on this device only&rdquo;</span>
-      <p>The biggest UX risk is a user assuming autosave = cloud sync. Three coordinated affordances: a persistent <strong>storage indicator</strong> (&ldquo;Saved on this device · <em>time</em>&rdquo;, a device icon, <em>never</em> a cloud) whose explainer names the exact loss vectors (clear site data / other device / private browsing); a prominent <strong>Back up / Export</strong> button framed as &ldquo;the real save&rdquo;; and failure-prevention copy at export moments (&ldquo;that file, not this browser, is your safe copy&rdquo;). Request <code>navigator.storage.persist()</code> and escalate the indicator to amber if denied — Safari/iOS is the known gap.</p>
+      <p>The biggest UX risk is a user assuming autosave = cloud sync. Three coordinated affordances: a persistent <strong>storage indicator</strong> (&ldquo;Saved on this device · <em>time</em>&rdquo;, a device icon, <em>never</em> a cloud) whose explainer names the exact loss vectors (clear site data / other device / private browsing); a prominent <strong>Export official card (PDF)</strong> button framed as &ldquo;the real save&rdquo;; and failure-prevention copy at export moments (&ldquo;that PDF, not this browser, is your safe copy&rdquo;). Request <code>navigator.storage.persist()</code> and escalate the indicator to amber if denied — Safari/iOS is the known gap.</p>
     </div>
 
     <div class="call insight">
@@ -570,8 +555,6 @@ UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pr
           <tr><td class="mono">@pdf-lib/fontkit</td><td class="mono">1.1.1</td><td>Font embed/subset — only needed at the edges (the blank already embeds <code>Cards</code>).</td></tr>
           <tr><td class="mono">zustand</td><td class="mono">5.0.14</td><td>Card store; selector subscriptions stop a ~295-field form re-rendering wholesale.</td></tr>
           <tr><td class="mono">idb</td><td class="mono">8.0.3</td><td>~1 KB IndexedDB wrapper for local autosave.</td></tr>
-          <tr><td class="mono">fflate</td><td class="mono">0.8.3</td><td>Deflate for the share-link fragment.</td></tr>
-          <tr><td class="mono">qrcode</td><td class="mono">1.5.4</td><td>QR for at-the-table sharing.</td></tr>
           <tr><td class="mono">@types/react / -dom</td><td class="mono">19.2.15 / 19.2.3</td><td>Type defs.</td></tr>
           <tr><td class="mono">vitest</td><td class="mono">+ pin at start</td><td>Dev-only test runner (Vite-native). The one addition to the locked set.</td></tr>
         </tbody>
@@ -589,14 +572,12 @@ UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pr
   io/
     pdf/     <span class="c">// adapter.ts (ONLY pdf-lib import), export.ts, import.ts, pdfjsFallback.ts</span>
     fdf/     <span class="c">// Kids-tree parser</span>
-    share/   <span class="c">// encode/decode (fflate → #frag), qr</span>
-    json.ts
   state/     <span class="c">// zustand store, idb persist, identity/import-resolution</span>
   ui/        <span class="c">// sections/, fields/, grid/, common/ (storage banner, resolution dialog)</span>
   content/   <span class="c">// codelists (md→JSON), palette, gRtFL renames, classification, abbreviations</span>
   assets/    <span class="c">// ABF_Card_FORM.pdf (export template) + Cards font (extracted from /DR)</span></code></pre>
 
-    <p><strong>Build &amp; deploy:</strong> <code>vite build</code> → static <code>/dist</code>; the blank PDF and font are fingerprinted assets fetched at export time. Set <code>base</code> to the repo subpath for GitHub Pages. Share-links live in the <code>#</code> fragment, so no server rewrite is needed — and no &ldquo;server-side&rdquo; anything exists (scrub that phrase wherever the research notes inherited it). A PWA/service-worker offline mode fits the table use-case but is <strong>YAGNI for v1</strong>.</p>
+    <p><strong>Build &amp; deploy:</strong> <code>vite build</code> → static <code>/dist</code>; the blank PDF and font are fingerprinted assets fetched at export time. Set <code>base</code> to the repo subpath for GitHub Pages; a single SPA fallback covers routing. No &ldquo;server-side&rdquo; anything exists (scrub that phrase wherever the research notes inherited it). A PWA/service-worker offline mode fits the table use-case but is <strong>YAGNI for v1</strong>.</p>
 
     <div class="call note">
       <span class="lab">Day-one data tasks (don&rsquo;t leave these implicit)</span>
@@ -616,7 +597,7 @@ UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pr
       <li><strong>Schema-migration / rename tests.</strong> Drive the gRtFL table with the real rules — the five simple renames plus the three algorithmically-expanded templated rules against the live field set — and a &ldquo;known UUID, newer revision&rdquo; case for the resolution branch.</li>
       <li><strong>Grid component tests.</strong> The §8 matrix renders the right (ragged) cells; editing writes to <code>responses[opening][bid]</code>; the coded combo seeds from the lists yet accepts free text; classification is one enum with an independent brown-sticker boolean.</li>
     </ol>
-    <p class="small">Fold the asset-probe scripts (field flags, font coverage, share-link sizing) into <code>abf/</code> tooling as a <strong>CI guard against asset drift</strong> — they are what proved the facts in this doc.</p>
+    <p class="small">Fold the asset-probe scripts (field flags, font coverage) into <code>abf/</code> tooling as a <strong>CI guard against asset drift</strong> — they are what proved the facts in this doc.</p>
    </div>
   </section>
 
@@ -636,9 +617,8 @@ UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pr
           <tr><td><code>Classification</code> colour literals</td><td><span class="st test">before M1/M2</span></td><td>Blank only shows <code>not set</code>. Recover <code>Green/Blue/Red/Yellow</code> literals from <code>gFpB</code> in the JS for the import/export boundary; map <code>not set</code> → <code>unset</code>.</td></tr>
           <tr><td>§8 grid name form via pdf-lib (flat vs dotted <code>Resp1C.<wbr>_1D</code>)</td><td><span class="st test">M2</span></td><td>Parse the field tree; treat flat and dotted as equivalent. Confirm exact on-disk form when reading.</td></tr>
           <tr><td>Templated <code>gRtFL</code> rules against real pre-2020 files</td><td><span class="st test">M2</span></td><td>Port <code>gMRFL</code>&rsquo;s loop; unit-test against a genuine legacy FDF. Degrades to &ldquo;unmatched → logged,&rdquo; not corruption.</td></tr>
-          <tr><td>Share-link / QR ceilings on real cards</td><td><span class="st test">after M3</span></td><td>Worst case measured ~1,931 URL chars. Trigger file/QR fallback at ~1,800; QR only below ~800. Re-measure with real notes-heavy cards.</td></tr>
-          <tr><td>Revision divergence detection (two partners fork rev 5)</td><td><span class="st test">M4</span></td><td>Carry <code>revision.parent</code>; absent it, route same-or-lower counters to Compare. Don&rsquo;t auto-pick a &ldquo;winner&rdquo; by timestamp.</td></tr>
-          <tr><td>Embedded marker durability (<code>Z_AppState</code> + XMP)</td><td><span class="st test">M3</span></td><td>Store in both channels; handle absence gracefully. Confirm pdf-lib <code>addField</code> round-trips through its own <code>load()</code>.</td></tr>
+          <tr><td>Revision divergence detection (two partners fork rev 5)</td><td><span class="st test">M3</span></td><td>Carry <code>revision.parent</code>; absent it, route same-or-lower counters to Compare. Don&rsquo;t auto-pick a &ldquo;winner&rdquo; by timestamp.</td></tr>
+          <tr><td>App-state stamp durability (hidden field + XMP)</td><td><span class="st test">M2</span></td><td>Store in both channels; handle absence gracefully. Confirm a hidden text field we <code>addField</code> at export round-trips through pdf-lib&rsquo;s own <code>load()</code>.</td></tr>
           <tr><td>Browser-driven print of an in-memory PDF</td><td><span class="st test">M1</span></td><td>May reduce to &ldquo;download then print from a viewer.&rdquo; Decide the Print-button copy accordingly.</td></tr>
           <tr><td><code>navigator.storage.persist()</code> on Safari/iOS</td><td><span class="st test">M0</span></td><td>Treat a denied persist as &ldquo;session may be evicted&rdquo; in the storage indicator.</td></tr>
           <tr><td>pdf-lib reads <code>/V</code>, fills, embeds Cards font, sets <code>/RV</code></td><td><span class="st ok">verified</span></td><td>All confirmed empirically against the asset (load ~206 ms, save ~520–710 ms, 535 KB). Guard the non-WinAnsi appearance throw; don&rsquo;t <code>getText()</code> rich twins.</td></tr>
@@ -666,10 +646,8 @@ UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pr
         <p>The <code>io/pdf/</code> adapter + the <strong>Strategy-A spike</strong> (the make-or-break item): fill the blank, author the <code>D_</code> rich appearances with the embedded Cards font, download. Delivers the regulation-faithful output. Land the export half of the round-trip test.</p></div>
       <div class="tier"><div class="t-h"><span class="pill">M2</span><b>Import</b></div>
         <p>Legacy PDF + FDF (Kids-tree) + the gRtFL rename, plus the pdf.js read-only fallback. <strong>Close the full round-trip contract test</strong> — the gate that proves M1+M2 are lossless. Accept flattened/signed as print-only.</p></div>
-      <div class="tier"><div class="t-h"><span class="pill">M3</span><b>JSON + share-link + QR</b></div>
-        <p>Canonical JSON; <code>fflate</code> → <code>#</code>-fragment links; the QR modal. <strong>Verify real card sizes</strong> against URL/QR limits; fall back to file when oversized.</p></div>
-      <div class="tier"><div class="t-h"><span class="pill">M4</span><b>Versioning &amp; import-resolution UI</b></div>
-        <p>Identity stamps are carried from M0; the resolution UI (new card vs. known-id newer-version, with replace / keep-both / compare + the diff view) lands last, once users actually exchange files.</p></div>
+      <div class="tier"><div class="t-h"><span class="pill">M3</span><b>Versioning &amp; import-resolution UI</b></div>
+        <p>Identity stamps are carried from M0 and embedded in exports from M1; the resolution UI (new card vs. known-id newer-version, with replace / keep-both / compare + the diff view) lands last, once users actually exchange PDFs.</p></div>
     </div>
    </div>
   </section>
