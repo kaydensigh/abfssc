@@ -1,17 +1,17 @@
 import { type ReactElement, useState } from "react";
-import { SECTIONS, SECTION_BY_ID } from "../model/index.ts";
+import { PAGES, PAGE_BY_ID, SECTION_BY_ID } from "../model/index.ts";
 import { Section } from "./sections/index.ts";
-import { SectionNav, StorageBanner } from "./common/index.ts";
+import { PageNav, StorageIndicator } from "./common/index.ts";
 
 /**
- * App shell: brand + section nav in a sticky header, the local-only storage
- * banner, then one section at a time (keeps a ~295-field form from rendering
- * wholesale). Sections are presented in natural order 1→10 — the PDF's front-
- * cover ordering is a print constraint and must not leak into editing.
+ * App shell: brand + 4-page nav in a sticky header, then the active page — a
+ * header row (page title left, storage indicator right) above its stacked
+ * sections. The four pages mirror the printed card's panels; within a page the
+ * sections keep natural 1→10 order and their own sub-headings.
  */
 export function App(): ReactElement {
-  const [activeId, setActiveId] = useState<string>(SECTIONS[0].id);
-  const active = SECTION_BY_ID[activeId] ?? SECTIONS[0];
+  const [activeId, setActiveId] = useState<string>(PAGES[0].id);
+  const page = PAGE_BY_ID[activeId] ?? PAGES[0];
   return (
     <div className="app">
       <header className="masthead-bar">
@@ -24,10 +24,26 @@ export function App(): ReactElement {
           </span>
           ABF System Card
         </div>
-        <SectionNav activeId={activeId} onSelect={setActiveId} />
+        <PageNav activeId={activeId} onSelect={setActiveId} />
       </header>
-      <StorageBanner />
-      <Section section={active} />
+
+      <main className="page" id={`page-${page.id}`} aria-labelledby={`page-${page.id}-title`}>
+        <div className="page-header">
+          <h1 className="page-heading" id={`page-${page.id}-title`}>
+            <span className="page-num" aria-hidden="true">
+              {page.number}
+            </span>
+            <span className="page-name">{page.title}</span>
+          </h1>
+          <StorageIndicator />
+        </div>
+
+        <div className="page-sections">
+          {page.sectionIds.map((sid) => (
+            <Section key={sid} section={SECTION_BY_ID[sid]} />
+          ))}
+        </div>
+      </main>
     </div>
   );
 }

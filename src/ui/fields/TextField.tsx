@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { useCardStore } from "../../state/index.ts";
-import { type FieldDef, fieldKind } from "../../model/index.ts";
+import { type FieldDef, fieldKind, fieldWidth } from "../../model/index.ts";
 import { CODE_LISTS, codeMap } from "../../content/codelists.ts";
 import { CodedInput } from "./CodedInput.tsx";
 
@@ -13,7 +13,7 @@ export function TextField({ def }: { def: FieldDef }): ReactElement {
   const isCoded = kind === "coded";
   const multiline = kind === "notes" || def.multiline === true;
   return (
-    <div className={`field${isCoded ? " coded" : ""}`}>
+    <div className={`field ${fieldWidth(def)}${isCoded ? " coded" : ""}`}>
       <label>{def.label}</label>
       <CodedInput
         value={value}

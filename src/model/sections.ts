@@ -7,8 +7,17 @@ import { hasCodeList } from "../content/codelists.ts";
 //
 // Field keys are the canonical names from abf/extracted/field_names.txt and are
 // also the keys of Card.fields (text fields) or Card.flags (checkboxes).
+//
+// Field ORDER and `width` reproduce the printed PDF layout (recovered from the
+// form's AcroForm rectangles): a `half` field shares a desktop row with the next
+// `half` (the card's side-by-side pairings — 1♣|1♥, the §7 two-column grid); a
+// `full` field spans the row. On mobile every field stacks to one column. The §5
+// vs-suit/vs-notrump leads are NOT `width` pairs — they use the bespoke PlayPairs
+// layout. `group` inserts a sub-heading before a run of like-grouped fields (used
+// by §8 to separate the 1NT / strong-two response blocks).
 
 export type FieldKind = "rich" | "coded" | "notes" | "player" | "checkbox";
+export type FieldWidth = "full" | "half";
 
 export interface FieldDef {
   key: string;
@@ -16,6 +25,10 @@ export interface FieldDef {
   /** Omitted → resolved as "coded" when the field ships a code list, else "rich". */
   kind?: FieldKind;
   multiline?: boolean;
+  /** Desktop column span. Omitted → "full" (single column, always safe on mobile). */
+  width?: FieldWidth;
+  /** Optional sub-heading rendered once before a run of fields sharing this label. */
+  group?: string;
 }
 
 /** A vs-NT / vs-suit field pair for the §5 two-column layout. */
@@ -44,13 +57,23 @@ export function fieldKind(def: FieldDef): FieldKind {
   return def.kind ?? (hasCodeList(def.key) ? "coded" : "rich");
 }
 
-const f = (key: string, label: string, extra: Omit<FieldDef, "key" | "label"> = {}): FieldDef => ({
+/** Resolve a field's desktop column span (defaults to full-width). */
+export function fieldWidth(def: FieldDef): FieldWidth {
+  return def.width ?? "full";
+}
+
+type Extra = Omit<FieldDef, "key" | "label">;
+const f = (key: string, label: string, extra: Extra = {}): FieldDef => ({ key, label, ...extra });
+const notes = (key: string, label: string, extra: Extra = {}): FieldDef => ({
   key,
   label,
+  kind: "notes",
+  multiline: true,
+  width: "full",
   ...extra,
 });
-const notes = (key: string, label: string): FieldDef => ({ key, label, kind: "notes", multiline: true });
-const cb = (key: string, label: string): FieldDef => ({ key, label, kind: "checkbox" });
+const cb = (key: string, label: string, extra: Extra = {}): FieldDef => ({ key, label, kind: "checkbox", ...extra });
+const half: Extra = { width: "half" };
 
 export const SECTIONS: readonly SectionDef[] = [
   {
@@ -58,10 +81,10 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Players & system",
     layout: "masthead",
     fields: [
-      f("PlayerName_A", "Player A — name", { kind: "player" }),
-      f("PlayerNo_A", "Player A — number", { kind: "player" }),
-      f("PlayerName_B", "Player B — name", { kind: "player" }),
-      f("PlayerNo_B", "Player B — number", { kind: "player" }),
+      f("PlayerNo_A", "Player A — no.", { kind: "player", width: "half" }),
+      f("PlayerName_A", "Player A — name", { kind: "player", width: "half" }),
+      f("PlayerNo_B", "Player B — no.", { kind: "player", width: "half" }),
+      f("PlayerName_B", "Player B — name", { kind: "player", width: "half" }),
       f("BasicSystem", "Basic system"),
       f("Date_A", "Revision / date"),
       cb("OneNTMayHave5Major", "1NT may contain a 5-card major"),
@@ -74,18 +97,19 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 1,
     title: "Opening bids",
     layout: "generic",
+    // PDF rows: 1♣|1♥, 1♦|1♠, 1NT full, 2♣/2♦/2♥/2♠ full, 2NT|3NT, Other full.
     fields: [
-      f("Open1C", "1♣"),
-      f("Open1D", "1♦"),
-      f("Open1H", "1♥"),
-      f("Open1S", "1♠"),
+      f("Open1C", "1♣", half),
+      f("Open1H", "1♥", half),
+      f("Open1D", "1♦", half),
+      f("Open1S", "1♠", half),
       f("Open1NT", "1NT"),
       f("Open2C", "2♣"),
       f("Open2D", "2♦"),
       f("Open2H", "2♥"),
       f("Open2S", "2♠"),
-      f("Open2NT", "2NT"),
-      f("Open3NT", "3NT"),
+      f("Open2NT", "2NT", half),
+      f("Open3NT", "3NT", half),
       f("OpenOther", "Other openings"),
     ],
   },
@@ -94,14 +118,15 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 2,
     title: "Pre-alerts",
     layout: "generic",
+    // PDF: a summary line over a 2-col × 3-row grid (left = _1_n, right = _2_n).
     fields: [
       notes("PreAlert_0", "Pre-alert summary"),
-      f("PreAlert_1_1", "Pre-alert 1"),
-      f("PreAlert_1_2", "Pre-alert 2"),
-      f("PreAlert_1_3", "Pre-alert 3"),
-      f("PreAlert_2_1", "Pre-alert 4"),
-      f("PreAlert_2_2", "Pre-alert 5"),
-      f("PreAlert_2_3", "Pre-alert 6"),
+      f("PreAlert_1_1", "Pre-alert 1", half),
+      f("PreAlert_2_1", "Pre-alert 4", half),
+      f("PreAlert_1_2", "Pre-alert 2", half),
+      f("PreAlert_2_2", "Pre-alert 5", half),
+      f("PreAlert_1_3", "Pre-alert 3", half),
+      f("PreAlert_2_3", "Pre-alert 6", half),
     ],
   },
   {
@@ -109,25 +134,26 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 3,
     title: "Competitive bids & overcalls",
     layout: "generic",
+    // Reordered into PDF printed-row order (sections.ts previously grouped by topic).
     fields: [
-      f("Doubles_1", "Doubles & redoubles"),
+      notes("Competitive_0", "Notes"),
+      f("Doubles_1", "Doubles & redoubles", half),
+      f("NegXLimit", "Neg. X limit", half),
       f("Doubles_2", "More doubles / redoubles"),
-      f("JumpOvercall", "Jump overcall"),
-      f("Overcall1NT", "1NT overcall (direct)"),
-      f("Reopen1NT", "1NT overcall (re-opening)"),
-      f("ImmedCueMajor", "Cue of their major"),
-      f("ImmedCueMinor", "Cue of their minor"),
-      f("UnusualNT", "Unusual notrump"),
-      f("Over1NTInterf", "Over interference to our 1NT"),
-      f("Over1NTInterfMore", "Over interference — more"),
+      f("JumpOvercall", "Jump overcall", half),
+      f("UnusualNT", "Unusual notrump", half),
+      f("Overcall1NT", "1NT overcall (direct)", half),
+      f("Reopen1NT", "1NT overcall (re-opening)", half),
+      f("ImmedCueMinor", "Cue of their minor", half),
+      f("ImmedCueMajor", "Cue of their major", half),
+      f("CompeteWeak2", "Defence to weak twos", half),
+      f("CompeteOpen3", "Defence to three-openings", half),
       f("Transfers_1", "Over their transfers"),
-      f("NegXLimit", "Negative double — upper limit"),
       f("Compete1NT_1", "Defence to their 1NT (1)"),
       f("Compete1NT_2", "Defence to their 1NT (2)"),
       f("Compete1NT_3", "Defence to their 1NT (3)"),
-      f("CompeteWeak2", "Defence to weak twos"),
-      f("CompeteOpen3", "Defence to three-openings"),
-      notes("Competitive_0", "Notes"),
+      f("Over1NTInterf", "Over interference to our 1NT", half),
+      f("Over1NTInterfMore", "Over interference — more", half),
     ],
   },
   {
@@ -136,13 +162,13 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Basic responses",
     layout: "generic",
     fields: [
-      f("JumpRaiseMinor", "Jump raise of a minor"),
-      f("JumpRaiseMinorOther", "Jump raise of a minor — other"),
-      f("JumpRaiseMajor", "Jump raise of a major"),
-      f("JumpRaiseMajorOther", "Jump raise of a major — other"),
-      f("MinorJumpShift", "Jump shift over a minor"),
-      f("MajorJumpShift", "Jump shift over a major"),
       notes("BasicResponses_0", "Notes"),
+      f("JumpRaiseMinor", "Jump raise of a minor", half),
+      f("JumpRaiseMinorOther", "Jump raise of a minor — other", half),
+      f("JumpRaiseMajor", "Jump raise of a major", half),
+      f("JumpRaiseMajorOther", "Jump raise of a major — other", half),
+      f("MinorJumpShift", "Jump shift over a minor", half),
+      f("MajorJumpShift", "Jump shift over a major", half),
     ],
   },
   {
@@ -150,15 +176,16 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 5,
     title: "Play conventions — leads & carding",
     layout: "playPairs",
+    // Pair order follows the printed card (discards before count; signal last).
     pairs: [
       { label: "Lead from a sequence", ntKey: "SeqLead_NT", sKey: "SeqLead_S" },
       { label: "Lead from 4+ to an honour", ntKey: "FourHonourLead_NT", sKey: "FourHonourLead_S" },
       { label: "Lead from four small", ntKey: "FourSmallLead_NT", sKey: "FourSmallLead_S" },
       { label: "Lead from three small", ntKey: "ThreeSmallLead_NT", sKey: "ThreeSmallLead_S" },
       { label: "Lead in partner's suit", ntKey: "LeadPartnersSuit_NT", sKey: "LeadPartnersSuit_S" },
-      { label: "Signal on partner's lead", ntKey: "SignalPartnerLead_NT", sKey: "SignalPartnerLead_S" },
-      { label: "Count signal", ntKey: "CountType_NT", sKey: "CountType_S" },
       { label: "Discard signal", ntKey: "DiscardType_NT", sKey: "DiscardType_S" },
+      { label: "Count signal", ntKey: "CountType_NT", sKey: "CountType_S" },
+      { label: "Signal on partner's lead", ntKey: "SignalPartnerLead_NT", sKey: "SignalPartnerLead_S" },
     ],
     fields: [
       f("SignalDeclarerLead", "Signal when declarer leads"),
@@ -174,13 +201,13 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Slam conventions",
     layout: "generic",
     fields: [
-      cb("IsBlackwood", "Blackwood"),
-      f("RKCBStyle", "RKCB style"),
-      cb("IsAskingBids", "Asking bids"),
-      cb("IsCueBids", "Cue bids"),
-      cb("IsGerber", "Gerber"),
+      cb("IsBlackwood", "Blackwood", half),
+      cb("IsGerber", "Gerber", half),
+      cb("IsCueBids", "Cue bids", half),
+      cb("IsAskingBids", "Asking bids", half),
       f("GerberWhen", "Gerber applies when"),
-      f("FourNTOther", "Other uses of 4NT"),
+      f("RKCBStyle", "RKCB style", half),
+      f("FourNTOther", "Other uses of 4NT", half),
       notes("SlamNotes_1", "Slam notes 1"),
       notes("SlamNotes_2", "Slam notes 2"),
       notes("SlamNotes_3", "Slam notes 3"),
@@ -191,18 +218,19 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 7,
     title: "Other conventions",
     layout: "generic",
+    // PDF: a summary note over a 2-col × 5-row grid (left = _1_n, right = _2_n).
     fields: [
       notes("Other_0", "Notes"),
-      f("Other_1_1", "Convention 1"),
-      f("Other_1_2", "Convention 2"),
-      f("Other_1_3", "Convention 3"),
-      f("Other_1_4", "Convention 4"),
-      f("Other_1_5", "Convention 5"),
-      f("Other_2_1", "Convention 6"),
-      f("Other_2_2", "Convention 7"),
-      f("Other_2_3", "Convention 8"),
-      f("Other_2_4", "Convention 9"),
-      f("Other_2_5", "Convention 10"),
+      f("Other_1_1", "Convention 1", half),
+      f("Other_2_1", "Convention 6", half),
+      f("Other_1_2", "Convention 2", half),
+      f("Other_2_2", "Convention 7", half),
+      f("Other_1_3", "Convention 3", half),
+      f("Other_2_3", "Convention 8", half),
+      f("Other_1_4", "Convention 4", half),
+      f("Other_2_4", "Convention 9", half),
+      f("Other_1_5", "Convention 5", half),
+      f("Other_2_5", "Convention 10", half),
     ],
   },
   {
@@ -210,20 +238,22 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 8,
     title: "Responses to opening bids",
     layout: "grid",
+    // The matrix is rendered above these; the coded fields fall into two PDF
+    // blocks (responses to 1NT, then to strong twos / 2NT) plus the notes.
     fields: [
-      f("Resp1NT2CStyle", "2♣ response to 1NT"),
-      f("Resp1NT2D", "2♦ response to 1NT"),
-      f("Resp1NT2H", "2♥ response to 1NT"),
-      f("Resp1NT2S", "2♠ response to 1NT"),
-      f("Resp1NT2NT", "2NT response to 1NT"),
-      f("Resp1NTDoubled", "When our 1NT is doubled"),
-      f("Resp1NTOther", "Other responses to 1NT"),
-      f("Response2NT", "Responses to 2NT (general)"),
-      f("ResponseStrong2", "Responses to a strong two"),
-      f("RespXLimit", "Responsive double — upper limit"),
-      notes("ResponseNotes_1", "Response notes 1"),
-      notes("ResponseNotes_2", "Response notes 2"),
-      notes("ResponseNotes_3", "Response notes 3"),
+      f("Resp1NT2CStyle", "2♣ response to 1NT", { group: "Responses to 1NT" }),
+      f("Resp1NT2D", "2♦ response to 1NT", { width: "half", group: "Responses to 1NT" }),
+      f("Resp1NT2S", "2♠ response to 1NT", { width: "half", group: "Responses to 1NT" }),
+      f("Resp1NT2H", "2♥ response to 1NT", { width: "half", group: "Responses to 1NT" }),
+      f("Resp1NT2NT", "2NT response to 1NT", { width: "half", group: "Responses to 1NT" }),
+      f("Resp1NTDoubled", "When our 1NT is doubled", { width: "half", group: "Responses to 1NT" }),
+      f("Resp1NTOther", "Other responses to 1NT", { width: "half", group: "Responses to 1NT" }),
+      f("ResponseStrong2", "Responses to a strong two", { group: "Responses to strong twos & 2NT" }),
+      f("Response2NT", "Responses to 2NT (general)", { group: "Responses to strong twos & 2NT" }),
+      f("RespXLimit", "Responsive double — upper limit", { width: "half", group: "Responses to strong twos & 2NT" }),
+      notes("ResponseNotes_1", "Response notes 1", { group: "Notes" }),
+      notes("ResponseNotes_2", "Response notes 2", { group: "Notes" }),
+      notes("ResponseNotes_3", "Response notes 3", { group: "Notes" }),
     ],
   },
   {
@@ -232,11 +262,12 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Conventions",
     layout: "generic",
     fields: [
+      notes("Conventions_0", "Notes"),
       f("UnusualNoTrump", "Unusual notrump (detail)"),
       f("UnusualNTOther", "Unusual notrump — other"),
       f("FourthSuitForcing", "Fourth suit forcing"),
-      cb("Is4thForcing1Round", "4SF — forcing one round"),
-      cb("Is4thForcingGame", "4SF — forcing to game"),
+      cb("Is4thForcing1Round", "4SF — forcing one round", half),
+      cb("Is4thForcingGame", "4SF — forcing to game", half),
       f("CheckbackPriorities", "Checkback priorities"),
       cb("IsNTCheckback", "NT checkback"),
       f("Defence3NT", "Defence to 3NT openings"),
@@ -250,9 +281,8 @@ export const SECTIONS: readonly SectionDef[] = [
       f("DefenceStrongC_4", "Defence to strong ♣ (4)"),
       f("LebensohlOther", "Lebensohl / other"),
       f("TakeOutOf4C4D", "Takeout of 4♣ / 4♦"),
-      f("TakeOutOf4H", "Takeout of 4♥"),
-      f("TakeOutOf4S", "Takeout of 4♠"),
-      notes("Conventions_0", "Notes"),
+      f("TakeOutOf4H", "Takeout of 4♥", half),
+      f("TakeOutOf4S", "Takeout of 4♠", half),
     ],
   },
   {

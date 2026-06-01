@@ -1,2 +1,2 @@
-export { StorageBanner } from "./StorageBanner.tsx";
-export { SectionNav } from "./SectionNav.tsx";
+export { StorageIndicator } from "./StorageIndicator.tsx";
+export { PageNav } from "./PageNav.tsx";
