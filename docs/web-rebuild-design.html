@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ABF System Card — Web Rebuild: Implementation Design</title>
+<style>
+  :root{
+    --ink:#1b1b21; --ink-soft:#3a3a44; --muted:#6b6b76;
+    --paper:#faf8f3; --paper-2:#f3efe6; --card:#ffffff;
+    --line:#e3ddd0; --line-strong:#ccc4b2;
+    --red:#c2152e; --red-soft:#fbeced;
+    --blue:#2d4a7c; --blue-soft:#eef2f8;
+    --amber:#9a6a00; --amber-soft:#fbf3df;
+    --green:#1f7a4d; --green-soft:#e9f5ee;
+    --code-bg:#1d1f27; --code-fg:#e6e6ef; --code-dim:#9aa0b4; --code-acc:#ffd479; --code-str:#9ad29a; --code-fn:#7fb4ff;
+    --maxw:880px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font:400 17px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .serif{font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
+  a{color:var(--blue); text-decoration:none; border-bottom:1px solid rgba(45,74,124,.28)}
+  a:hover{border-bottom-color:var(--blue)}
+
+  .wrap{display:grid; grid-template-columns:270px minmax(0,1fr); gap:0; max-width:1240px; margin:0 auto}
+  nav.toc{
+    position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+    padding:34px 22px 60px 30px; border-right:1px solid var(--line); font-size:13.5px;
+  }
+  nav.toc .brand{font-weight:700; letter-spacing:.02em; font-size:14px; color:var(--ink); display:flex; gap:7px; align-items:center; margin-bottom:4px}
+  nav.toc .brand .suit{color:var(--red)}
+  nav.toc .sub{color:var(--muted); font-size:12px; margin-bottom:20px; line-height:1.4}
+  nav.toc ol{list-style:none; margin:0; padding:0; counter-reset:s}
+  nav.toc li{margin:1px 0}
+  nav.toc a{display:block; padding:5px 9px; border:0; border-radius:6px; color:var(--ink-soft); line-height:1.3}
+  nav.toc a .n{color:var(--muted); font-variant-numeric:tabular-nums; margin-right:8px; font-size:12px}
+  nav.toc a:hover{background:var(--paper-2); color:var(--ink)}
+  nav.toc a.active{background:var(--ink); color:#fff}
+  nav.toc a.active .n{color:rgba(255,255,255,.6)}
+
+  main{padding:0 0 120px}
+  .col{max-width:var(--maxw); margin:0 auto; padding:0 32px}
+
+  header.hero{
+    background:
+      radial-gradient(1200px 380px at 78% -120px, rgba(45,74,124,.10), transparent 60%),
+      linear-gradient(180deg,#fffefb, var(--paper));
+    border-bottom:1px solid var(--line); padding:62px 0 44px; margin-bottom:8px;
+  }
+  .kicker{font-size:12.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--blue); font-weight:700}
+  h1{font-size:clamp(30px,4.4vw,46px); line-height:1.08; margin:14px 0 10px; letter-spacing:-.015em; font-weight:600}
+  .lede{font-size:19.5px; color:var(--ink-soft); max-width:760px; margin:0}
+  .badges{display:flex; flex-wrap:wrap; gap:8px; margin-top:26px}
+  .badge{display:inline-flex; align-items:baseline; gap:6px; background:var(--card); border:1px solid var(--line-strong);
+    border-radius:999px; padding:5px 13px; font-size:12.5px; color:var(--ink-soft)}
+  .badge b{color:var(--ink); font-variant-numeric:tabular-nums; font-weight:600}
+  .suitrow{margin-top:18px; font-size:20px; letter-spacing:6px}
+  .suitrow .r{color:var(--red)} .suitrow .b{color:var(--ink)}
+
+  section{padding:46px 0 8px; border-top:1px solid var(--line)}
+  section:first-of-type{border-top:0}
+  h2{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--blue); margin:0 0 6px; font-weight:700}
+  h2 .num{color:var(--line-strong); margin-right:10px}
+  .h2title{font-size:clamp(23px,3vw,31px); line-height:1.15; margin:0 0 18px; font-weight:600; letter-spacing:-.01em}
+  h3{font-size:19px; margin:34px 0 8px; font-weight:650; letter-spacing:-.005em}
+  h4{font-size:15.5px; margin:22px 0 4px; font-weight:650; color:var(--ink)}
+  p{margin:0 0 15px}
+  strong{font-weight:650}
+  .small{font-size:14.5px; color:var(--muted)}
+  ul,ol.body{margin:0 0 16px; padding-left:22px}
+  li{margin:6px 0}
+  code{font-family:"SF Mono",ui-monospace,"Cascadia Code","JetBrains Mono",Consolas,monospace; font-size:.86em;
+    background:var(--paper-2); border:1px solid var(--line); border-radius:4px; padding:.08em .36em; color:#7a2230}
+  .fn{color:#7a2230; font-weight:600}
+
+  .call{border:1px solid var(--line); border-left-width:4px; border-radius:8px; padding:16px 18px; margin:20px 0; background:var(--card); font-size:15.5px}
+  .call .lab{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; display:block; margin-bottom:5px}
+  .call p:last-child{margin-bottom:0}
+  .call.insight{border-left-color:var(--amber); background:var(--amber-soft)} .call.insight .lab{color:var(--amber)}
+  .call.limit{border-left-color:var(--red); background:var(--red-soft)} .call.limit .lab{color:var(--red)}
+  .call.note{border-left-color:var(--blue); background:var(--blue-soft)} .call.note .lab{color:var(--blue)}
+  .call.win{border-left-color:var(--green); background:var(--green-soft)} .call.win .lab{color:var(--green)}
+
+  pre{background:var(--code-bg); color:var(--code-fg); border-radius:10px; padding:16px 18px; overflow-x:auto;
+    font-family:"SF Mono",ui-monospace,"Cascadia Code","JetBrains Mono",Consolas,monospace; font-size:13px; line-height:1.6; margin:18px 0}
+  pre code{background:none; border:0; padding:0; color:inherit; font-size:inherit}
+  pre .c{color:var(--code-dim); font-style:italic}
+  pre .k{color:var(--code-acc)}
+  pre .s{color:var(--code-str)}
+  pre .f{color:var(--code-fn)}
+
+  .tablewrap{overflow-x:auto; margin:20px 0; border:1px solid var(--line); border-radius:10px}
+  table{border-collapse:collapse; width:100%; font-size:14px}
+  th,td{text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top}
+  thead th{background:var(--paper-2); font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-soft); font-weight:700; position:sticky; top:0}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:#fcfaf5}
+  td .cost{color:var(--red)}
+  .mono{font-family:"SF Mono",ui-monospace,Consolas,monospace; font-size:12.5px}
+
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:12px; margin:24px 0}
+  .stat{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 15px}
+  .stat .v{font-size:25px; font-weight:680; letter-spacing:-.02em; line-height:1; font-variant-numeric:tabular-nums}
+  .stat .l{font-size:12.5px; color:var(--muted); margin-top:6px; line-height:1.3}
+
+  .tiers{display:flex; flex-direction:column; gap:12px; margin:22px 0}
+  .tier{border:1px solid var(--line-strong); border-radius:10px; padding:14px 16px; background:var(--card); position:relative}
+  .tier .t-h{display:flex; align-items:center; gap:10px; margin-bottom:5px}
+  .tier .pill{font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#fff; background:var(--blue); border-radius:999px; padding:3px 9px}
+  .tier .t-h b{font-size:15.5px}
+  .tier .when{margin-left:auto; font-size:12px; color:var(--muted)}
+  .tier p{margin:0; font-size:14.5px; color:var(--ink-soft)}
+  .tier .arrow{position:absolute; left:50%; bottom:-13px; transform:translateX(-50%); color:var(--line-strong); font-size:16px; z-index:1}
+
+  .palette{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:8px; margin:16px 0}
+  .sw{display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:7px; padding:6px 8px; font-size:12.5px; background:var(--card)}
+  .sw .chip{width:16px; height:16px; border-radius:4px; border:1px solid rgba(0,0,0,.15); flex:none}
+  .sw .mono{font-size:12px}
+
+  .flow{font-family:"SF Mono",ui-monospace,Consolas,monospace; font-size:12.5px; line-height:1.65; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:18px 0; overflow-x:auto; white-space:pre}
+
+  /* status pills for the risk register */
+  .st{display:inline-block; font-size:11px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:2px 8px; border-radius:999px; white-space:nowrap}
+  .st.ok{background:var(--green-soft); color:var(--green); border:1px solid #bfe3cd}
+  .st.test{background:var(--amber-soft); color:var(--amber); border:1px solid #ecd9a3}
+  .st.fix{background:var(--red-soft); color:var(--red); border:1px solid #f0c9cf}
+
+  hr.soft{border:0; border-top:1px solid var(--line); margin:30px 0}
+  footer{border-top:1px solid var(--line); margin-top:50px; padding:30px 0 60px; color:var(--muted); font-size:13.5px}
+
+  @media(max-width:920px){
+    .wrap{grid-template-columns:1fr}
+    nav.toc{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line); padding:18px 22px}
+    nav.toc ol{column-count:2; column-gap:18px}
+  }
+  @media print{
+    nav.toc{display:none} .wrap{display:block} .badges,.suitrow{break-inside:avoid}
+    pre{border:1px solid #ccc} body{background:#fff}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ TABLE OF CONTENTS ============ -->
+  <nav class="toc" id="toc">
+    <div class="brand"><span class="suit">♠♥♦♣</span> ABF Card · Web</div>
+    <div class="sub">Implementation design for the static web rebuild</div>
+    <ol>
+      <li><a href="#overview"><span class="n">01</span>Overview &amp; directions taken</a></li>
+      <li><a href="#shape"><span class="n">02</span>System shape</a></li>
+      <li><a href="#model"><span class="n">03</span>Data model &amp; identity</a></li>
+      <li><a href="#render"><span class="n">04</span>The render engine</a></li>
+      <li><a href="#import"><span class="n">05</span>Import pipeline</a></li>
+      <li><a href="#export"><span class="n">06</span>Export pipeline</a></li>
+      <li><a href="#ui"><span class="n">07</span>UI &amp; the hard flows</a></li>
+      <li><a href="#stack"><span class="n">08</span>Stack &amp; structure</a></li>
+      <li><a href="#testing"><span class="n">09</span>Testing</a></li>
+      <li><a href="#risks"><span class="n">10</span>Risk &amp; must-test register</a></li>
+      <li><a href="#milestones"><span class="n">11</span>Milestones</a></li>
+      <li><a href="#method"><span class="n">＊</span>How this was produced</a></li>
+    </ol>
+  </nav>
+
+  <main>
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <div class="col">
+      <div class="kicker">System Card · Web Rebuild · Design</div>
+      <h1 class="serif">Rebuilding the ABF System Card as a static web app</h1>
+      <p class="lede">A single typed document, two presentation paths: a responsive on-screen card for phone and desktop, and a regulation-faithful PDF produced by filling the <em>original</em> blank form. This is the implementation design — grounded in the reverse-engineering work and fact-checked against the real PDF.</p>
+      <div class="badges">
+        <span class="badge"><b>React 19</b> + Vite + TS</span>
+        <span class="badge"><b>100%</b> static</span>
+        <span class="badge"><b>pdf-lib</b> read + fill</span>
+        <span class="badge">mobile <b>+</b> desktop</span>
+        <span class="badge"><b>~295</b> logical fields</span>
+        <span class="badge">full <b>!</b>-code markup</span>
+      </div>
+      <div class="suitrow"><span class="b">♠</span> <span class="r">♥</span> <span class="r">♦</span> <span class="b">♣</span></div>
+    </div>
+  </header>
+
+  <!-- ============ 01 ============ -->
+  <section id="overview">
+   <div class="col">
+    <h2><span class="num">01</span>Overview &amp; the directions we took</h2>
+    <div class="h2title">Keep the card, collapse the cleverness, fill the original for print</div>
+
+    <p>The companion analysis (<a href="../abf/architecture.html">architecture.html</a>) showed that the existing PDF packed what is essentially an app inside a PDF. The web platform provides most of those features for free. The design goal, then, is narrow: faithfully reproduce the <em>regulated bridge content</em> and its semantics, and let the platform do the rest. The build target is a static site deployable to GitHub&nbsp;Pages / Cloudflare&nbsp;Pages.</p>
+
+    <p>Several genuine forks were settled before this design. Each is recorded here with the alternatives considered, so the &ldquo;why&rdquo; survives.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th style="width:20%">Decision</th><th>Options considered</th><th style="width:30%">Chosen &amp; why</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>Product scope</b></td>
+            <td>Digital-only · print-faithful only · <b>both</b></td>
+            <td><b>Both, equally.</b> One data model feeds a responsive screen UI <em>and</em> a regulation PDF. No compromise on either; the model is the single source of truth.</td>
+          </tr>
+          <tr>
+            <td><b>Print output</b></td>
+            <td>Re-draw the regulated layout ourselves (pdfmake/jsPDF) · <b>fill the original blank PDF</b> · hybrid</td>
+            <td><b>Fill the original blank.</b> We ship <code>ABF_Card_FORM.pdf</code> and write values into its existing AcroForm fields. The output <em>is</em> the regulation form — conformance by construction, zero layout to maintain, and it re-opens in the legacy ecosystem.</td>
+          </tr>
+          <tr>
+            <td><b>Round-trip</b></td>
+            <td>Re-openable by us only · also by the old form/tools · both</td>
+            <td><b>Both, for free.</b> Because the export <em>is</em> a filled ABF form, the legacy ecosystem can read it and so can we. An optional embedded marker gives a lossless fast-path on re-open.</td>
+          </tr>
+          <tr>
+            <td><b>Build stack</b></td>
+            <td>Vanilla TS · Svelte/Solid · <b>React</b></td>
+            <td><b>React 19.</b> Most widely used; the form&rarr;sections&rarr;grid structure maps cleanly onto components. All versions verified live (see §08).</td>
+          </tr>
+          <tr>
+            <td><b>Markup scope</b></td>
+            <td>Suits + colour only · + sub/super · <b>full language</b></td>
+            <td><b>Full <code>gFVbR</code> language.</b> Suits, the 10-colour palette, b/i/u, super/sub, size steps, tabs, Unicode escapes, lock/force, grave shortcuts — minus internal diagnostic injectors. One render engine, used twice.</td>
+          </tr>
+          <tr>
+            <td><b>Save &amp; share</b></td>
+            <td>local autosave · QR · share-link · JSON file (any combination)</td>
+            <td><b>All of them</b>, with autosave as the always-on base. Local-only storage is <em>clearly communicated</em>. Share-link is designed-in but its URL-size ceiling is verified after MVP.</td>
+          </tr>
+          <tr>
+            <td><b>Legacy import</b></td>
+            <td>none · filled PDF · FDF · all</td>
+            <td><b>Filled PDF + FDF + our own files.</b> Entirely client-side, normalized through the form&rsquo;s own <code>gRtFL</code> rename rules so even pre-2020 cards map correctly.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="call insight">
+      <span class="lab">The one rule everything hangs off</span>
+      <p>A single typed <code>Card</code> object is the only source of truth. The screen, the PDF, the JSON file, the share-link and the QR code are all <em>projections</em> of it. The rich rendering (suits, colour, formatting) is <strong>derived, never stored</strong> — similary to the &ldquo;editable value + regenerable display twin&rdquo; the original form used.</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 02 ============ -->
+  <section id="shape">
+   <div class="col">
+    <h2><span class="num">02</span>System shape</h2>
+    <div class="h2title">One model, three projections, two foreign formats</div>
+
+    <div class="flow">                 ┌──────────────── Card (typed model) ────────────────┐
+                 │ ~295 logical fields · responses[opening][bid] grid  │
+                 │ 10 booleans · classification enum + brownSticker    │
+                 │ players[2]+primary · settings · {schemaVersion, ts} │
+                 └───────────────┬─────────────────────────────────────┘
+            zustand store  +  idb (IndexedDB) autosave, debounced  ── LOCAL ONLY
+                                 │
+   ┌──────────────┬─────────────┼───────────────┬──────────────────┐
+   ▼              ▼             ▼               ▼                  ▼
+ SCREEN        EXPORT pdf     EXPORT json     SHARE link/QR       IMPORT
+ React form    fill blank     canonical       fflate → #frag      legacy PDF / FDF
+ live render   ABF_Card_FORM  interchange     + QR (qrcode)       / our json / our pdf
+ §8 grid       /V + D_ /RV+/AP                                    pdf-lib read → gRtFL
+ (table↔stack) (renders w/o JS)                                   rename → Card</div>
+
+    <p>Three layers do the work. They are deliberately decoupled so the pure logic is trivially testable and the foreign-format mess is quarantined.</p>
+
+    <div class="tiers">
+      <div class="tier">
+        <div class="t-h"><span class="pill">Pure</span><b><code>model/</code> + <code>render/</code></b><span class="when">no React, no DOM, no pdf-lib</span></div>
+        <p>The <code>Card</code> type and the <code>!</code>-code render engine. A single pure function <code>renderCoded(raw) → Span[]</code> is consumed twice: by a React renderer for the screen, and by a PDF appearance-builder for export. Build it once; fidelity everywhere.</p>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="tier">
+        <div class="t-h"><span class="pill">Edges</span><b><code>io/</code> + <code>state/</code></b><span class="when">all foreign formats live here</span></div>
+        <p>pdf-lib is touched in exactly one directory behind a two-function adapter. FDF parsing, share-link encode/decode, JSON, and the zustand store + IndexedDB persistence sit beside it. Card identity / import-resolution logic lives in <code>state/identity.ts</code>.</p>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="tier">
+        <div class="t-h"><span class="pill">Shell</span><b><code>ui/</code></b><span class="when">the only place React lives</span></div>
+        <p>One component per regulated section + the masthead, the §8 grid, the six field-kind components, the storage indicator, and the import-resolution dialog. The editing DOM is never made to print — printing means &ldquo;export the official PDF.&rdquo;</p>
+      </div>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 03 ============ -->
+  <section id="model">
+   <div class="col">
+    <h2><span class="num">03</span>Data model &amp; card identity</h2>
+    <div class="h2title">A flat map of logical values, a ragged grid, and three orthogonal stamps</div>
+
+    <p>The persisted <code>Card</code> is a flat keyed map of the ~295 editable logical fields, the §8 grid as a nested partial map, ten booleans, a classification enum plus an independent brown-sticker boolean, a two-player array with a &ldquo;primary&rdquo; pointer, a typed settings object, and a two-field provenance block. Every <code>D_</code>/<code>B_</code>/<code>V_</code>/<code>Z_</code>/<code>My_</code>/<code>I_</code> machinery field of the original is dropped — they are regenerable PDF plumbing.</p>
+
+<pre><code><span class="k">type</span> CodedText = <span class="k">string</span>;   <span class="c">// the raw !-code source the user typed; rendered form is DERIVED, never stored</span>
+<span class="k">type</span> SuitOpening = <span class="s">'1C'|'1D'|'1H'|'1S'|'1NT'|'2C'|'2D'|'2H'|'2S'|'2NT'</span>;
+
+<span class="k">interface</span> <span class="f">Card</span> {
+  id: <span class="k">string</span>;            <span class="c">// stable UUID v4 — plan identity; never changes through edits/round-trips</span>
+  schemaVersion: <span class="k">number</span>; <span class="c">// shape of our model (gate for migration)</span>
+  revision: { label: CodedText; counter: <span class="k">number</span>; parent?: <span class="k">number</span> }; <span class="c">// which version</span>
+  provenance: { schemaVersion: <span class="k">number</span>; savedAt: <span class="k">string</span> };  <span class="c">// ISO; NO identity/viewer/OS leak</span>
+
+  players: [Player, Player];   <span class="c">// slots A=0 / B=1</span>
+  primaryPlayer: <span class="s">0</span> | <span class="s">1</span>;       <span class="c">// swap-to-print = a pointer flip, no data movement</span>
+  basicSystem: CodedText;      <span class="c">// coded (1 Standard / 2 2-over-1 / 3 Acol / 4 Precision / …)</span>
+
+  classification: <span class="s">'green'|'blue'|'red'|'yellow'|'unset'</span>;
+  flags: CardFlags;            <span class="c">// the 10 boolean agreements (see below)</span>
+
+  s1_openings: Section1; s2_preAlerts: Section2; <span class="c">/* … */</span> s10_notes: Section10;
+  s8_responses: ResponsesGrid; <span class="c">// nested PARTIAL map (the grid is ragged)</span>
+
+  settings: CardSettings;      <span class="c">// display prefs, separate from card content</span>
+}
+
+<span class="c">// The §8 grid is RAGGED — only the cells that exist for a given opening are present.</span>
+<span class="k">type</span> ResponsesGrid = <span class="f">Partial</span>&lt;<span class="f">Record</span>&lt;SuitOpening, <span class="f">Partial</span>&lt;<span class="f">Record</span>&lt;ResponseBid, CodedText&gt;&gt;&gt;&gt;;</code></pre>
+
+    <div class="call limit">
+      <span class="lab">Verified correction · the §8 grid is hierarchical, not flat</span>
+      <p>Probing the real PDF shows the grid cells are <strong>hierarchical AcroForm fields</strong>: a parent field <code>Resp1C</code> with child partial names <code>_1D</code>, <code>_1H</code>, … <code>Other</code> — so the fully-qualified name is <code>Resp1C.<wbr>_1D</code> (dot separator), <strong>not</strong> <code>Resp1C_1H</code>. Parse the field <em>tree</em> (parent <code>/T</code> + child <code>/T</code>), or split fully-qualified names on the <em>first</em> dot. And beware: <code>Resp1NT2D</code>, <code>Resp1NTDoubled</code>, <code>Resp1NT2CStyle</code> are <em>separate top-level coded fields</em> (they carry their own tooltip code-lists), <strong>not</strong> grid cells — the real 1NT cells are <code>Resp1NT.<wbr>_3C</code> … <code>Resp1NT.<wbr>_4S</code>/<code>Resp1NT.Other</code>. Conflating these mis-routes data on import and export.</p>
+    </div>
+
+    <h3>The ten &ldquo;checkboxes&rdquo; are booleans to us — but text fields in the PDF</h3>
+    <p>On our side these are unambiguously booleans:</p>
+<pre><code><span class="k">interface</span> <span class="f">CardFlags</span> {
+  IsBlackwood: <span class="k">boolean</span>; IsGerber: <span class="k">boolean</span>; IsAskingBids: <span class="k">boolean</span>;
+  IsCueBids: <span class="k">boolean</span>; IsNTCheckback: <span class="k">boolean</span>; IsCanape: <span class="k">boolean</span>; IsBrownSticker: <span class="k">boolean</span>;
+  Is4thForcing1Round: <span class="k">boolean</span>; Is4thForcingGame: <span class="k">boolean</span>;  <span class="c">// 4th-suit-forcing is two agreements</span>
+  OneNTMayHave5Major: <span class="k">boolean</span>;
+}</code></pre>
+    <div class="call limit">
+      <span class="lab">Verified correction · do not call the checkbox API</span>
+      <p>Probing by <code>/FT</code> confirms <code>IsBlackwood</code> and the rest are <strong><code>/Tx</code> text fields</strong> (&ldquo;imitation checkboxes&rdquo; the original cycles through tick styles), <em>not</em> <code>/Btn</code> checkboxes. <code>pdf-lib</code>&rsquo;s <code>form.getCheckBox(name)</code> will <strong>throw</strong>. On export, write the tick-style glyph value (<code>My_CheckBoxValues</code>: Big-X / Small-Black / Tick / Cross) into the text field and its <code>B_</code> twin; on import, read a non-empty/&ldquo;on&rdquo; value as <code>true</code>. <code>Classification</code> is likewise a text field, and the blank stores the literal sentinel <code>not&nbsp;set</code> (not <code>Green</code>/<code>G</code>/<code>1</code>) — settle the colour literals from <code>gFpB</code> in the JS before the import/export mapper is built. The only true non-text fields are the two print-mirror radio groups <code>Z_MyClass</code>/<code>Z_Sticker</code> (already dropped).</p>
+    </div>
+
+    <h3>Identity, revision and schema are three different things</h3>
+    <p>Conflating them is the classic bug, so they are kept orthogonal:</p>
+    <ul>
+      <li><strong><code>id</code> (UUID)</strong> — <em>plan</em> identity. Minted once; survives every edit, export, re-import and player swap. This is what tells &ldquo;a different pair&rsquo;s card&rdquo; from &ldquo;another revision of <em>our</em> card.&rdquo;</li>
+      <li><strong><code>revision</code></strong> — <em>which version</em>. A monotonic <code>counter</code> + the user-facing <code>label</code>. Replaces the original&rsquo;s <code>I_LastSave</code> ordering <em>without</em> its viewer/OS/user payload.</li>
+      <li><strong><code>schemaVersion</code></strong> — <em>which shape</em> of our model. A migration gate. Bumping the app schema must not look like the user edited the card.</li>
+    </ul>
+
+    <p><strong>Migration on load</strong> is a one-time pure transform, never self-modifying fields. Two distinct layers, run in order: first a <strong>legacy field-name rename</strong> (current AcroForm names ← pre-2020 names) seeded from the form&rsquo;s own <code>gRtFL</code> DSL; then, only when a second schema eventually ships, a <code>schemaVersion</code> ladder. For v1 there is exactly one schema, so the ladder is a single guard, not infrastructure (see §10 YAGNI).</p>
+
+    <div class="call note">
+      <span class="lab">Import resolution — the &ldquo;new file vs. partner&rsquo;s new version&rdquo; problem</span>
+      <p>After rename + migration produce a candidate <code>Card</code>, branch on <code>id</code>. <strong>Unknown id</strong> (every legacy file, since it has no UUID of ours — mint one) &rarr; <em>new card</em>. <strong>Known id</strong> &rarr; it&rsquo;s our plan again — a new revision or a partner&rsquo;s edits &rarr; offer <em>replace / keep-both / compare</em>, using <code>revision.counter</code>/<code>savedAt</code> to label which is newer. To distinguish linear succession (<em>their rev 6 descends from my rev 5</em> — safe replace) from a <em>fork</em> (<em>both forked from rev 5</em> — must compare), carry a <code>revision.parent</code> pointer; absent that, route all same-or-lower counters to <em>compare</em>.</p>
+    </div>
+
+    <h3>What is dropped — and a stale-artifact caution</h3>
+    <div class="call limit">
+      <span class="lab">Verified correction · build the field registry from the asset, not the text dump</span>
+      <p>The live <code>ABF_Card_FORM.pdf</code> has <strong>690 AcroForm fields</strong> (688 text + 2 radio), not the 601 the extracted <code>field_names.txt</code> lists — the text dump is <em>stale</em> relative to the asset we actually ship. Build the canonical field registry by enumerating the live form&rsquo;s <code>getFields()</code>, then drop the machinery prefixes (<code>D_</code>=245, <code>My_</code>=13, <code>Box</code>=10, <code>B_</code>=9, <code>A_</code>=7, <code>I_</code>=6, <code>Q_</code>=5, <code>T_</code>=5, <code>V_</code>=4, <code>Z_</code>=2). The bare <code>_1D…_4S</code> &ldquo;column header&rdquo; fields the drafts wanted to drop <strong>don&rsquo;t exist as standalone fields</strong> — they&rsquo;re only the child partials of the <code>Resp</code> parents; the headers are pure render-time labels. The &ldquo;~295 logical&rdquo; figure counts grid cells collapsed into the matrix; the flat <code>getFields()</code> non-machinery count is ~383. Pin the exact registry once, in code, against the asset.</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 04 ============ -->
+  <section id="render">
+   <div class="col">
+    <h2><span class="num">04</span>The render engine</h2>
+    <div class="h2title">One pure function, three stacked code layers, two consumers</div>
+
+    <p>~295 logical fields and all 52 code-lists are authored in the form&rsquo;s terse code language, so we must port it. The engine (from <a href="../abf/extracted/clean_2_block20.js">clean_2_block20.js</a>) is a string interpreter; our port is a single pure function with no globals, no DOM, no PDF — <code>renderCoded(raw, opts) → Span[]</code> — feeding both the screen and the PDF export.</p>
+
+    <h3>Three layers, run as sequential passes</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Layer</th><th>Introducer</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><b>A · Tooltip code-list</b></td><td>digit / <code>x</code> / <code>9</code> / <code>?</code></td><td>Per-field. Expands a code to its phrase (the 52 lists). On the web this becomes the field&rsquo;s autocomplete; selecting inserts the phrase, which may itself contain <code>!</code>-codes that then render.</td></tr>
+          <tr><td><b>B · Grave shortcut</b></td><td><code>`</code> backtick</td><td>Global hash <code>gCdH</code> (seeded by <code>gFrC</code>). Values are themselves <code>!</code>-code strings, so B expands <em>into</em> C. Extensible via user settings (<code>My_Codes</code>).</td></tr>
+          <tr><td><b>C · Rich codes</b></td><td><code>!</code></td><td>The render engine proper — suits, colour, b/i/u, super/sub, size, tabs, Unicode, lock/force.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The <code>!0</code>–<code>!9</code> palette is taken verbatim from the source <code>gClrA</code> array (every value confirmed against the architecture doc):</p>
+    <div class="palette">
+      <div class="sw"><span class="chip" style="background:#000"></span><span class="mono">!0</span> black</div>
+      <div class="sw"><span class="chip" style="background:#ff0000"></span><span class="mono">!1</span> red</div>
+      <div class="sw"><span class="chip" style="background:#0000ff"></span><span class="mono">!2</span> blue</div>
+      <div class="sw"><span class="chip" style="background:#ff00ff"></span><span class="mono">!3</span> fuchsia</div>
+      <div class="sw"><span class="chip" style="background:#00b34d"></span><span class="mono">!4</span> green</div>
+      <div class="sw"><span class="chip" style="background:#a121f0"></span><span class="mono">!5</span> purple</div>
+      <div class="sw"><span class="chip" style="background:#007aa6"></span><span class="mono">!6</span> cerulean</div>
+      <div class="sw"><span class="chip" style="background:#cc6600"></span><span class="mono">!7</span> brown</div>
+      <div class="sw"><span class="chip" style="background:#663333"></span><span class="mono">!8</span> dk brown</div>
+      <div class="sw"><span class="chip" style="background:#ffb333"></span><span class="mono">!9</span> orange</div>
+    </div>
+
+    <p>The full code set to implement: <strong>suits</strong> <code>!S!H!D!C</code> (and lowercase) — rendered on screen as Unicode <code>♠♥♦♣</code> with CSS colour (the embedded <em>Cards</em> font is <em>not</em> needed in the browser; defaults are black spades/clubs, red hearts/diamonds, matching <code>gScxA</code>); <strong>colour</strong> <code>!0</code>–<code>!9</code>; <strong>b/i/u</strong> <code>!b!i!u</code>; <strong>super/sub</strong> <code>!^!v</code>; <strong>size</strong> <code>!+</code>/<code>!=</code>/<code>!-</code> (suits capped at 11pt, size floored at 6pt); <strong>tabs</strong> <code>!:</code>/<code>!;</code>; <strong>Unicode</strong> <code>!U+XXXX;</code>; <strong>lock/force</strong> <code>!N!=</code> (swallowed by the renderer); <strong>save/restore</strong> <code>!{ !}</code>; literal <code>!!</code>; alignment <code>!&lt; !| !&gt;</code>. Grave defaults include <code>`1`</code>→1ˢᵗ … <code>`5`</code>→5ᵗʰ, <code>`@`</code>→½, <code>`_`</code>→en-dash, <code>`a`</code>–<code>`e`</code>→α–ε.</p>
+
+    <div class="call win">
+      <span class="lab">YAGNI &amp; verified simplifications</span>
+      <p>Collapse the original&rsquo;s <em>dual</em> rich/basic sub-parsers into <strong>one rich parser</strong> — the &ldquo;basic&rdquo; path only existed for low-capability Acrobat readers we don&rsquo;t have. Drop the diagnostic injectors <code>!$ !* !@ !~ !&amp;</code> (internal field-name/date/build dumps) and the <code>gEit</code> italic fallback (browsers always have italics). The engine must be <strong>total</strong>: an unknown <code>!x</code> emits the literal <code>!x</code>, so malformed legacy values never throw.</p>
+    </div>
+
+<pre><code><span class="k">interface</span> <span class="f">Span</span> { text: <span class="k">string</span>; suit?: <span class="s">'S'|'H'|'D'|'C'</span>;
+  color: <span class="k">string</span>; bold: <span class="k">boolean</span>; italic: <span class="k">boolean</span>; underline: <span class="k">boolean</span>;
+  vshift: <span class="s">0</span>|<span class="s">1</span>|<span class="s">-1</span>; sizePt: <span class="k">number</span>; align?: <span class="s">'left'|'center'|'right'</span>; }
+
+<span class="k">function</span> <span class="f">renderCoded</span>(raw: <span class="k">string</span>, opts: {
+  fieldDefaults?: { sizePt: <span class="k">number</span> };
+  codeList?: <span class="f">Record</span>&lt;<span class="k">string</span>,<span class="k">string</span>&gt;;   <span class="c">// Layer-A list for THIS field</span>
+  graveTable?: <span class="f">Record</span>&lt;<span class="k">string</span>,<span class="k">string</span>&gt;;  <span class="c">// Layer-B gCdH</span>
+}): Span[];</code></pre>
+
+    <p><strong>Consumer (a) — React:</strong> map each <code>Span</code> to a styled element (<code>&lt;sup&gt;</code>/<code>&lt;sub&gt;</code> for vshift, CSS for the rest), suits as Unicode glyphs pinned to text-presentation. <strong>Consumer (b) — PDF export:</strong> the same <code>Span[]</code> becomes the <code>D_</code> twin&rsquo;s rich appearance (see §06). The intermediate <code>Span[]</code> is the shared contract, and the boundary the test table asserts against.</p>
+
+    <h3>Editing UX</h3>
+    <p>Default display is rendered. On focus a cell shows its raw codes in a monospace input with a <strong>live preview</strong> beside it (debounced; <code>renderCoded</code> is pure and cheap). A markup toolbar inserts the common codes (♠♥♦♣, the colour swatches, B/I/U, super/sub, size) at the caret, so casual users never type a code and power users still can. Coded fields add an autocomplete seeded from the field&rsquo;s list — strictly better than the original&rsquo;s modal &ldquo;type <code>?</code>, dismiss, retype&rdquo; dance, same data.</p>
+   </div>
+  </section>
+
+  <!-- ============ 05 ============ -->
+  <section id="import">
+   <div class="col">
+    <h2><span class="num">05</span>Import pipeline</h2>
+    <div class="h2title">Legacy PDF, FDF, and our own files — all converging on one Card</div>
+
+    <p>Import is read-only and entirely client-side. Four sources in two tiers: a <strong>fast path</strong> for files we wrote (our JSON, our PDF&rsquo;s embedded marker), and a <strong>legacy path</strong> for filled ABF PDFs and FDF. All converge through one pipeline:</p>
+
+    <div class="flow">bytes ─▶ load ─▶ read fields ─▶ normalizeName (gRtFL) ─▶ drop machinery ─▶ mapToLogical ─▶ Card
+                                                                              │
+                                              build responses[opening][bid] from the field TREE</div>
+
+    <h3>Legacy filled PDF</h3>
+    <p><code>PDFDocument.load(bytes, {ignoreEncryption:true})</code> &rarr; <code>getForm().getFields()</code>. If the list is empty, the file was flattened or signed (<code>numFields==0</code>) — an <strong>accepted limitation</strong>: print-only, not importable, surfaced with a clear message rather than an empty card.</p>
+
+    <div class="call limit">
+      <span class="lab">Verified correction · two import gotchas</span>
+      <p><strong>(1) Values are already expanded text.</strong> The original&rsquo;s Validate script replaces a typed code (&lt;3 chars) with its phrase <em>at commit time</em>, so a saved card stores <code>&ldquo;12-14 Balanced&rdquo;</code>, not <code>&ldquo;1&rdquo;</code>. Import therefore <strong>passes values through</strong> (they may still carry <code>!</code>-codes, which the render engine resolves) and must <em>not</em> try to reverse-map a phrase to a code. The elaborate code-vs-prose disambiguation is unnecessary for the common case. <strong>(2) Don&rsquo;t call <code>getText()</code> on rich fields.</strong> It throws <code>RichTextFieldReadError</code> when a RichText-flagged field has no <code>/V</code> — and all 245 <code>D_</code> twins are rich. Dropping <code>D_</code> avoids this, but a naïve &ldquo;loop every field calling <code>getText()</code>&rdquo; will throw; guard with <code>isRichFormatted()</code> / try-catch.</p>
+    </div>
+
+    <p><strong>Build the §8 grid from the field tree</strong>, not from string-splitting flat names (see the §03 correction): walk parent <code>Resp&lt;opening&gt;</code> → child <code>_&lt;bid&gt;</code>/<code>Other</code>. The bare opening field (<code>Resp1C</code> with no child) is the per-row &ldquo;general approach&rdquo; cell — a distinct logical field, not a grid cell.</p>
+
+    <h3>The <code>gRtFL</code> rename normalization</h3>
+    <p>The form&rsquo;s own migration DSL (transcribed exactly from <code>_openaction_clean.js</code>; the architecture doc&rsquo;s 5-rule snippet is abbreviated — use the full 8):</p>
+<pre><code>Player~.&gt;_   Resp~.O&gt;_O   Resp!ons!Oth!._~._&gt;_   Resp1NT2COther&gt;Resp1NT2CStyle
+JumpRaiseMinorOther&gt;JumpRaiseMinor   JumpRaiseMajorOther&gt;JumpRaiseMajor
+UnusualNTOther&gt;UnusualNoTrump   Over1NTInterfMore&gt;Over1NTInterf</code></pre>
+    <div class="call note">
+      <span class="lab">Verified · the 3 templated rules need algorithmic expansion</span>
+      <p>The five plain <code>OLD&gt;NEW</code> rules are a trivial static dict. The three <code>~</code> rules (<code>Player~.&gt;_</code>, <code>Resp~.O&gt;_O</code>, <code>Resp!ons!Oth!._~._&gt;_</code>) are <em>not</em> name pairs — they are prefix + substring-substitution with <code>!</code>-delimited ignore-tokens, exactly as the source <code>gMRFL</code> parser applies them. You <strong>cannot</strong> precompute a static map from the DSL alone; port <code>gMRFL</code>&rsquo;s loop and run it against the live field-name list <strong>at build time</strong> to materialize the concrete old→new pairs. Several rules are <em>merges</em> (e.g. <code>JumpRaiseMinorOther → JumpRaiseMinor</code>): concatenate rather than overwrite, and log any legacy name that survives normalization yet fails to map.</p>
+    </div>
+
+    <h3>FDF</h3>
+    <div class="call limit">
+      <span class="lab">Verified correction · FDF needs a Kids-tree walker, not a flat regex</span>
+      <p>Hierarchical fields (the entire §8 grid) appear in FDF as nested <code>/Kids</code> dictionaries — <code>&lt;&lt;/T(Resp1C)/Kids[&lt;&lt;/T(_1D)/V(…)&gt;&gt; …]&gt;&gt;</code> — <strong>not</strong> flat <code>/T(Resp1C._1D)/V(…)</code> pairs. A flat <code>/T(…)/V(…)</code> regex misses every grid cell (the parent has <code>/T</code> but no <code>/V</code>; children lose the parent name). Walk the dict structure, tracking the parent <code>/T</code> while descending <code>Kids</code>. Also handle hex-string names (<code>/T&lt;48…&gt;</code>) and <code>/V</code>-before-<code>/T</code> ordering. The original&rsquo;s console-dump whitespace tokens (<code>&lt;&lt;R&gt;&gt;</code> etc.) only matter for that hack, but a cheap reverse pass lets us also ingest a file saved straight from the console.</p>
+    </div>
+
+    <h3>Our own files (fast path)</h3>
+    <p>Our JSON is the canonical <code>Card</code> serialization — no rename, no family-dropping, just a <code>schemaVersion</code> check and the identity branch. Our exported PDF carries an embedded marker (UUID + schemaVersion + revision) so re-open is lossless and instant; absent the marker we fall back to field-by-field reading. Always try the marker first.</p>
+   </div>
+  </section>
+
+  <!-- ============ 06 ============ -->
+  <section id="export">
+   <div class="col">
+    <h2><span class="num">06</span>Export pipeline</h2>
+    <div class="h2title">Fill the original blank — and the one hard spike that makes it print</div>
+
+    <p>Everything leaves through four exporters. Three are trivial serializations of the in-memory <code>Card</code> (JSON, share-link, QR). The fourth — the regulation PDF — is the only hard one, and the only one with a genuine decision point.</p>
+
+    <h3>1 · &ldquo;Export official card&rdquo; — fill the blank</h3>
+    <p>We ship <code>abf/ABF_Card_FORM.pdf</code> (<strong>535 KB</strong>, blank, fields + embedded JS intact) as a static asset, fetch it at export time, and write our values into its existing fields by name (mapping our logical keys back through the same <code>gRtFL</code> table). The output <em>is</em> the regulated form — it re-opens in Adobe/Foxit <em>and</em> in our own importer. We never reproduce the layout.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Field class</th><th>Example</th><th><code>/F</code> flag</th><th>Prints?</th></tr></thead>
+        <tbody>
+          <tr><td>Editable code field</td><td class="mono">Open1C, PlayerName_A</td><td class="mono">32 = NoView</td><td><b class="cost">No</b></td></tr>
+          <tr><td><code>D_</code> display twin (×245)</td><td class="mono">D_Open1C</td><td class="mono">4 = Print, RichText</td><td><b style="color:var(--green)">Yes</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="call limit">
+      <span class="lab">The decision point · what prints is the <code>D_</code> twin, not the field we &ldquo;own&rdquo;</span>
+      <p>Verified against the asset: editable fields are <strong>NoView</strong> (never print); only the <code>D_</code> twins are <strong>Print</strong>. So if we fill only the editable fields, the printout is <em>blank</em> until a recipient opens the file in a JS-capable reader and runs the form&rsquo;s REFRESH. That fails on every phone viewer, Preview and browser PDF view — unacceptable for &ldquo;regulation-faithful output.&rdquo; <strong>Strategy A (chosen): we pre-populate the <code>D_</code> twins&rsquo; rich appearance ourselves</strong>, reusing the render engine. Strategy B (fill editable, rely on the reader&rsquo;s JS) is rejected for output.</p>
+    </div>
+
+    <div class="call win">
+      <span class="lab">Verified feasible · Strategy A works, end-to-end</span>
+      <p><code>pdf-lib</code> has <strong>no</strong> rich-text API (<code>setText</code> writes plain <code>/V</code>; <code>enableRichFormatting</code> only flips a flag). But the spike confirmed the real path works: (1) set <code>/RV</code> by hand on the field dict (for Acrobat re-editability — the <code>D_</code> twins already carry exactly this structure), and (2) build the visible appearance yourself via <code>field.updateAppearances(font, provider)</code>, where <code>provider</code> returns a raw operator array — <code>setFillingColor</code>, <code>setFontAndSize('Cards', 11)</code>, <code>showText(cardsFont.encodeText('S'))</code>, <code>Ts</code> rise for super/sub. This saved a valid PDF with the embedded suit font as the AP resource. <strong>The <code>Cards</code> font is free:</strong> it&rsquo;s already embedded in the blank&rsquo;s <code>/DR</code> (a 104-glyph TrueType containing all four suits), so an appearance referencing <code>/Cards</code> needs no new embed. Keep <code>NeedAppearances=false</code> so viewers honour our appearance verbatim. This is the #1 spike for M1.</p>
+    </div>
+
+    <p><strong>Provenance is dropped for free:</strong> we never write <code>I_LastSave</code>/<code>A_JN</code>, so our export leaks no name, OS, reader or login — a real privacy win over the original, at zero cost. The only stamp is the model&rsquo;s <code>{schemaVersion, savedAt}</code>.</p>
+
+    <h3>2 · JSON, share-link, QR</h3>
+    <p>JSON is the compact, lossless, diffable interchange (store the raw <code>!</code>-code source per field; round-trip JSON→JSON must be identity). Share-link: <code>JSON</code> → <code>fflate</code> raw-deflate → base64url → URL <strong>fragment</strong> (<code>#</code>, never sent to a server). QR is generated from that same URL.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Card</th><th>JSON</th><th>deflate</th><th>base64url</th><th>URL</th></tr></thead>
+        <tbody>
+          <tr><td>Typical / sparse</td><td>~1.9 KB</td><td>~0.5 KB</td><td>~660</td><td>~700</td></tr>
+          <tr><td>Heavy (full grid + many fields)</td><td>~15 KB</td><td>~1.3 KB</td><td>~1,698</td><td>~1,722</td></tr>
+          <tr><td>Pathological (long pasted notes)</td><td>—</td><td>—</td><td>~1,900</td><td><b class="cost">~1,931</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Compression is ~10:1 (repeated codes + stock phrases). Even a heavy card sits under the conservative ~2 KB URL ceiling, so share-link is viable for the overwhelming majority of cards — but free-text notes are the failure mode. <strong>Set the fallback trigger at ~1,800 chars</strong> (degrade to JSON-file / QR-of-a-short-card, never truncate), and <strong>verify against real payloads after MVP</strong>. QR has a tighter real ceiling (~800 chars to stay scannable on paper), so offer QR only below that bound.</p>
+
+    <div class="call note">
+      <span class="lab">Embedded marker caveat</span>
+      <p>The lossless re-open marker needs a home that survives. <code>Z_AppState</code> doesn&rsquo;t exist in the form — we&rsquo;d <code>addField</code> it, which works in <em>our</em> output (pdf-lib writes it directly, no reader-JS needed) but isn&rsquo;t &ldquo;guaranteed&rdquo; through third-party re-saves. Store the marker JSON in <strong>both</strong> a custom XMP/Info key <em>and</em> a hidden text field, and treat absence gracefully (fall back to field-by-field import).</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 07 ============ -->
+  <section id="ui">
+   <div class="col">
+    <h2><span class="num">07</span>UI &amp; the hard flows</h2>
+    <div class="h2title">Responsive sections, a grid that restacks, and three flows that bite</div>
+
+    <p>One route per regulated section plus the masthead — matching the regulated schema 1:1 makes the card legible to anyone who knows the paper form. Six field-kind components (<code>RichTextField</code>, <code>CodedField</code>, <code>Checkbox</code>, <code>ClassificationSwatch</code>, <code>PlayerField</code>, <code>NotesArea</code>) cover everything.</p>
+
+    <h3>Responsive layout</h3>
+    <ul>
+      <li><strong>Section nav:</strong> tab strip on desktop, drawer + section <code>&lt;select&gt;</code> + thumb stepper on mobile. Present sections in natural order 1→10 — the PDF&rsquo;s right-column front cover is a <em>print</em> constraint and must not leak into editing.</li>
+      <li><strong>§8 responses grid:</strong> a real <code>&lt;table&gt;</code> with sticky header row + first column on desktop; a <strong>stacked accordion, one panel per opening</strong>, on mobile. Both read/write the identical <code>responses[opening][bid]</code> cells, so a viewport change never reshapes data.</li>
+      <li><strong>Classification:</strong> four colour swatches as a radio group; clicking the active one clears to <em>unset</em> (the original&rsquo;s radio-from-one-string behaviour). Brown Sticker is a <em>separate</em> checkbox beside it. A helper line links out to current ABF regs for the colour semantics (deliberately out of file).</li>
+      <li><strong>§5 play conventions:</strong> render the natural <code>_NT</code>/<code>_S</code> pairing as two columns (vs-NT / vs-suit), stacked on mobile.</li>
+    </ul>
+
+    <div class="call insight">
+      <span class="lab">Flow 1 · &ldquo;Autosave is on this device only&rdquo;</span>
+      <p>The biggest UX risk is a user assuming autosave = cloud sync. Three coordinated affordances: a persistent <strong>storage indicator</strong> (&ldquo;Saved on this device · <em>time</em>&rdquo;, a device icon, <em>never</em> a cloud) whose explainer names the exact loss vectors (clear site data / other device / private browsing); a prominent <strong>Back up / Export</strong> button framed as &ldquo;the real save&rdquo;; and failure-prevention copy at export moments (&ldquo;that file, not this browser, is your safe copy&rdquo;). Request <code>navigator.storage.persist()</code> and escalate the indicator to amber if denied — Safari/iOS is the known gap.</p>
+    </div>
+
+    <div class="call insight">
+      <span class="lab">Flow 2 · Import resolution (new file vs. partner&rsquo;s new version)</span>
+      <p>On any open, parse → normalize → read <code>{id, revision, schemaVersion}</code> → branch. <strong>Dialog A (unknown id):</strong> &ldquo;This looks like a different card …&rdquo; → Open / Keep both / Cancel (no destructive default). <strong>Dialog B (matching id — the partner hand-off):</strong> &ldquo;This is an update to <em>Smith / Jones</em>. Theirs is revision 7; yours is 5.&rdquo; → <em>Replace mine</em> (old kept in history) / <em>Keep both</em> / <em>Compare</em> → a field-level diff with per-field keep-mine / take-theirs. This is the one place we <em>add</em> reconciliation the original lacked, because two people now genuinely edit separate copies. Use the <code>revision.parent</code> stamp to route true forks to Compare rather than auto-picking a &ldquo;winner.&rdquo;</p>
+    </div>
+
+    <div class="call insight">
+      <span class="lab">Flow 3 · Swap-to-print &amp; Print</span>
+      <p>Players are <code>[A,B]</code> + a <code>primaryPlayer</code> pointer; <strong>&ldquo;Swap players&rdquo; = flip the pointer</strong> (instant, reversible, zero data risk). <strong>&ldquo;Print partner&rsquo;s card&rdquo; = flip → export → flip back.</strong> The <strong>Print</strong> button simply runs &ldquo;Export official card,&rdquo; then hands the PDF to the browser/Acrobat print path — there is <em>no</em> separate print stylesheet. Open question worth an early spike: whether browsers can be driven to print an in-memory filled PDF directly, or the realistic flow is &ldquo;download, then print from a viewer.&rdquo; And the print promise rides entirely on the Strategy-A spike (§06) — surface a graceful degradation path if it slips.</p>
+    </div>
+
+    <p class="small"><strong>Accessibility:</strong> each section is a labelled landmark; the §8 grid is a real table with <code>scope</code>d headers and arrow-key cell navigation; classification swatches carry text labels and <code>aria-checked</code> (never colour alone); the live <code>!</code>-preview is <code>aria-hidden</code> with the raw code field carrying the accessible value.</p>
+   </div>
+  </section>
+
+  <!-- ============ 08 ============ -->
+  <section id="stack">
+   <div class="col">
+    <h2><span class="num">08</span>Stack &amp; project structure</h2>
+    <div class="h2title">Verified versions, one load-bearing dependency, a quarantined adapter</div>
+
+    <p>Versions checked live against the npm registry on 2026-06-01. Pin exactly (no <code>^</code>/<code>~</code>) and commit a lockfile.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Package</th><th>Version</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">react / react-dom</td><td class="mono">19.2.6</td><td>UI; sections → fields → grid.</td></tr>
+          <tr><td class="mono">typescript</td><td class="mono">6.0.3</td><td>Types for the field model, render tokens, IO contract.</td></tr>
+          <tr><td class="mono">vite + @vitejs/plugin-react</td><td class="mono">8.0.15 / 6.0.2</td><td>Dev server + static <code>/dist</code> bundler.</td></tr>
+          <tr><td class="mono">pdf-lib</td><td class="mono">1.17.1</td><td><b>The load-bearing dep</b> — reads <em>and</em> fills AcroForm fields client-side.</td></tr>
+          <tr><td class="mono">@pdf-lib/fontkit</td><td class="mono">1.1.1</td><td>Font embed/subset — only needed at the edges (the blank already embeds <code>Cards</code>).</td></tr>
+          <tr><td class="mono">zustand</td><td class="mono">5.0.14</td><td>Card store; selector subscriptions stop a ~295-field form re-rendering wholesale.</td></tr>
+          <tr><td class="mono">idb</td><td class="mono">8.0.3</td><td>~1 KB IndexedDB wrapper for local autosave.</td></tr>
+          <tr><td class="mono">fflate</td><td class="mono">0.8.3</td><td>Deflate for the share-link fragment.</td></tr>
+          <tr><td class="mono">qrcode</td><td class="mono">1.5.4</td><td>QR for at-the-table sharing.</td></tr>
+          <tr><td class="mono">@types/react / -dom</td><td class="mono">19.2.15 / 19.2.3</td><td>Type defs.</td></tr>
+          <tr><td class="mono">vitest</td><td class="mono">+ pin at start</td><td>Dev-only test runner (Vite-native). The one addition to the locked set.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="call limit">
+      <span class="lab">The single biggest technical risk · pdf-lib maintenance</span>
+      <p>pdf-lib is the only library that can both read and fill AcroForm fields client-side, and it&rsquo;s low-activity. Mitigation, layered: <strong>(1)</strong> pin <code>1.17.1</code> + lockfile; <strong>(2)</strong> hide it behind a thin adapter — <em>all</em> pdf-lib calls live in <code>io/pdf/adapter.ts</code> behind <code>readFields()</code> and <code>fillForm()</code>, so a swap is one directory; <strong>(3)</strong> keep <code>pdf.js</code> as a read-only import fallback behind the same interface (it can&rsquo;t fill, so export stays on pdf-lib).</p>
+    </div>
+
+<pre><code>src/
+  model/     <span class="c">// pure: Card type, field registry, §8 grid axes, empty-card factory, migrate</span>
+  render/    <span class="c">// THE engine: lexer, tokens, toReact.tsx, toRichSpans.ts, palette.ts</span>
+  io/
+    pdf/     <span class="c">// adapter.ts (ONLY pdf-lib import), export.ts, import.ts, pdfjsFallback.ts</span>
+    fdf/     <span class="c">// Kids-tree parser</span>
+    share/   <span class="c">// encode/decode (fflate → #frag), qr</span>
+    json.ts
+  state/     <span class="c">// zustand store, idb persist, identity/import-resolution</span>
+  ui/        <span class="c">// sections/, fields/, grid/, common/ (storage banner, resolution dialog)</span>
+  content/   <span class="c">// codelists (md→JSON), palette, gRtFL renames, classification, abbreviations</span>
+  assets/    <span class="c">// ABF_Card_FORM.pdf (export template) + Cards font (extracted from /DR)</span></code></pre>
+
+    <p><strong>Build &amp; deploy:</strong> <code>vite build</code> → static <code>/dist</code>; the blank PDF and font are fingerprinted assets fetched at export time. Set <code>base</code> to the repo subpath for GitHub Pages. Share-links live in the <code>#</code> fragment, so no server rewrite is needed — and no &ldquo;server-side&rdquo; anything exists (scrub that phrase wherever the research notes inherited it). A PWA/service-worker offline mode fits the table use-case but is <strong>YAGNI for v1</strong>.</p>
+
+    <div class="call note">
+      <span class="lab">Day-one data tasks (don&rsquo;t leave these implicit)</span>
+      <p><strong>Cards font:</strong> extract from the blank&rsquo;s <code>/DR/Font/Cards</code> (FontFile2 is FlateDecode — <code>decodePDFRawStream().decode()</code> first), or confirm a DA of <code>/Cards 0 Tf</code> resolves the already-embedded resource. <strong>Codelists:</strong> <code>field_codelists.md</code> is prose — write the md→JSON extractor (52 fields / 211 codes). <strong>Palette:</strong> one home (<code>render/palette.ts</code>), no duplication. <strong>Settings defaults must be decided</strong>, not blank: <code>suitColours:true</code>, <code>checkboxStyle:'bigX'</code> (the original&rsquo;s default tick), <code>richness:'rich'</code>, <code>dateFormat:</code> ISO.</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 09 ============ -->
+  <section id="testing">
+   <div class="col">
+    <h2><span class="num">09</span>Testing</h2>
+    <div class="h2title">Four families, one contract test that protects the whole product</div>
+    <ol class="body">
+      <li><strong>Render-engine unit tests (table-driven).</strong> Pure and central — test it hardest. A table of <code>!</code>-code / grave inputs → expected <code>Span[]</code>, asserted at the <code>tokens</code> boundary so both consumers are covered at once. Every suit, every palette colour, b/i/u, super/sub, size clamps, tabs, <code>!U+</code>, the grave defaults, and code-list expansion (a digit → phrase whose phrase itself contains <code>!H</code>). Include malformed inputs to lock in graceful degradation.</li>
+      <li><strong>The IO round-trip contract test (highest value).</strong> Fixture = a known filled legacy ABF PDF. Assert <code>import(pdf) → Card₁</code>, <code>export(Card₁) → pdf'</code>, <code>import(pdf') → Card₂</code>, and <code>Card₁</code> deep-equals <code>Card₂</code> (ignoring the provenance timestamp/revision). This proves the adapter, the gRtFL normalization, the grid tree-mapping, and the render→<code>D_</code>-appearance emission all compose losslessly. Add an FDF fixture too. Build it early — it&rsquo;s the harness that turns the export VERIFYs into CI guarantees.</li>
+      <li><strong>Schema-migration / rename tests.</strong> Drive the gRtFL table with the real rules — the five simple renames plus the three algorithmically-expanded templated rules against the live field set — and a &ldquo;known UUID, newer revision&rdquo; case for the resolution branch.</li>
+      <li><strong>Grid component tests.</strong> The §8 matrix renders the right (ragged) cells; editing writes to <code>responses[opening][bid]</code>; the coded combo seeds from the lists yet accepts free text; classification is one enum with an independent brown-sticker boolean.</li>
+    </ol>
+    <p class="small">Fold the asset-probe scripts (field flags, font coverage, share-link sizing) into <code>abf/</code> tooling as a <strong>CI guard against asset drift</strong> — they are what proved the facts in this doc.</p>
+   </div>
+  </section>
+
+  <!-- ============ 10 ============ -->
+  <section id="risks">
+   <div class="col">
+    <h2><span class="num">10</span>Risk &amp; must-test register</h2>
+    <div class="h2title">What&rsquo;s proven, what to validate, and when</div>
+
+    <p>The adversarial pass resolved most uncertainties empirically against the real PDF. These remain to confirm during build — none block starting, but each has a clear &ldquo;resolve by.&rdquo;</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th style="width:34%">Item</th><th style="width:12%">Status</th><th>Detail &amp; resolve-by</th></tr></thead>
+        <tbody>
+          <tr><td>Strategy A: <code>D_</code> twin <code>/RV</code> + hand-built <code>/AP</code> renders in non-Acrobat viewers</td><td><span class="st test">spike M1</span></td><td>Verified feasible end-to-end in the probe; the remaining risk is per-span layout fidelity across 245 twins. <strong>First spike of M1.</strong> Define the flatten-to-image fallback if it slips.</td></tr>
+          <tr><td>The 10 &ldquo;checkboxes&rdquo; are text fields — export tick-glyph token</td><td><span class="st fix">before M1/M2</span></td><td><code>getCheckBox()</code> throws. Settle the exact &ldquo;on&rdquo; tick value (<code>My_CheckBoxValues</code>) to write into the text field + <code>B_</code> twin. Day-one breakage if any code calls the checkbox API.</td></tr>
+          <tr><td><code>Classification</code> colour literals</td><td><span class="st test">before M1/M2</span></td><td>Blank only shows <code>not set</code>. Recover <code>Green/Blue/Red/Yellow</code> literals from <code>gFpB</code> in the JS for the import/export boundary; map <code>not set</code> → <code>unset</code>.</td></tr>
+          <tr><td>§8 grid name form via pdf-lib (flat vs dotted <code>Resp1C.<wbr>_1D</code>)</td><td><span class="st test">M2</span></td><td>Parse the field tree; treat flat and dotted as equivalent. Confirm exact on-disk form when reading.</td></tr>
+          <tr><td>Templated <code>gRtFL</code> rules against real pre-2020 files</td><td><span class="st test">M2</span></td><td>Port <code>gMRFL</code>&rsquo;s loop; unit-test against a genuine legacy FDF. Degrades to &ldquo;unmatched → logged,&rdquo; not corruption.</td></tr>
+          <tr><td>Share-link / QR ceilings on real cards</td><td><span class="st test">after M3</span></td><td>Worst case measured ~1,931 URL chars. Trigger file/QR fallback at ~1,800; QR only below ~800. Re-measure with real notes-heavy cards.</td></tr>
+          <tr><td>Revision divergence detection (two partners fork rev 5)</td><td><span class="st test">M4</span></td><td>Carry <code>revision.parent</code>; absent it, route same-or-lower counters to Compare. Don&rsquo;t auto-pick a &ldquo;winner&rdquo; by timestamp.</td></tr>
+          <tr><td>Embedded marker durability (<code>Z_AppState</code> + XMP)</td><td><span class="st test">M3</span></td><td>Store in both channels; handle absence gracefully. Confirm pdf-lib <code>addField</code> round-trips through its own <code>load()</code>.</td></tr>
+          <tr><td>Browser-driven print of an in-memory PDF</td><td><span class="st test">M1</span></td><td>May reduce to &ldquo;download then print from a viewer.&rdquo; Decide the Print-button copy accordingly.</td></tr>
+          <tr><td><code>navigator.storage.persist()</code> on Safari/iOS</td><td><span class="st test">M0</span></td><td>Treat a denied persist as &ldquo;session may be evicted&rdquo; in the storage indicator.</td></tr>
+          <tr><td>pdf-lib reads <code>/V</code>, fills, embeds Cards font, sets <code>/RV</code></td><td><span class="st ok">verified</span></td><td>All confirmed empirically against the asset (load ~206 ms, save ~520–710 ms, 535 KB). Guard the non-WinAnsi appearance throw; don&rsquo;t <code>getText()</code> rich twins.</td></tr>
+          <tr><td>10-colour palette &amp; grave-shortcut tables</td><td><span class="st ok">verified</span></td><td>Match the source <code>gClrA</code>/<code>gCdH</code> exactly. Use bank 0 (the <code>!0..!9</code> set), not the alternate banks.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="call note">
+      <span class="lab">Cut from v1 (YAGNI)</span>
+      <p>The <code>schemaVersion</code> <em>migration ladder</em> (there is one schema — ship a stored int + a single guard; add the ladder with the second schema). A persisted <code>RenderedField</code> wrapper (selector-only; the code language expresses everything). PWA/offline. Any reproduction of the regulated print layout. A &ldquo;Standard system&rdquo; starter template. The <code>gRtFL</code> rename table is <em>not</em> in this bucket — it&rsquo;s needed at M2.</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 11 ============ -->
+  <section id="milestones">
+   <div class="col">
+    <h2><span class="num">11</span>Milestones</h2>
+    <div class="h2title">Each slice independently shippable; YAGNI between them</div>
+    <div class="tiers">
+      <div class="tier"><div class="t-h"><span class="pill">M0</span><b>Model + render engine + screen form + autosave</b></div>
+        <p>Define <code>model/</code>, build <code>render/</code> with its test table first (riskiest pure logic), render all sections + the §8 grid, wire the zustand store and idb autosave with the clearly-communicated local-only banner. A user can fill a card on screen and have it persist. No PDF yet.</p></div>
+      <div class="tier"><div class="t-h"><span class="pill">M1</span><b>Export official card</b></div>
+        <p>The <code>io/pdf/</code> adapter + the <strong>Strategy-A spike</strong> (the make-or-break item): fill the blank, author the <code>D_</code> rich appearances with the embedded Cards font, download. Delivers the regulation-faithful output. Land the export half of the round-trip test.</p></div>
+      <div class="tier"><div class="t-h"><span class="pill">M2</span><b>Import</b></div>
+        <p>Legacy PDF + FDF (Kids-tree) + the gRtFL rename, plus the pdf.js read-only fallback. <strong>Close the full round-trip contract test</strong> — the gate that proves M1+M2 are lossless. Accept flattened/signed as print-only.</p></div>
+      <div class="tier"><div class="t-h"><span class="pill">M3</span><b>JSON + share-link + QR</b></div>
+        <p>Canonical JSON; <code>fflate</code> → <code>#</code>-fragment links; the QR modal. <strong>Verify real card sizes</strong> against URL/QR limits; fall back to file when oversized.</p></div>
+      <div class="tier"><div class="t-h"><span class="pill">M4</span><b>Versioning &amp; import-resolution UI</b></div>
+        <p>Identity stamps are carried from M0; the resolution UI (new card vs. known-id newer-version, with replace / keep-both / compare + the diff view) lands last, once users actually exchange files.</p></div>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ METHOD ============ -->
+  <section id="method">
+   <div class="col">
+    <h2><span class="num">＊</span>How this design was produced</h2>
+    <div class="h2title">Drafted from the artifacts, then fact-checked against the real PDF</div>
+    <p>Six section authors drafted this design directly against the extracted artifacts (<a href="../abf/architecture.html">architecture.html</a>, the seven research reports, the field/codelist dumps, and the beautified JavaScript). Three adversarial verifiers then fact-checked the riskiest claims — several by <em>probing the live <code>ABF_Card_FORM.pdf</code> with pdf-lib</em> — which corrected real errors before they reached this page: the §8 grid is hierarchical (not flat); the &ldquo;checkboxes&rdquo; and <code>Classification</code> are text fields; editable fields store expanded text; the live form has 690 fields (the text dump is stale); pdf-lib has no rich-text API but Strategy A is nonetheless feasible; and the blank is 535 KB with the suit font already embedded. The remaining open items are collected honestly in §10 rather than smoothed over.</p>
+    <hr class="soft">
+    <footer>
+      <p><strong>ABF System Card — web rebuild, implementation design.</strong> Companion to <a href="../abf/architecture.html">abf/architecture.html</a> (how the original works) and <a href="card-content-model.md">card-content-model.md</a> (what the card captures). Target: a static React app reproducing the regulated bridge content; the regulation PDF is produced by filling the original <code>ABF_Card_FORM.pdf</code>, never re-laid-out. Suits, naturally: <span style="color:var(--ink)">♠♣</span> <span style="color:var(--red)">♥♦</span>.</p>
+    </footer>
+   </div>
+  </section>
+
+  </main>
+</div>
+
+<script>
+  // Scrollspy: highlight the current section in the TOC
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+    var map = {};
+    links.forEach(function(a){ var id=a.getAttribute('href').slice(1); var el=document.getElementById(id); if(el) map[id]=a; });
+    var ids = Object.keys(map);
+    function onScroll(){
+      var y = window.scrollY + 120, current = ids[0];
+      ids.forEach(function(id){ var el=document.getElementById(id); if(el && el.offsetTop <= y) current = id; });
+      links.forEach(function(a){ a.classList.remove('active'); });
+      if(map[current]) map[current].classList.add('active');
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('load', onScroll);
+    onScroll();
+  })();
+</script>
+</body>
+</html>
