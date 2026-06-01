@@ -63,6 +63,7 @@ byte‑for‑byte.
 | [extract_clean.js](extract_clean.js) | `all_inflated.txt` | `extracted/clean_*.js`, `js_all_clean.js` | **Canonical JS extractor.** Parses all 183 `/JS(...)` action blocks, unescapes the PDF string literals (incl. the `\`+EOL line‑continuation packing), and beautifies the largest blocks. |
 | [extract_fields.js](extract_fields.js) | `all_inflated.txt`, the form PDF | `extracted/field_names.txt`, `field_tooltips.txt`, `bookmark_titles.txt` | Pulls the AcroForm field names (`/T`), tooltips (`/TU`), and outline/bookmark titles (`/Title`). |
 | [extract_guide.js](extract_guide.js) | `ABF_Card_Form_Usage_Guide.pdf` | `extracted/usage_guide_text.txt` | Decompresses the guide and extracts its text from the `Tj`/`TJ` operators. Self‑contained (does its own inflate). |
+| [extract_codelists.js](extract_codelists.js) | `all_inflated.txt` | `extracted/field_codelists.md` | Pulls the per‑field shortcut‑code lists out of the tooltips (with proper `\r` unescaping) — the domain content for the web form's dropdowns/autocomplete. |
 | [analyze_js.js](analyze_js.js) | `all_inflated.txt` | *(stdout)* | Diagnostic: lists every `function` definition and ranks helper‑function call frequency. |
 | [extract_js.js](extract_js.js) | `all_inflated.txt` | `extracted/js_blocks.txt`, `top_*_block_*.js` | *Earlier/raw* block dump (escapes **not** fully cleaned). Superseded by `extract_clean.js`; kept for provenance. |
 | [beautify_and_guide.js](beautify_and_guide.js) | `all_inflated.txt`, guide PDF | `extracted/beautified_*.js` | *Earlier* beautifier (leaves stray `\` from line‑continuation). Superseded by `extract_clean.js`; kept for provenance. |
@@ -96,6 +97,7 @@ duplicated across 183 `/JS` action blocks. The useful, beautified views:
 | [extracted/field_tooltips.txt](extracted/field_tooltips.txt) | 690 | Field tooltips. These double as **help text and the shortcut‑code lookup tables** — lines like `1 : Standard`. (The stray `r` characters are stripped carriage returns.) |
 | [extracted/bookmark_titles.txt](extracted/bookmark_titles.txt) | 127 | The bookmark/outline titles — i.e. the form's command menu, in storage order. |
 | [extracted/usage_guide_text.txt](extracted/usage_guide_text.txt) | — | Full text of the 53‑page usage guide (searchable). |
+| [extracted/field_codelists.md](extracted/field_codelists.md) | 52 | The shortcut‑code lists distilled from the tooltips (domain content for dropdowns/autocomplete). See also [`../docs/card-content-model.md`](../docs/card-content-model.md). |
 
 ### Intermediate / raw (kept for reference, not the canonical view)
 
