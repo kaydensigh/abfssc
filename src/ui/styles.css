@@ -1,0 +1,540 @@
+:root {
+  --ink: #1b1b21;
+  --ink-soft: #3a3a44;
+  --muted: #6b6b76;
+  --paper: #faf8f3;
+  --paper-2: #f3efe6;
+  --card: #ffffff;
+  --line: #e3ddd0;
+  --line-strong: #ccc4b2;
+  --red: #c2152e;
+  --red-soft: #fbeced;
+  --blue: #2d4a7c;
+  --blue-soft: #eef2f8;
+  --amber: #9a6a00;
+  --amber-soft: #fbf3df;
+  --green: #1f7a4d;
+  --green-soft: #e9f5ee;
+  --focus: #2d4a7c;
+  --radius: 9px;
+  --mono: "SF Mono", ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
+}
+a {
+  color: var(--blue);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.player-slot .col-head {
+  margin-bottom: 4px;
+  display: block;
+}
+.sub-head {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 22px 0 10px;
+  color: var(--ink-soft);
+}
+
+.suit-S,
+.suit-C {
+  color: #000;
+}
+.suit-H,
+.suit-D {
+  color: var(--red);
+}
+
+/* ---- App shell ---------------------------------------------------------- */
+.app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 16px 120px;
+}
+.masthead-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(180deg, #fffefb, var(--paper));
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0 0;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 18px;
+}
+.brand .suits {
+  font-size: 18px;
+  letter-spacing: 3px;
+}
+.brand .suits .r {
+  color: var(--red);
+}
+
+/* ---- Section navigation ------------------------------------------------- */
+nav.sections {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 10px 0 12px;
+  scrollbar-width: thin;
+}
+nav.sections button {
+  flex: 0 0 auto;
+  border: 1px solid var(--line-strong);
+  background: var(--card);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 6px 13px;
+  font-size: 13.5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+nav.sections button.active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+nav.sections button:hover:not(.active) {
+  background: var(--paper-2);
+}
+
+.mobile-section-select {
+  display: none;
+}
+
+/* ---- Storage banner ----------------------------------------------------- */
+.storage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  background: var(--blue-soft);
+  border: 1px solid #d6e0ee;
+  border-radius: var(--radius);
+  padding: 9px 13px;
+  margin: 16px 0;
+}
+.storage.warn {
+  background: var(--amber-soft);
+  border-color: #ecd9a3;
+  color: var(--amber);
+}
+.storage .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--green);
+  flex: none;
+}
+.storage.warn .dot {
+  background: var(--amber);
+}
+.storage .device {
+  font-size: 15px;
+}
+.storage details {
+  margin-left: auto;
+}
+.storage summary {
+  cursor: pointer;
+  color: var(--blue);
+}
+.storage .explain {
+  font-size: 12.5px;
+  color: var(--muted);
+  max-width: 60ch;
+  margin-top: 6px;
+}
+
+/* ---- Section ------------------------------------------------------------ */
+section.card-section {
+  margin: 26px 0;
+}
+section.card-section > h2 {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin: 0 0 2px;
+}
+section.card-section > .section-title {
+  font-size: 23px;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+/* ---- Field -------------------------------------------------------------- */
+.field {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+.field.coded {
+  border-left: 3px solid var(--blue);
+}
+.field > label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+}
+.field-display {
+  width: 100%;
+  min-height: 1.7em;
+  text-align: left;
+  border: 1px dashed transparent;
+  border-radius: 6px;
+  padding: 5px 7px;
+  background: var(--paper);
+  cursor: text;
+  font: inherit;
+  color: inherit;
+}
+.field-display:hover {
+  border-color: var(--line-strong);
+}
+.field-display.empty {
+  color: var(--muted);
+  font-style: italic;
+}
+.field-edit textarea,
+.field-edit input {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  border: 1px solid var(--focus);
+  border-radius: 6px;
+  padding: 6px 7px;
+  resize: vertical;
+  background: #fff;
+  color: var(--ink);
+}
+.field-edit textarea {
+  min-height: 56px;
+}
+.field-preview {
+  font-size: 14px;
+  margin-top: 6px;
+  padding: 5px 7px;
+  background: var(--paper-2);
+  border-radius: 6px;
+  min-height: 1.5em;
+  word-break: break-word;
+}
+.field-preview .lbl {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 6px;
+}
+
+/* ---- Markup toolbar ----------------------------------------------------- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 6px;
+}
+.toolbar button {
+  min-width: 26px;
+  height: 26px;
+  border: 1px solid var(--line-strong);
+  background: var(--card);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0 5px;
+  line-height: 1;
+}
+.toolbar button:hover {
+  background: var(--paper-2);
+}
+.toolbar .swatch {
+  width: 22px;
+  min-width: 22px;
+  padding: 0;
+}
+.toolbar .sep {
+  width: 1px;
+  background: var(--line);
+  margin: 2px 3px;
+}
+
+/* ---- Autocomplete ------------------------------------------------------- */
+.autocomplete {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: #fff;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.autocomplete li {
+  padding: 5px 7px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13.5px;
+  display: flex;
+  gap: 8px;
+}
+.autocomplete li:hover,
+.autocomplete li.active {
+  background: var(--blue-soft);
+}
+.autocomplete .code {
+  font-family: var(--mono);
+  color: var(--blue);
+  font-weight: 700;
+  flex: none;
+}
+
+/* ---- Checkbox & classification ----------------------------------------- */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
+}
+.classification {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.classification .swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 5px 12px 5px 8px;
+  background: var(--card);
+  cursor: pointer;
+  font-size: 14px;
+}
+.classification .swatch[aria-checked="true"] {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+.classification .chip {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* ---- Masthead form ------------------------------------------------------ */
+.masthead-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.players-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.btn {
+  border: 1px solid var(--line-strong);
+  background: var(--card);
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--paper-2);
+}
+.btn.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.primary-tag {
+  font-size: 11px;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+/* ---- §5 play pairs ------------------------------------------------------ */
+.pair-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pair-row > .pair-label {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+.col-head {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+/* ---- §8 response grid --------------------------------------------------- */
+.grid-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+table.responses {
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 720px;
+}
+table.responses th,
+table.responses td {
+  border: 1px solid var(--line);
+  padding: 0;
+  vertical-align: top;
+}
+table.responses thead th {
+  position: sticky;
+  top: 0;
+  background: var(--paper-2);
+  padding: 6px 8px;
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 2;
+}
+table.responses tbody th {
+  position: sticky;
+  left: 0;
+  background: var(--paper-2);
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+  z-index: 1;
+}
+table.responses td.hole {
+  background: repeating-linear-gradient(45deg, #f6f3ec, #f6f3ec 4px, #f0ece2 4px, #f0ece2 8px);
+}
+table.responses td .cell-display {
+  min-height: 30px;
+  padding: 4px 6px;
+  cursor: text;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  font: inherit;
+}
+table.responses td input {
+  width: 100%;
+  border: 1px solid var(--focus);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 3px 4px;
+}
+
+/* ---- Mobile accordion for the grid ------------------------------------- */
+.grid-accordion {
+  display: none;
+}
+.grid-accordion details {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  background: var(--card);
+}
+.grid-accordion summary {
+  padding: 10px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.grid-accordion .acc-body {
+  padding: 4px 12px 12px;
+  display: grid;
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  nav.sections {
+    display: none;
+  }
+  .mobile-section-select {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 9px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+  }
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+  .pair-row {
+    grid-template-columns: 1fr;
+  }
+  .grid-wrap {
+    display: none;
+  }
+  .grid-accordion {
+    display: block;
+  }
+}
