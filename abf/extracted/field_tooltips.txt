@@ -1,0 +1,690 @@
+A_Help
+A_Help2
+A_Help3
+A_Help4
+A_Help5
+A_JN
+A_MyHelp
+B_Is4thForcing1Round
+B_Is4thForcingGame
+B_IsAskingBids
+B_IsBlackwood
+B_IsCanape
+B_IsCueBids
+B_IsGerber
+B_IsNTCheckback
+B_OneNTMayHave5Major
+BasicResponses_0r rSpace for more notes
+BasicSystemr rBriefly describe your system: rfor example...r1 : Standardr2 : 2/1r3 : Acolr4 : Precisionr5 : Strong clubr6 : Honeymoon Moscitor 
+BoxMN14
+BoxMN34
+BoxOC115
+BoxOC215
+BoxON34
+BoxON57
+BoxPA113
+BoxPA123
+BoxPA213
+BoxPA223
+CheckbackPrioritiesr rDescribe the priority sequence for your repliesrto a checkback response to your NT rebids.r rAlso show which methods you use.rE.g. 2-way Checkback, New Minor Forcing, XYZ.  
+Classification
+Compete1NT_1r rHow do you compete over 1NT opening bids ?rShow differences for weak and strong 1NT openings.rHow do you define weak versus strong 1NT ?rPlease include details of any conventions you use.
+Compete1NT_2
+Compete1NT_3
+CompeteOpen3r rHow do you compete over 3 level opening bids ?r9 : Non-leaping Michaelsr 
+CompeteWeak2r rHow do you compete over natural weak 2 opening bids ?r1 : !-2NT 16-18, T/O X with LEBr 
+Competitive_0r rSpace for more notes
+Conventions_0r rSpace for more conventions
+CountType_NTr rAgainst notrump contracts, how do you show count ?r1 : High-Low = Evenr2 : Low-High = Evenrx : Not usedr9 : See Note #r
+CountType_Sr rAgainst suit contracts, how do you show count ?r1 : High-Low = Evenr2 : Low-High = Evenrx : Not usedr9 : See Note #r
+D_BasicResponses_0r... see bookmark [HELP / General / The Display Fields]
+D_BasicSystem
+D_CheckbackPriorities
+D_Compete1NT_1
+D_Compete1NT_2
+D_Compete1NT_3
+D_CompeteOpen3
+D_CompeteWeak2r... see bookmark [HELP / General / The Display Fields]
+D_Competitive_0
+D_Conventions_0
+D_CountType_NT
+D_CountType_S
+D_Date_A
+D_Defence3NT
+D_DefenceMultir... see bookmark [HELP / General / The Display Fields]
+D_DefenceOpening2
+D_DefenceOtherTwos
+D_DefenceRCO
+D_DefenceStrongC_1
+D_DefenceStrongC_2
+D_DefenceStrongC_3
+D_DefenceStrongC_4r... see bookmark [HELP / General / The Display Fields]
+D_DiscardType_NT
+D_DiscardType_S
+D_Doubles_1
+D_Doubles_2
+D_FourHonourLead_NT
+D_FourHonourLead_S
+D_FourNTOtherr... see bookmark [HELP / General / The Display Fields]
+D_FourSmallLead_NT
+D_FourSmallLead_S
+D_FourthSuitForcing
+D_GerberWhen
+D_ImmedCueMajor
+D_ImmedCueMinor
+D_JumpOvercallr... see bookmark [HELP / General / The Display Fields]
+D_JumpRaiseMajor
+D_JumpRaiseMinor
+D_LeadPartnersSuit_NT
+D_LeadPartnersSuit_S
+D_LebensohlOther
+D_MajorJumpShift
+D_MinorJumpShiftr... see bookmark [HELP / General / The Display Fields]
+D_MoreNotes_1
+D_MoreNotes_2
+D_MoreNotes_3
+D_MoreNotes_4
+D_NegXLimit
+D_Open1C
+D_Open1Dr... see bookmark [HELP / General / The Display Fields]
+D_Open1H
+D_Open1NT
+D_Open1S
+D_Open2C
+D_Open2D
+D_Open2H
+D_Open2NTr... see bookmark [HELP / General / The Display Fields]
+D_Open2S
+D_Open3NT
+D_OpenOther
+D_OtherNotes_0
+D_OtherNotes_1
+D_OtherNotes_2
+D_OtherNotes_3r... see bookmark [HELP / General / The Display Fields]
+D_OtherNotes_4
+D_OtherNotes_5
+D_OtherNotes_6
+D_OtherNotes_7
+D_Other_0
+D_Other_1_1
+D_Other_1_2r... see bookmark [HELP / General / The Display Fields]
+D_Other_1_3
+D_Other_1_4
+D_Other_1_5
+D_Other_2_1
+D_Other_2_2
+D_Other_2_3
+D_Other_2_4r... see bookmark [HELP / General / The Display Fields]
+D_Other_2_5
+D_Over1NTInterf
+D_Overcall1NT
+D_PlayConventions_0
+D_PlayNotes_1
+D_PlayNotes_2
+D_PlayNotes_3r... see bookmark [HELP / General / The Display Fields]
+D_PlayerName_A
+D_PlayerName_B
+D_PlayerNo_A
+D_PlayerNo_B
+D_PreAlert_0
+D_PreAlert_1_1
+D_PreAlert_1_2r... see bookmark [HELP / General / The Display Fields]
+D_PreAlert_1_3
+D_PreAlert_2_1
+D_PreAlert_2_2
+D_PreAlert_2_3
+D_RKCBStyle
+D_Reopen1NT
+D_Resp1C_1Dr... see bookmark [HELP / General / The Display Fields]
+D_Resp1C_1H
+D_Resp1C_1NT
+D_Resp1C_1S
+D_Resp1C_2C
+D_Resp1C_2D
+D_Resp1C_2H
+D_Resp1C_2NTr... see bookmark [HELP / General / The Display Fields]
+D_Resp1C_2S
+D_Resp1C_3C
+D_Resp1C_3D
+D_Resp1C_3H
+D_Resp1C_3NT
+D_Resp1C_3S
+D_Resp1C_4Cr... see bookmark [HELP / General / The Display Fields]
+D_Resp1C_Other
+D_Resp1D_1H
+D_Resp1D_1NT
+D_Resp1D_1S
+D_Resp1D_2C
+D_Resp1D_2D
+D_Resp1D_2Hr... see bookmark [HELP / General / The Display Fields]
+D_Resp1D_2NT
+D_Resp1D_2S
+D_Resp1D_3C
+D_Resp1D_3D
+D_Resp1D_3H
+D_Resp1D_3NT
+D_Resp1D_3Sr... see bookmark [HELP / General / The Display Fields]
+D_Resp1D_4C
+D_Resp1D_4D
+D_Resp1D_Other
+D_Resp1H_1NT
+D_Resp1H_1S
+D_Resp1H_2C
+D_Resp1H_2Dr... see bookmark [HELP / General / The Display Fields]
+D_Resp1H_2H
+D_Resp1H_2NT
+D_Resp1H_2S
+D_Resp1H_3C
+D_Resp1H_3D
+D_Resp1H_3H
+D_Resp1H_3NTr... see bookmark [HELP / General / The Display Fields]
+D_Resp1H_3S
+D_Resp1H_Other
+D_Resp1NT2CStyle
+D_Resp1NT2D
+D_Resp1NT2H
+D_Resp1NT2NT
+D_Resp1NT2Sr... see bookmark [HELP / General / The Display Fields]
+D_Resp1NTDoubled
+D_Resp1NTOther
+D_Resp1NT_3C
+D_Resp1NT_3D
+D_Resp1NT_3H
+D_Resp1NT_3NT
+D_Resp1NT_3Sr... see bookmark [HELP / General / The Display Fields]
+D_Resp1NT_4C
+D_Resp1NT_4D
+D_Resp1NT_4H
+D_Resp1NT_4S
+D_Resp1NT_Other
+D_Resp1S_1NT
+D_Resp1S_2Cr... see bookmark [HELP / General / The Display Fields]
+D_Resp1S_2D
+D_Resp1S_2H
+D_Resp1S_2NT
+D_Resp1S_2S
+D_Resp1S_3C
+D_Resp1S_3D
+D_Resp1S_3Hr... see bookmark [HELP / General / The Display Fields]
+D_Resp1S_3NT
+D_Resp1S_3S
+D_Resp1S_4C
+D_Resp1S_Other
+D_Resp2C_2D
+D_Resp2C_2H
+D_Resp2C_2NTr... see bookmark [HELP / General / The Display Fields]
+D_Resp2C_2S
+D_Resp2C_3C
+D_Resp2C_3D
+D_Resp2C_3H
+D_Resp2C_3NT
+D_Resp2C_3S
+D_Resp2C_Otherr... see bookmark [HELP / General / The Display Fields]
+D_Resp2D_2H
+D_Resp2D_2NT
+D_Resp2D_2S
+D_Resp2D_3C
+D_Resp2D_3D
+D_Resp2D_3H
+D_Resp2D_3NTr... see bookmark [HELP / General / The Display Fields]
+D_Resp2D_3S
+D_Resp2D_4C
+D_Resp2D_Other
+D_Resp2H_2NT
+D_Resp2H_2S
+D_Resp2H_3C
+D_Resp2H_3Dr... see bookmark [HELP / General / The Display Fields]
+D_Resp2H_3H
+D_Resp2H_3NT
+D_Resp2H_3S
+D_Resp2H_4C
+D_Resp2H_4H
+D_Resp2H_Other
+D_Resp2NT_3Cr... see bookmark [HELP / General / The Display Fields]
+D_Resp2NT_3D
+D_Resp2NT_3H
+D_Resp2NT_3NT
+D_Resp2NT_3S
+D_Resp2NT_4C
+D_Resp2NT_4D
+D_Resp2NT_4Hr... see bookmark [HELP / General / The Display Fields]
+D_Resp2NT_4S
+D_Resp2NT_Other
+D_Resp2S_2NT
+D_Resp2S_3C
+D_Resp2S_3D
+D_Resp2S_3H
+D_Resp2S_3NTr... see bookmark [HELP / General / The Display Fields]
+D_Resp2S_3S
+D_Resp2S_4C
+D_Resp2S_4H
+D_Resp2S_4S
+D_Resp2S_Other
+D_RespXLimit
+D_Response2NTr... see bookmark [HELP / General / The Display Fields]
+D_ResponseNotes_1
+D_ResponseNotes_2
+D_ResponseNotes_3
+D_ResponseStrong2
+D_SeqLead_NT
+D_SeqLead_S
+D_SignalDeclarerLeadr... see bookmark [HELP / General / The Display Fields]
+D_SignalPartnerLead_NT
+D_SignalPartnerLead_S
+D_SlamNotes_1
+D_SlamNotes_2
+D_SlamNotes_3
+D_TakeOutOf4C4D
+D_TakeOutOf4Hr... see bookmark [HELP / General / The Display Fields]
+D_TakeOutOf4S
+D_ThreeSmallLead_NT
+D_ThreeSmallLead_S
+D_Transfers_1
+D_UnusualNT
+D_UnusualNoTrump
+Date_A  [Optional]  Your revision code.r r Choose between  date  or  version number/code. r If date - may be set using  [ToolBox / Set Dates]  bookmark r or clicking on the MyRev. side label.r To disable that, use NoDates bookmarkr 
+Defence3NTr rHow do you bid after an opponent opens 3NT ?r9 : Non-leaping Michaelsr 
+DefenceMultir rDescribe your defence to multi-two opening bids
+DefenceOpening2r rCommon notes on your defences to opening two bidsr1 : 2NT=16-19 BALr 
+DefenceOtherTwosr rDescribe your defence to other two level opening bids
+DefenceRCOr rDescribe your defence to unanchored two level openingrbids which do not show length in any specific suit.r r  RCO   or   CRO   style bidsrwhere  R=Rank  C=Colour  O=Odd
+DefenceStrongC_1r rDescribe your defence to strong CLUB openings.r rShow defences after  1C and 2C openingsrseparately if needed.r rE.g. Insert  (1!C):  and  (2!C):  as side headingsr  within the details.
+DefenceStrongC_2
+DefenceStrongC_3
+DefenceStrongC_4
+DiscardType_NTr rAgainst notrump contracts, how do you signal when discarding ?r1 : McKenneyr2 : Odd=ENCRG, Even=McKenneyr3 : Even=ENCRG, Odd=McKenneyr4 : Odd/Evenr5 : Low Encourager6 : High Encourager8 : Revolvingr9 : See Note #r 
+DiscardType_Sr rAgainst suit contracts, how do you signal when discarding ?r1 : McKenneyr2 : Odd=ENCRG, Even=McKenneyr3 : Even=ENCRG, Odd=McKenneyr4 : Odd/Evenr5 : Low Encourager6 : High Encourager8 : Revolvingr9 : See Note #r 
+Doubles_1r rWhich other Doubles and Redoubles do you use ?rE.g.r1 : Support Doubles & Redoublesr2 : Rosenkranzr3 : Balancingr4 : Lead-Directingr 
+Doubles_2r rMore details about your Doubles and RedoublesrE.g.r1 : Support Doubles & Redoublesr2 : Rosenkranzr3 : Balancingr4 : Lead-Directingr 
+FourHonourLead_NTr rAgainst notrump contracts,rwhich card do you lead from 4 or more headed by an honour card ?r4 : 4th highestr1 : attituder3 : 3rd/Lowr5 : 3rd/5thr9 : See Note #r 
+FourHonourLead_Sr rAgainst suit contracts, which card do you lead from 4 or more headed by an honour card ?r4 : 4th highestr1 : attituder3 : 3rd/Lowr5 : 3rd/5thr9 : See Note #r 
+FourNTOtherr rDescribe your other uses of 4NTr1 : Naturalr2 : Quantitativer3 : NAT, QUANTr 
+FourSmallLead_NTr rAgainst notrump contracts, which card do you lead from four small cards ?r1 : TOPr2 : 2nd highestr3 : 3rd highestr4 : 4th highestr9 : See Note #r 
+FourSmallLead_Sr rAgainst suit contracts,rwhich card do you lead from four small cards ?r1 : TOPr2 : 2nd highestr3 : 3rd highestr4 : 4th highestr9 : See Note #r 
+FourthSuitForcingr rAdditional notes on your use of 4th suit forcingr4 :  1!S  IS  4!^th!n suit forcingr 
+GerberWhenr rWhen do you use 4C as a Gerber ace ask ?
+H_Colours
+I_Format
+I_InfoMessage
+I_LastSave
+I_LogMessage
+I_Tag
+I_TextColours
+ImmedCueMajorr rWhat is your immediate cue of a major suit opening ?r1 : 5 other Major & 5 minor 6-10r9 : naturalr 
+ImmedCueMinorr rWhat is your immediate cue of a minor suit opening ?r1 : Michaels 5/5 Majors 6-10r9 : naturalr 
+Is4thForcing1Round
+Is4thForcingGame
+IsAskingBids
+IsBlackwood
+IsBrownSticker
+IsCanape
+IsCueBids
+IsGerber
+IsNTCheckback
+JumpOvercallr rBriefly describe the method you userfor a jump overcall in a suitr1 : weakr3 : intermediater5 : strongr9 : romanr 
+JumpRaiseMajorOther
+JumpRaiseMajorr rDescribe your jump raise of an opening bid of one in a major suit.r1 : Preempt 0-6 HCP, 5+ cardsr3 : Limit  10-12 HCP, 4+ cardsr4 : Limit  7-9 HCP, 4+ cardsr9 : Forcingr 
+JumpRaiseMinorOther
+JumpRaiseMinorr rDescribe your jump raise of an opening bid of one in a minor suit.r1 : Preempt 0-6 HCP, 5+ cardsr2 : Inverted: 6-9 HCP, 4+ cardsr3 : Limit  10-12 HCP, 4+ cardsr9 : Forcingr 
+LeadPartnersSuit_NTr rHow do you lead in partner's bid suitr  against NT contracts ?rE.g. several of:rTop of sequence [Ssx]rTop of 2 [Xx]rLow from 2 [xX]rTop of 3 small [Xxx]rMiddle of 3 small [xXx]rHonour doubleton [Hx] or [hX]rx : !|As abover1 : standardr5 : Ssx Xx Xxx Hx hxXr 
+LeadPartnersSuit_Sr rHow do you lead in partner's bid suitr  against suit contracts ?rE.g. several of:rTop of sequence [Ssx]rTop of 2 [Xx]rLow from 2 [xX]rTop of 3 small [Xxx]rMiddle of 3 small [xXx]rHonour doubleton [Hx] or [hX]rx : !|As abover1 : standardr4 : Ssx Xx xXx Hx hxXr 
+LebensohlOtherr rAdditional notes about your other uses of lebensohlrE.g. when competing against 2 level opening bids
+MajorJumpShiftr rWhat do you show by a jump shift responserto a major suit opening ?r1 : Natural, weak at 2 levelr2 : Fit showing: 5+ cards & 4 card supportr5 : Natural, game forcingr9 : Splinter: 0-1 cards, 4+ card supportr 
+MinorJumpShiftr rWhat do you show by a jump shift responserto a minor suit opening ?r1 : Natural, weak at 2 levelr2 : Fit showing: 5+ cards & 4 card supportr5 : Natural, game forcingr9 : Splinter: 0-1 cards, 4+ card supportr
+MoreNotes_1r rSpace for more notesr rE.g. Define your abbreviationsrused on this side of the card.
+MoreNotes_2
+MoreNotes_3
+MoreNotes_4
+My_CheckBoxValues
+My_Codes
+My_Colours
+My_DateFormat
+My_FillColours
+My_Font
+My_FormatA
+My_FormatB
+My_Options
+My_Rectangles
+My_Richness
+My_Styles
+My_Symbols
+NegXLimitr rWhat is the highest bid where yourrdouble is negative, ie is not for penalties ?
+OneNTMayHave5Major
+Open1Cr rDescribe your 1C openingr1 : 12+ HCP, !T3+!Cr2 : 11+ HCP, !T2+!Cr9 : STRONG, 16+ HCP, any shaper 
+Open1Dr rDescribe your 1D openingr2 : 11+, !T2`+!Dr3 : 11-20 HCP, !T3`+!Dr4 : 11+ HCP, !T4`+!Dr8 : 11+, better minor, 3`+!Dr
+Open1Hr rDescribe your 1H openingr1 : 12-20 HCP !T5+!Hr3 : 11-22 HCP !T4+!Hr5 : 11-15 HCP !T5+!Hr8 : 10-15 HCP, 4+!H, <4!Sr 
+Open1NTr rDescribe your 1NT opening r1 : 12-14 Balancedr2 : 15-17 Balancedr3 : 16-18 Balancedr4 : 10-15 HCP, !T4+/4+ MAJORSr5 : Any 20+r6 : 12-14 BAL,   14-16 BAL in 3!^rd!n seatr 
+Open1Sr rDescribe your 1S openingr4 : 11+ HCP, !T4`+!Sr5 : 11-20 HCP, !T5`+!Sr
+Open2Cr rDescribe your 2C openingr1 : 11-15 HCP, 5+!C UNBALr2 : 11-15 HCP precision style: 6+!C or 5!C & 4Majorr4 : 23+ BAL or any game forcer6 : Any game forcer 
+Open2Dr rDescribe your 2D openingr1 : Weak, 6-9 HCP, 6+!Dr2 : Multi : weak Major OR 20-22 BALr3 : Weak Majorr9 : 8 Playing tricks, 6+!Dr  
+Open2Hr rDescribe your 2H openingr1 : Weak, 6-10 HCP, 6!Hr2 : Multi : weak, 5+!H & 5 any other suitr9 : 8 Playing tricks, 6+!Hr  
+Open2NTr rDescribe your 2NT openingr1 : 20-22 balancedr2 : minors: 5+!C&5+!D 6-9 HCPr 
+Open2Sr rDescribe your 2S openingr1 : Weak, 6-10 HCP, 6!Sr2 : Multi : weak, 5+!S & 5 in either minorr9 : 8 Playing tricks, 6+!Sr  
+Open3NTr rDescribe your 3NT openingr1 : Gambling, solid minor, no side A or Kr2 : 27-28 Balanced
+OpenOtherr rDescribe your other opening bids.
+OtherNotes_0r rSpace for other notesr rE.g. Define your abbreviationsrused on this side of the card.
+OtherNotes_1
+OtherNotes_2
+OtherNotes_3
+OtherNotes_4
+OtherNotes_5
+OtherNotes_6
+OtherNotes_7
+Other_0
+Other_1_1r rSpace for other conventions
+Other_1_2
+Other_1_3
+Other_1_4
+Other_1_5
+Other_2_1r rSpace for other conventions
+Other_2_2
+Other_2_3
+Other_2_4
+Other_2_5
+Over1NTInterfMore
+Over1NTInterfr rWhat method do you use after your opponents compete over your 1NT bid ?rDoes this apply when 1NT was not your opening bid ?r1 : lebensohlr2 : rubinsohlr
+Overcall1NTr rWhat does you direct 1NT overcall mean ?ri.e. in second seatr1 : 15-17 BALr2 : 15-18 BALr4 : Single suit takeoutr5 : Strong takeoutr6 : Two suited takeoutr 
+PlayConventions_0r rSpace for more notes
+PlayNotes_1r rFurther notes about your play conventions.rPlease cross reference note numbersrfrom text above.
+PlayNotes_2
+PlayNotes_3
+PlayerName.A
+PlayerName.B
+PlayerName_Ar rYour name           rx :  First !T Lastr 
+PlayerName_Br rYour partner's namerx :  First !T Lastr 
+PlayerNo.A
+PlayerNo.B
+PlayerNo_Ar rYour ABF number
+PlayerNo_Br rYour partner's ABF number
+PreAlert_0r rDescribe your pre-alerts
+PreAlert_1_1r rDescribe your pre-alerts
+PreAlert_1_2
+PreAlert_1_3
+PreAlert_2_1r rDescribe your pre-alerts
+PreAlert_2_2
+PreAlert_2_3
+Q_Blue
+Q_Brown
+Q_Green
+Q_Red
+Q_Yellow
+RKCBStyler rRKCB response style: r1 : 1430r3 : 3041r9 : 1430 exc.!Cr
+Reopen1NTr rWhat does your re-opening 1NT overcall mean ?ri.e. in fourth seat. rAlso do you use sandwich 1NT after both opponents bid ?r1 : 10-14r5 : 15-18r 
+Resp1C.Other
+Resp1C._1D
+Resp1C._1H
+Resp1C._1NT
+Resp1C._1S
+Resp1C._2C
+Resp1C._2D
+Resp1C._2H
+Resp1C._2NT
+Resp1C._2S
+Resp1C._3C
+Resp1C._3D
+Resp1C._3H
+Resp1C._3NT
+Resp1C._3S
+Resp1C._4C
+Resp1C_1Dr rWhat does 1C-P-1D show and deny ?rx : 6+ HCP, !T4+!Dr 
+Resp1C_1Hr rWhat does 1C-P-1H show and deny ?rx : 6+ HCP, !T4+!Hr 
+Resp1C_1NTr rWhat does 1C-P-1NT show and deny ?rx : 6-9 HCP, 4+!Cr 
+Resp1C_1Sr rWhat does 1C-P-1S show and deny ?rx : 6+ HCP, !T4+!Sr 
+Resp1C_2Cr rWhat does 1C-P-2C show and deny ?
+Resp1C_2Dr rWhat does 1C-P-2D show and deny ?
+Resp1C_2Hr rWhat does 1C-P-2H show and deny ?
+Resp1C_2NTr rWhat does 1C-P-2NT show and deny ?
+Resp1C_2Sr rWhat does 1C-P-2S show and deny ?
+Resp1C_3Cr rWhat does 1C-P-3C show and deny ?
+Resp1C_3Dr rWhat does 1C-P-3D show and deny ?
+Resp1C_3Hr rWhat does 1C-P-3H show and deny ?
+Resp1C_3NTr rWhat does 1C-P-3NT show and deny ?
+Resp1C_3Sr rWhat does 1C-P-3S show and deny ?
+Resp1C_4Cr rWhat does 1C-P-4C show and deny ?
+Resp1C_Otherr rDescribe your other responses to 1C opening,ror elaborate on listed responses.
+Resp1D.Other
+Resp1D._1H
+Resp1D._1NT
+Resp1D._1S
+Resp1D._2C
+Resp1D._2D
+Resp1D._2H
+Resp1D._2NT
+Resp1D._2S
+Resp1D._3C
+Resp1D._3D
+Resp1D._3H
+Resp1D._3NT
+Resp1D._3S
+Resp1D._4C
+Resp1D._4D
+Resp1D_1Hr rWhat does 1D-P-1H show and deny ?
+Resp1D_1NTr rWhat does 1D-P-1NT show and deny ?
+Resp1D_1Sr rWhat does 1D-P-1S show and deny ?
+Resp1D_2Cr rWhat does 1D-P-2C show and deny ?
+Resp1D_2Dr rWhat does 1D-P-2D show and deny ?
+Resp1D_2Hr rWhat does 1D-P-2H show and deny ?
+Resp1D_2NTr rWhat does 1D-P-2NT show and deny ?
+Resp1D_2Sr rWhat does 1D-P-2S show and deny ?
+Resp1D_3Cr rWhat does 1D-P-3C show and deny ?
+Resp1D_3Dr rWhat does 1D-P-3D show and deny ?
+Resp1D_3Hr rWhat does 1D-P-3H show and deny ?
+Resp1D_3NTr rWhat does 1D-P-3NT show and deny ?
+Resp1D_3Sr rWhat does 1D-P-3S show and deny ?
+Resp1D_4Cr rWhat does 1D-P-4C show and deny ?
+Resp1D_4Dr rWhat does 1D-P-4D show and deny ?
+Resp1D_Otherr rDescribe your other responses to 1D opening,ror elaborate on listed responses.
+Resp1H.Other
+Resp1H._1NT
+Resp1H._1S
+Resp1H._2C
+Resp1H._2D
+Resp1H._2H
+Resp1H._2NT
+Resp1H._2S
+Resp1H._3C
+Resp1H._3D
+Resp1H._3H
+Resp1H._3NT
+Resp1H._3S
+Resp1H_1NTr rWhat does 1H-P-1NT show and deny ?
+Resp1H_1Sr rWhat does 1H-P-1S show and deny ?
+Resp1H_2Cr rWhat does 1H-P-2C show and deny ?
+Resp1H_2Dr rWhat does 1H-P-2D show and deny ?
+Resp1H_2Hr rWhat does 1H-P-2H show and deny ?
+Resp1H_2NTr rWhat does 1H-P-2NT show and deny ?
+Resp1H_2Sr rWhat does 1H-P-2S show and deny ?
+Resp1H_3Cr rWhat does 1H-P-3C show and deny ?
+Resp1H_3Dr rWhat does 1H-P-3D show and deny ?
+Resp1H_3Hr rWhat does 1H-P-3H show and deny ?
+Resp1H_3NTr rWhat does 1H-P-3NT show and deny ?
+Resp1H_3Sr rWhat does 1H-P-3S show and deny ?
+Resp1H_Otherr rDescribe your other responses to 1H opening,ror elaborate on listed responses.
+Resp1NT.Other
+Resp1NT._3C
+Resp1NT._3D
+Resp1NT._3H
+Resp1NT._3NT
+Resp1NT._3S
+Resp1NT._4C
+Resp1NT._4D
+Resp1NT._4H
+Resp1NT._4S
+Resp1NT2COther
+Resp1NT2CStyler rWhat does your 2 club response to 1NT opening bid mean ?r rAdd details if this varies by seat position or vulnerability.r1 : Simple Staymanr2 : Extended Staymanr5 : 5 card Major enquiryr8 : Game force relayr 
+Resp1NT2Dr rWhat is 2D response to 1NT ?rx : Natural, To Playr1 : Transfer !Hr8 : Forcing Stayman ?r r Note that responses are no longer r  assumed to be transfers so you r  need to state which are transfers.
+Resp1NT2Hr rWhat is 2H response to 1NT ?rx : Natural, To Playr1 : TRF !Sr r  Note that responses are no longer r  assumed to be transfers so you r  need to state which are transfers.
+Resp1NT2NTr rWhat is 2NT response to 1NT ?r1 : Invite 3NTr2 : TRF !Dr r  Note that responses are no longer r  assumed to be transfers so you r  need to state which are transfers.
+Resp1NT2Sr rWhat is 2S response to 1NT ?rx : Natural, To Playr1 : TRF minorr2 : TRF !Cr7 : Range prober8 : Range Probe/TRF !Cr r  Note that responses are no longer r  assumed to be transfers so you r  need to state which are transfers.
+Resp1NTDoubledr rDescribe your methods when your 1NT opening is doubled.r0 : Samer2 : Rubinsohlr3 : Lebensohlr rSee also  Over 1NT Interference  in section 9.r 
+Resp1NTOtherr rAdd notes about responses to 1NT.r rSee also section 8 at the LEFT of the inside pagesrfor space to describe 3C and higher responsesrto your 1NT opening bid.
+Resp1NT_3Cr rWhat is 3C response to 1NT ?
+Resp1NT_3Dr rWhat is 3D response to 1NT ?
+Resp1NT_3Hr rWhat is 3H response to 1NT ?
+Resp1NT_3NTr rWhat is 3NT response to 1NT ?
+Resp1NT_3Sr rWhat is 3S response to 1NT ?
+Resp1NT_4Cr rWhat is 4C response to 1NT ?
+Resp1NT_4Dr rWhat is 4D response to 1NT ?
+Resp1NT_4Hr rWhat is 4H response to 1NT ?
+Resp1NT_4Sr rWhat is 4S response to 1NT ?
+Resp1NT_Otherr rDescribe other responses to 1NT opening,ror elaborate on listed responses.r rSee also 1NT Responses in section 1 on the outside pagesrfor space to describe your 2C through 2NT responsesrto your 1NT opening bid.
+Resp1S.Other
+Resp1S._1NT
+Resp1S._2C
+Resp1S._2D
+Resp1S._2H
+Resp1S._2NT
+Resp1S._2S
+Resp1S._3C
+Resp1S._3D
+Resp1S._3H
+Resp1S._3NT
+Resp1S._3S
+Resp1S._4C
+Resp1S_1NTr rWhat does 1S-P-1NT show and deny ?
+Resp1S_2Cr rWhat does 1S-P-2C show and deny ?
+Resp1S_2Dr rWhat does 1S-P-2D show and deny ?
+Resp1S_2Hr rWhat does 1S-P-2H show and deny ?
+Resp1S_2NTr rWhat does 1S-P-2NT show and deny ?
+Resp1S_2Sr rWhat does 1S-P-2S show and deny ?
+Resp1S_3Cr rWhat does 1S-P-3C show and deny ?
+Resp1S_3Dr rWhat does 1S-P-3D show and deny ?
+Resp1S_3Hr rWhat does 1S-P-3H show and deny ?
+Resp1S_3NTr rWhat does 1S-P-3NT show and deny ?
+Resp1S_3Sr rWhat does 1S-P-3S show and deny ?
+Resp1S_4Cr rWhat does 1S-P-4C show and deny ?
+Resp1S_Otherr rDescribe your other responses to 1S opening,ror elaborate on listed responses.
+Resp2C.Other
+Resp2C._2D
+Resp2C._2H
+Resp2C._2NT
+Resp2C._2S
+Resp2C._3C
+Resp2C._3D
+Resp2C._3H
+Resp2C._3NT
+Resp2C._3S
+Resp2C_2Dr rWhat does 2C-P-2D show and deny ?
+Resp2C_2Hr rWhat does 2C-P-2H show and deny ?
+Resp2C_2NTr rWhat does 2C-P-2NT show and deny ?
+Resp2C_2Sr rWhat does 2C-P-2S show and deny ?
+Resp2C_3Cr rWhat does 2C-P-3C show and deny ?
+Resp2C_3Dr rWhat does 2C-P-3D show and deny ?
+Resp2C_3Hr rWhat does 2C-P-3H show and deny ?
+Resp2C_3NTr rWhat does 2C-P-3NT show and deny ?
+Resp2C_3Sr rWhat does 2C-P-3S show and deny ?
+Resp2C_Otherr rDescribe other responses to your 2C opening,ror elaborate on listed responses.
+Resp2D.Other
+Resp2D._2H
+Resp2D._2NT
+Resp2D._2S
+Resp2D._3C
+Resp2D._3D
+Resp2D._3H
+Resp2D._3NT
+Resp2D._3S
+Resp2D._4C
+Resp2D_2Hr rWhat does 2D-P-2H show and deny ?
+Resp2D_2NTr rWhat does 2D-P-2NT show and deny ?
+Resp2D_2Sr rWhat does 2D-P-2S show and deny ?
+Resp2D_3Cr rWhat does 2D-P-3C show and deny ?
+Resp2D_3Dr rWhat does 2D-P-3D show and deny ?
+Resp2D_3Hr rWhat does 2D-P-3H show and deny ?
+Resp2D_3NTr rWhat does 2D-P-3NT show and deny ?
+Resp2D_3Sr rWhat does 2D-P-3S show and deny ?
+Resp2D_4Cr rWhat does 2D-P-4C show and deny ?
+Resp2D_Otherr rDescribe your other responses to 2D opening,ror elaborate on listed responses.
+Resp2H.Other
+Resp2H._2NT
+Resp2H._2S
+Resp2H._3C
+Resp2H._3D
+Resp2H._3H
+Resp2H._3NT
+Resp2H._3S
+Resp2H._4C
+Resp2H._4H
+Resp2H_2NTr rWhat does 2H-P-2NT show and deny ?
+Resp2H_2Sr rWhat does 2H-P-2S show and deny ?
+Resp2H_3Cr rWhat does 2H-P-3C show and deny ?
+Resp2H_3Dr rWhat does 2H-P-3D show and deny ?
+Resp2H_3Hr rWhat does 2H-P-3H show and deny ?
+Resp2H_3NTr rWhat does 2H-P-3NT show and deny ?
+Resp2H_3Sr rWhat does 2H-P-3S show and deny ?
+Resp2H_4Cr rWhat does 2H-P-4C show and deny ?
+Resp2H_4Hr rWhat does 2H-P-4H show and deny ?
+Resp2H_Otherr rDescribe other responses to your 2H opening,ror elaborate on listed responses.r rInclude 4D response here if significantly different to 4C response.
+Resp2NT.Other
+Resp2NT._3C
+Resp2NT._3D
+Resp2NT._3H
+Resp2NT._3NT
+Resp2NT._3S
+Resp2NT._4C
+Resp2NT._4D
+Resp2NT._4H
+Resp2NT._4S
+Resp2NT_3Cr rWhat does 2NT-P-3C show and deny ?
+Resp2NT_3Dr rWhat does 2NT-P-3D show and deny ?
+Resp2NT_3Hr rWhat does 2NT-P-3H show and deny ?
+Resp2NT_3NTr rWhat does 2NT-P-3NT show and deny ?
+Resp2NT_3Sr rWhat does 2NT-P-3S show and deny ?
+Resp2NT_4Cr rWhat does 2NT-P-4C show and deny ?
+Resp2NT_4Dr rWhat does 2NT-P-4D show and deny ?
+Resp2NT_4Hr rWhat does 2NT-P-4H show and deny ?
+Resp2NT_4Sr rWhat does 2NT-P-4S show and deny ?
+Resp2NT_Otherr rDescribe other responses to your 2NT opening,ror elaborate on listed responses.
+Resp2S.Other
+Resp2S._2NT
+Resp2S._3C
+Resp2S._3D
+Resp2S._3H
+Resp2S._3NT
+Resp2S._3S
+Resp2S._4C
+Resp2S._4H
+Resp2S._4S
+Resp2S_2NTr rWhat does 2S-P-2NT show and deny ?
+Resp2S_3Cr rWhat does 2S-P-3C show and deny ?
+Resp2S_3Dr rWhat does 2S-P-3D show and deny ?
+Resp2S_3Hr rWhat does 2S-P-3H show and deny ?
+Resp2S_3NTr rWhat does 2S-P-3NT show and deny ?
+Resp2S_3Sr rWhat does 2S-P-3S show and deny ?
+Resp2S_4Cr rWhat does 2S-P-4C show and deny ?
+Resp2S_4Hr rWhat does 2S-P-4H show and deny ?
+Resp2S_4Sr rWhat does 2S-P-4S show and deny ?
+Resp2S_Otherr rDescribe other responses to your 2S opening,ror elaborate on listed responses.r rInclude 4D response here if significantly different to 4C response.
+RespXLimitr rWhat is the highest bid where yourrdouble is responsive and not for penalties ?
+Response2NTr rDescribe responses to your opening 2NT bid
+ResponseNotes_1r rSpace for more notes about responses
+ResponseNotes_2
+ResponseNotes_3
+ResponseStrong2r rDescribe your responses to any strong 2 levelrsuit openings in your system
+SeqLead_NTr rAgainst notrump contracts, which style do you use when leading from sequences of honour cards ?r1 : Overlead Allr2 : Overlead except AKx(+)r3 : Overlead, A-Attitude  K-Countr4 : Underleadr5 : Journalistr6 : A-Attitude  K-Countr7 : Slavinskyr8 : Rusinowr9 : See Note #r 
+SeqLead_Sr rAgainst suit contracts, what style do you use when leading from sequences of honour cards ?r1 : Overlead Allr2 : Overlead except AKx(+)r3 : Overlead, A-Attitude  K-Countr4 : Underleadr5 : Journalistr6 : A-Attitude  K-Countr7 : Slavinskyr8 : Rusinowr9 : See Note #r 
+SignalDeclarerLeadr rWhat signals do you use when declarer leads a suit ?r1 : Countr3 : Smith Echo in trumpsr9 : Prism hand pattern signalr 
+SignalPartnerLead_NTr rAgainst notrump contracts, how do you signal on partners lead ?rUse numbers for priorities.r1 : Low Encourager2 : High Encourager3 : Suit Preferencer4 : Countr5 : Low = Evenr6 : Low = Oddr
+SignalPartnerLead_Sr rAgainst suit contracts, how do you signal on partners lead ?rUse numbers for priorities.r1 : Low Encourager2 : High Encourager3 : Suit Preferencer4 : Countr5 : Low = Evenr6 : Low = Oddr
+SlamNotes_1r rFurther notes about your slam methods.
+SlamNotes_2
+SlamNotes_3
+T_OMD
+T_ONE
+T_OOF
+T_SPANs
+T_TWO
+TakeOutOf4C4Dr rDescribe your takeout bids after an opponent opens 4.minorrE.g. DBL and/or 4NT
+TakeOutOf4Hr rDescribe your takeout bids after an opponent opens 4HrE.g. DBL and/or 4NT
+TakeOutOf4Sr rDescribe your takeout bids after an opponent opens 4SrE.g. DBL and/or 4NT
+ThreeSmallLead_NTr rAgainst notrump contracts,rwhich card do you lead from three small cards ?r1 : Topr2 : Middler3 : Bottomr 
+ThreeSmallLead_Sr rAgainst suit contracts,rwhich card do you lead from three small cards ?r1 : Topr2 : Middler3 : Bottomr 
+Transfers_1r rDescrbe your methods after opponents use a transfer bid.rE.g.r1 : Double = takeoutr2 : Cue = strongr3 : Cue = good 2 suiterr4 : Double = Lead-Directingr 
+UnusualNTOther
+UnusualNTr rBriefly describe your use of therUnusual NT convention.rSee also Conventions on the inside pages.rIf you need more space, please use selection 9.r r1 : minorsr2 : Other suitsr3 : Lower 2 unbid suitsr4 : 2 non-touching suitsr5 : Any 2 unbid suitsr9 : !1!B!|See section 9!#yr
+UnusualNoTrumpr rWhat does your unusual leap in NT show ?r1 : minorsr2 : Other suitsr3 : Lower 2 unbid suitsr4 : 2 non-touching suitsr5 : Any 2 unbid suitsr 
+V_BasicSystem
+V_PlayerName_A
+V_PlayerName_B
+V_PlayerNo_A
+Z_MyClass
+Z_Sticker

@@ -1,0 +1,127 @@
+Status Check
+Make FDF in Log
+Miscellaneous
+My Notes
+Log many values
+Show Settings
+Show Button Info
+Expose Java Console
+The JavaScript Warning
+Manage Java Warning
+ToolBox
+Set  Date
+Print Partner's Card
+Load data file:
+Load an FDF file
+Clear & Load FDF
+HELP
+Recent Help
+Extra Notes
+Enhancements
+Richness = None
+Show extra notes?
+Show Action Areas
+Print Preparation
+Richness = Basic
+Richness = Rich
+Text Field Code Basics
+Popup Messages
+View editable fields
+REFRESH
+Shortcuts & More
+Save shortcut codes
+Cancel shortcut codes
+Restore default codes
+Date Format
+NoDates
+2017-Sep
+CheckBox Format
+Big X
+Small Black
+Rich Mode Functions
+Text Colours
+Font = default
+Manage Styles
+Fill Colours
+Hide Fill Colours
+Gray and white Fill
+Normal Fill Colours
+Show Fill Colours
+Normal
+Suits Black.R.B.G.
+Suits Blue.R.O.G.
+Spades Blue
+Suits Red & Black
+All Black
+Tick
+Cross
+All Black
+19/09/2017
+19 Sep 17
+2017-09-19
+2017-09-19 17:23
+TEXT Field Codes
+Fill Colour codes
+Enhanced Basic Mode
+Unicode Text
+Text Colour Codes
+More Rich Codes
+Rich Codes
+Suit Symbols
+Shortcut codes
+Rich Text Tips
+Abbreviations
+Abbreviations A-F
+Abbreviations S-z
+Printing Tips
+Printing Problems
+Print Partner Card
+General
+Classification
+List Box Help
+Important
+When opening the form
+Shrink file
+Quick Help
+File SIZE
+Font removal
+Text Overflow
+Signing Hints
+Text Font Size
+Text Value Problems
+BLUE Fill
+Other Programs
+For Foxit Users
+For Nitro Users
+For Adobe Users
+For MAC Users
+TEXT FIELDS
+WARNING: Pasting text
+For MPE Users
+The Display Fields
+The Editable Fields
+HINTS - CheckBoxes
+Field Hints
+TAB Sequence
+Showing Priorities
+Abbreviations O-S
+Abbreviations G-N
+_HANDLE with CARE_
+Print the Card
+Encode Unicode
+Refresh at Open
+Formatting Finished
+Format - Use default
+Font Sizes
+**Tweak** Font Sizes
+Format Font Size 9pt
+Trim Leading Spaces
+Big X
+Retired Fields
+Check Old Fields
+Remove Retired Fields
+Swap Players
+Make Retired Fields
+Append Old Fields
+Format Font Size 10pt
+ABF System Card

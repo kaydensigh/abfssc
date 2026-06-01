@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ABF Standard System Card — Architecture of a PDF That Thinks It's an App</title>
+<style>
+  :root{
+    --ink:#1b1b21; --ink-soft:#3a3a44; --muted:#6b6b76;
+    --paper:#faf8f3; --paper-2:#f3efe6; --card:#ffffff;
+    --line:#e3ddd0; --line-strong:#ccc4b2;
+    --red:#c2152e;        /* ABF masthead red / hearts-diamonds */
+    --red-soft:#fbeced;
+    --blue:#2d4a7c;       /* ink-blue links */
+    --blue-soft:#eef2f8;
+    --amber:#9a6a00; --amber-soft:#fbf3df;
+    --green:#1f7a4d; --green-soft:#e9f5ee;
+    --code-bg:#1d1f27; --code-fg:#e6e6ef; --code-dim:#9aa0b4; --code-acc:#ffd479; --code-str:#9ad29a; --code-fn:#7fb4ff;
+    --maxw:880px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font:400 17px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+  .serif{font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
+  a{color:var(--blue); text-decoration:none; border-bottom:1px solid rgba(45,74,124,.28)}
+  a:hover{border-bottom-color:var(--blue)}
+
+  /* ---------- Layout ---------- */
+  .wrap{display:grid; grid-template-columns:270px minmax(0,1fr); gap:0; max-width:1240px; margin:0 auto}
+  nav.toc{
+    position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+    padding:34px 22px 60px 30px; border-right:1px solid var(--line); font-size:13.5px;
+  }
+  nav.toc .brand{font-weight:700; letter-spacing:.02em; font-size:14px; color:var(--ink); display:flex; gap:7px; align-items:center; margin-bottom:4px}
+  nav.toc .brand .suit{color:var(--red)}
+  nav.toc .sub{color:var(--muted); font-size:12px; margin-bottom:20px; line-height:1.4}
+  nav.toc ol{list-style:none; margin:0; padding:0; counter-reset:s}
+  nav.toc li{margin:1px 0}
+  nav.toc a{display:block; padding:5px 9px; border:0; border-radius:6px; color:var(--ink-soft); line-height:1.3}
+  nav.toc a .n{color:var(--muted); font-variant-numeric:tabular-nums; margin-right:8px; font-size:12px}
+  nav.toc a:hover{background:var(--paper-2); color:var(--ink)}
+  nav.toc a.active{background:var(--ink); color:#fff}
+  nav.toc a.active .n{color:rgba(255,255,255,.6)}
+
+  main{padding:0 0 120px}
+  .col{max-width:var(--maxw); margin:0 auto; padding:0 32px}
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    background:
+      radial-gradient(1200px 380px at 78% -120px, rgba(194,21,46,.10), transparent 60%),
+      linear-gradient(180deg,#fffefb, var(--paper));
+    border-bottom:1px solid var(--line); padding:62px 0 44px; margin-bottom:8px;
+  }
+  .kicker{font-size:12.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--red); font-weight:700}
+  h1{font-size:clamp(30px,4.4vw,46px); line-height:1.08; margin:14px 0 10px; letter-spacing:-.015em; font-weight:600}
+  .lede{font-size:19.5px; color:var(--ink-soft); max-width:760px; margin:0}
+  .badges{display:flex; flex-wrap:wrap; gap:8px; margin-top:26px}
+  .badge{display:inline-flex; align-items:baseline; gap:6px; background:var(--card); border:1px solid var(--line-strong);
+    border-radius:999px; padding:5px 13px; font-size:12.5px; color:var(--ink-soft)}
+  .badge b{color:var(--ink); font-variant-numeric:tabular-nums; font-weight:600}
+  .suitrow{margin-top:18px; font-size:20px; letter-spacing:6px}
+  .suitrow .r{color:var(--red)} .suitrow .b{color:var(--ink)}
+
+  /* ---------- Sections ---------- */
+  section{padding:46px 0 8px; border-top:1px solid var(--line)}
+  section:first-of-type{border-top:0}
+  h2{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--red); margin:0 0 6px; font-weight:700}
+  h2 .num{color:var(--line-strong); margin-right:10px}
+  .h2title{font-size:clamp(23px,3vw,31px); line-height:1.15; margin:0 0 18px; font-weight:600; letter-spacing:-.01em}
+  h3{font-size:19px; margin:34px 0 8px; font-weight:650; letter-spacing:-.005em}
+  h4{font-size:15.5px; margin:22px 0 4px; font-weight:650; color:var(--ink)}
+  p{margin:0 0 15px}
+  strong{font-weight:650}
+  .small{font-size:14.5px; color:var(--muted)}
+  ul,ol.body{margin:0 0 16px; padding-left:22px}
+  li{margin:6px 0}
+  code{font-family:"SF Mono",ui-monospace,"Cascadia Code","JetBrains Mono",Consolas,monospace; font-size:.86em;
+    background:var(--paper-2); border:1px solid var(--line); border-radius:4px; padding:.08em .36em; color:#7a2230}
+  .fn{color:#7a2230; font-weight:600}
+
+  /* ---------- Callouts ---------- */
+  .call{border:1px solid var(--line); border-left-width:4px; border-radius:8px; padding:16px 18px; margin:20px 0; background:var(--card); font-size:15.5px}
+  .call .lab{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; display:block; margin-bottom:5px}
+  .call p:last-child{margin-bottom:0}
+  .call.insight{border-left-color:var(--amber); background:var(--amber-soft)} .call.insight .lab{color:var(--amber)}
+  .call.limit{border-left-color:var(--red); background:var(--red-soft)} .call.limit .lab{color:var(--red)}
+  .call.note{border-left-color:var(--blue); background:var(--blue-soft)} .call.note .lab{color:var(--blue)}
+  .call.win{border-left-color:var(--green); background:var(--green-soft)} .call.win .lab{color:var(--green)}
+
+  /* ---------- Code blocks ---------- */
+  pre{background:var(--code-bg); color:var(--code-fg); border-radius:10px; padding:16px 18px; overflow-x:auto;
+    font-family:"SF Mono",ui-monospace,"Cascadia Code","JetBrains Mono",Consolas,monospace; font-size:13px; line-height:1.6; margin:18px 0}
+  pre code{background:none; border:0; padding:0; color:inherit; font-size:inherit}
+  pre .c{color:var(--code-dim); font-style:italic}
+  pre .k{color:var(--code-acc)}
+  pre .s{color:var(--code-str)}
+  pre .f{color:var(--code-fn)}
+
+  /* ---------- Tables ---------- */
+  .tablewrap{overflow-x:auto; margin:20px 0; border:1px solid var(--line); border-radius:10px}
+  table{border-collapse:collapse; width:100%; font-size:14px}
+  th,td{text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top}
+  thead th{background:var(--paper-2); font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-soft); font-weight:700; position:sticky; top:0}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:#fcfaf5}
+  td .cost{color:var(--red)}
+  .mono{font-family:"SF Mono",ui-monospace,Consolas,monospace; font-size:12.5px}
+
+  /* ---------- Stat grid ---------- */
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:12px; margin:24px 0}
+  .stat{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 15px}
+  .stat .v{font-size:25px; font-weight:680; letter-spacing:-.02em; line-height:1; font-variant-numeric:tabular-nums}
+  .stat .l{font-size:12.5px; color:var(--muted); margin-top:6px; line-height:1.3}
+
+  /* ---------- Card layout diagram ---------- */
+  .pages{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:22px 0}
+  @media(max-width:620px){.pages{grid-template-columns:1fr}}
+  .pg{border:1px solid var(--line-strong); border-radius:10px; overflow:hidden; background:var(--card)}
+  .pg .cap{font-size:12px; padding:8px 12px; background:var(--ink); color:#fff; display:flex; justify-content:space-between}
+  .pg .cap em{color:rgba(255,255,255,.6); font-style:normal}
+  .pg .cols{display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:10px}
+  .pg.single .cols{grid-template-columns:1fr}
+  .sec{border:1px solid var(--line); border-radius:6px; padding:7px 9px; font-size:12px; background:var(--paper)}
+  .sec b{display:block; font-size:11px; color:var(--red); letter-spacing:.02em}
+  .sec.mast{background:#fff7f8; border-color:#f0c9cf}
+  .sec.note-blk{color:var(--muted)}
+
+  /* ---------- Tier diagram ---------- */
+  .tiers{display:flex; flex-direction:column; gap:12px; margin:22px 0}
+  .tier{border:1px solid var(--line-strong); border-radius:10px; padding:14px 16px; background:var(--card); position:relative}
+  .tier .t-h{display:flex; align-items:center; gap:10px; margin-bottom:5px}
+  .tier .pill{font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#fff; background:var(--blue); border-radius:999px; padding:3px 9px}
+  .tier .t-h b{font-size:15.5px}
+  .tier .when{margin-left:auto; font-size:12px; color:var(--muted)}
+  .tier p{margin:0; font-size:14.5px; color:var(--ink-soft)}
+  .tier .arrow{position:absolute; left:50%; bottom:-13px; transform:translateX(-50%); color:var(--line-strong); font-size:16px; z-index:1}
+
+  /* ---------- Palette swatches ---------- */
+  .palette{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:8px; margin:16px 0}
+  .sw{display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:7px; padding:6px 8px; font-size:12.5px; background:var(--card)}
+  .sw .chip{width:16px; height:16px; border-radius:4px; border:1px solid rgba(0,0,0,.15); flex:none}
+  .sw .mono{font-size:12px}
+
+  /* ---------- Tree ---------- */
+  .tree{font-family:"SF Mono",ui-monospace,Consolas,monospace; font-size:13px; line-height:1.7; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:18px 0; overflow-x:auto}
+  .tree .grp{color:var(--ink); font-weight:700}
+  .tree .danger{color:var(--red)}
+  .tree .dim{color:var(--muted)}
+
+  hr.soft{border:0; border-top:1px solid var(--line); margin:30px 0}
+  footer{border-top:1px solid var(--line); margin-top:50px; padding:30px 0 60px; color:var(--muted); font-size:13.5px}
+  .toc-toggle{display:none}
+
+  @media(max-width:920px){
+    .wrap{grid-template-columns:1fr}
+    nav.toc{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line); padding:18px 22px}
+    nav.toc ol{column-count:2; column-gap:18px}
+  }
+  @media print{
+    nav.toc{display:none} .wrap{display:block} .badges,.suitrow{break-inside:avoid}
+    pre{border:1px solid #ccc} body{background:#fff}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ TABLE OF CONTENTS ============ -->
+  <nav class="toc" id="toc">
+    <div class="brand"><span class="suit">♠♥♦♣</span> ABF Card</div>
+    <div class="sub">Architecture of the JavaScript PDF form &middot; Rev 21E29</div>
+    <ol>
+      <li><a href="#what"><span class="n">01</span>An app inside a PDF</a></li>
+      <li><a href="#domain"><span class="n">02</span>The bridge domain</a></li>
+      <li><a href="#runtime"><span class="n">03</span>Runtime architecture</a></li>
+      <li><a href="#richfields"><span class="n">04</span>Rich fields &amp; code languages</a></li>
+      <li><a href="#commands"><span class="n">05</span>The command surface</a></li>
+      <li><a href="#data"><span class="n">06</span>Data, versioning &amp; sync</a></li>
+      <li><a href="#degrade"><span class="n">07</span>Capability detection</a></li>
+      <li><a href="#catalogue"><span class="n">08</span>The platform-limit catalogue</a></li>
+      <li><a href="#candour"><span class="n">09</span>Self-test &amp; fragility</a></li>
+      <li><a href="#rebuild"><span class="n">10</span>Implications for a rebuild</a></li>
+      <li><a href="#method"><span class="n">＊</span>How this was analysed</a></li>
+    </ol>
+  </nav>
+
+  <main>
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <div class="col">
+      <div class="kicker">System Card · Reverse-Engineering Notes</div>
+      <h1 class="serif">A PDF that thinks it&rsquo;s an application</h1>
+      <p class="lede">How the ABF Standard System Card&mdash;a two-page bridge convention card&mdash;became a 148&nbsp;KB JavaScript program living inside an Acrobat form, and why almost every strange decision in it is a workaround for something a PDF simply cannot do.</p>
+      <div class="badges">
+        <span class="badge">Form Rev <b>21E29</b></span>
+        <span class="badge">by <b>RoL</b> (Rex Livingston)</span>
+        <span class="badge">&copy; ABF <b>2021</b></span>
+        <span class="badge"><b>2</b> pages</span>
+        <span class="badge"><b>~148 KB</b> embedded JS</span>
+        <span class="badge"><b>~76</b> functions</span>
+        <span class="badge"><b>601</b> form fields</span>
+        <span class="badge"><b>127</b> bookmarks</span>
+      </div>
+      <div class="suitrow"><span class="b">♠</span> <span class="r">♥</span> <span class="r">♦</span> <span class="b">♣</span></div>
+    </div>
+  </header>
+
+  <!-- ============ 01 ============ -->
+  <section id="what">
+   <div class="col">
+    <h2><span class="num">01</span>What this artifact actually is</h2>
+    <div class="h2title">An entire application, smuggled into a two-page Acrobat form</div>
+
+    <p>On paper, the ABF Standard System Card is one folded A4 sheet on which a bridge partnership writes down its bidding and play agreements. The file in <code>abf/ABF_Card_FORM.pdf</code> reproduces that sheet&mdash;but behind the two visible pages sits a complete software product: roughly <strong>148&nbsp;KB of minified JavaScript</strong> spread across <strong>183 separate <code>/JS</code> action blocks</strong>, defining a library of about <strong>76 functions</strong> that drive <strong>601 form fields</strong>, a <strong>127-entry command menu</strong>, a rich-text rendering engine, a settings system, a schema-migration layer, and an FDF data-exchange format. It even ships with its own 53-page <em>Usage Guide</em> because, as the guide cheerfully admits on page&nbsp;1, &ldquo;The PDF form is quite different from other PDF forms you may have used.&rdquo;</p>
+
+    <p>The single most useful lens for understanding the whole thing is this:</p>
+
+    <div class="call insight">
+      <span class="lab">The thesis</span>
+      <p>A PDF reader gives JavaScript almost none of the primitives an app developer expects&mdash;no toolbar, no custom dialogs, no module system, no &ldquo;re-render&rdquo; call, no preferences store, no reliable rich-text widget, no guarantee the code will even run. <strong>Nearly every peculiar feature of this form is a substitute for one of those missing primitives.</strong> Read it that way and the oddities stop being quirks and become a catalogue of clever&mdash;and sometimes desperate&mdash;workarounds.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="v">183</div><div class="l"><code>/JS</code> action blocks</div></div>
+      <div class="stat"><div class="v">~76</div><div class="l">library functions</div></div>
+      <div class="stat"><div class="v">78</div><div class="l"><code>typeof</code>&nbsp;guards</div></div>
+      <div class="stat"><div class="v">601</div><div class="l">AcroForm fields</div></div>
+      <div class="stat"><div class="v">245</div><div class="l"><code>D_</code> display twins</div></div>
+      <div class="stat"><div class="v">127</div><div class="l">bookmarks (the menu)</div></div>
+      <div class="stat"><div class="v">690</div><div class="l">tooltips (the help)</div></div>
+      <div class="stat"><div class="v">3</div><div class="l">stacked code languages</div></div>
+    </div>
+
+    <p>The form is the work of one author&mdash;the footer reads &ldquo;PDF Form Rev. 21E29 by RoL&rdquo;, and the guide names him as <strong>Rex Livingston</strong>. His initials are fossilised throughout the code: virtually every function parameter is named with a trailing <code>RoL</code> (e.g. <code>gFsH(qDXRoL)</code>). The naming scheme is terse and consistent&mdash;helper functions are prefixed <span class="fn">gF</span>, with <span class="fn">gR</span>/<span class="fn">gM</span>/<span class="fn">gS</span>/<span class="fn">gT</span> families for rich/make/set/toggle operations, and locals carry three-character scramble prefixes (<code>hSX</code>, <code>qDX</code>, <code>yEX</code>&hellip;) to stay collision-free after minification.</p>
+   </div>
+  </section>
+
+  <!-- ============ 02 ============ -->
+  <section id="domain">
+   <div class="col">
+    <h2><span class="num">02</span>The domain it must reproduce</h2>
+    <div class="h2title">A regulated full-disclosure document for a bridge partnership</div>
+
+    <p>In duplicate bridge, opponents are entitled to know how you bid and play. A <strong>convention card</strong> (or &ldquo;system card&rdquo;) is the standardised sheet a pair fills in so the opposition and the director can read its agreements at the table. The ABF&rsquo;s card layout&mdash;the numbered sections, the order, the classification scheme&mdash;<em>is itself the regulated artifact</em>. A faithful rebuild therefore has to reproduce the same sections and the same classification model, not merely &ldquo;a bridge form.&rdquo;</p>
+
+    <h3>Two pages, folded into a booklet</h3>
+    <p>The PDF has exactly two pages, mirroring the two sides of the folded paper card. <strong>PDF page&nbsp;1 is the <em>Outside</em></strong> (the masthead plus sections&nbsp;1&ndash;7), and <strong>PDF page&nbsp;2 is the <em>Inside</em></strong> (sections&nbsp;8&ndash;10)&mdash;the same numbering the guide uses. A subtle but important layout fact: on the outside page the printed <em>front cover</em> (masthead + section&nbsp;1) sits in the <strong>right-hand column</strong>, not the left. The guide explains why (p.2): &ldquo;It simplifies printing. When printed, we fold the card in the middle and then the booklet opens at the right.&rdquo; On screen the reading order is therefore non-linear&mdash;a print-layout constraint leaking into the editing experience.</p>
+
+    <div class="pages">
+      <div class="pg">
+        <div class="cap"><span>PDF page 1 — Outside</span><em>&ldquo;the Simple Card&rdquo;</em></div>
+        <div class="cols">
+          <div>
+            <div class="sec"><b>4</b> Basic Responses</div>
+            <div class="sec"><b>5</b> Play Conventions <span class="small">(opening leads, signals, count, discards)</span></div>
+            <div class="sec"><b>6</b> Slam Conventions</div>
+            <div class="sec"><b>7</b> Other Conventions</div>
+          </div>
+          <div>
+            <div class="sec mast"><b>Masthead</b> ABF logo · players · Classification ● · Brown Sticker ◦</div>
+            <div class="sec"><b>1</b> Opening Bids</div>
+            <div class="sec"><b>2</b> Pre-Alerts</div>
+            <div class="sec"><b>3</b> Competitive Bids / Overcalls</div>
+          </div>
+        </div>
+      </div>
+      <div class="pg">
+        <div class="cap"><span>PDF page 2 — Inside</span><em>the dense grids</em></div>
+        <div class="cols">
+          <div>
+            <div class="sec"><b>8</b> Responses to Opening Bids <span class="small">— the ~10-row bidding matrix</span></div>
+            <div class="sec note-blk">1♣ 1♦ 1♥ 1♠ 1NT 2♣ 2♦ 2♥ 2♠ 2NT&nbsp;→ response meanings</div>
+          </div>
+          <div>
+            <div class="sec"><b>9</b> Conventions <span class="small">(4th-suit forcing, checkback, defences&hellip;)</span></div>
+            <div class="sec"><b>10</b> Other Notes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="small">Note: section&nbsp;1 is <strong>Opening Bids</strong> (fields <code>Open1C&hellip;Open2NT</code>), <em>not</em> &ldquo;Opening Leads&rdquo;&mdash;leads and carding live in section&nbsp;5, Play Conventions. The same sheet doubles as two products: the full <strong>Standard Card</strong> (both pages) and a lighter <strong>Simple Card</strong> (the outside page alone, folded), reusing the same fields.</p>
+
+    <h3>Classification: one enum and one independent flag</h3>
+    <p>The defining piece of metadata is the system <strong>Classification</strong>&mdash;a regulatory colour bucket (Green / Blue / Red / Yellow) shown as a large coloured circle in the masthead&mdash;plus an independent <strong>Brown Sticker</strong> flag. A revealing implementation detail: these are <em>not</em> four booleans. There is a single string field named <code>Classification</code>; the names <code>IsClassGreen/Blue/Red/Yellow</code> are <strong>virtual call targets</strong> that don&rsquo;t exist as fields at all. Clicking a colour runs a one-liner like <code>gFpB('1','IsClassGreen')</code>, and <span class="fn">gFpB</span> reads the suffix after <code>IsClass</code>, then sets (or toggles off) the one <code>Classification</code> string&mdash;genuinely radio-like behaviour from a single value. The Brown Sticker is passed as <code>'2'</code> instead of <code>'1'</code>; that literal parameter encodes its conceptual independence from the colour.</p>
+
+    <div class="call note">
+      <span class="lab">Deliberately out of scope</span>
+      <p>The form stores and renders the classification colour but <strong>does not embed what each colour means</strong>. The guide (p.24) defers to &ldquo;the latest national Regulations when classifying your system.&rdquo; A web rebuild must source the Green/Blue/Red/Yellow semantics, and the WBF/ABF abbreviation vocabulary (FG = <em>Forcing to game</em>, TRF = <em>transfer</em>, RKCB, T/O&hellip; shown in the guide&rsquo;s Abbreviations appendix), from current ABF regulations&mdash;they are not in the file.</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 03 ============ -->
+  <section id="runtime">
+   <div class="col">
+    <h2><span class="num">03</span>The runtime architecture</h2>
+    <div class="h2title">Three reactive tiers, two chokepoints, and 78 idempotency guards</div>
+
+    <p>A PDF can run code in only a few situations: once via the document&rsquo;s <em>OpenAction</em>, on field events (validate / format / focus / mouse / calculate), and on document lifecycle hooks (WillPrint, WillSave, WillClose). The form&rsquo;s whole control flow is built from exactly those hooks, arranged into three tiers.</p>
+
+    <div class="tiers">
+      <div class="tier">
+        <div class="t-h"><span class="pill">Tier 1</span><b>OpenAction bootstrap</b><span class="when">runs once, at open</span></div>
+        <p>A single, uncompressed document-level script (~26&nbsp;KB) declares every global, defines the lowest-level primitives the rest of the code only ever <em>calls</em> (<span class="fn">gFaA</span>, <span class="fn">gFpB</span>, <span class="fn">gMDH</span>, <span class="fn">gFXa</span>&hellip;), builds the <code>gFHash</code> field-type map for all 601 fields, probes the reader&rsquo;s capabilities, and kicks off initialisation via <code>gFiF('AtOpenUp')</code>.</p>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="tier">
+        <div class="t-h"><span class="pill">Tier 2</span><b>Per-field Validate / Format events</b><span class="when">on every edit</span></div>
+        <p>Each rich field&rsquo;s own actions expand shortcut codes (Validate) and build the rendered rich-text spans (Format). <strong>This is the render engine.</strong> Writing a field value is the <em>only</em> way to trigger it.</p>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="tier">
+        <div class="t-h"><span class="pill">Tier 3</span><b>Document Calculate scripts on settings fields</b><span class="when">when a setting changes</span></div>
+        <p>Hidden <code>My_*</code> / <code>I_Format</code> fields carry Calculate scripts that, when written, loop over <em>all</em> fields and broadcast a style/colour/border change across the whole card&mdash;the closest thing here to reactive data-binding.</p>
+      </div>
+    </div>
+
+    <p>Because the 76-function library is duplicated across many of the 183 action strings (any one of them might be the &ldquo;first&rdquo; to execute), every function is wrapped in an idempotency guard&mdash;there are exactly <strong>78</strong> of them:</p>
+
+<pre><code><span class="k">if</span>(<span class="k">typeof</span> gFsH===<span class="s">'undefined'</span>){
+  <span class="k">function</span> <span class="f">gFsH</span>(qDXRoL){ <span class="c">/* … installs itself on first use … */</span> }
+}</code></pre>
+
+    <p>There is no module loader and no guaranteed load order, so this lazy self-installation is how the library reliably exists by the time any field, bookmark, or hook needs it. (The cost: the library is repeated many times over, which is part of why the file is large.)</p>
+
+    <h3>Two chokepoints do most of the work</h3>
+    <ul>
+      <li><strong><span class="fn">gFaA(type, icon, title, message)</span></strong> &mdash; the universal alert/confirm wrapper, called 49&times;. Every dialog in the app flows through it, which is how the form can <em>uniformly</em> paginate over-long messages into sequential &ldquo;click OK to proceed&rdquo; alerts (Acrobat dialogs grow downward and push the OK button off-screen), offer an auto-OK &ldquo;hot cancel&rdquo;, and normalise return codes across readers&mdash;Foxit returns 6/7 for Yes/No where Acrobat returns 4/3, so <span class="fn">gFXa</span> remaps them.</li>
+      <li><strong><code>gFHash</code> + per-call-site ordering strings</strong> &mdash; every field is mapped to a one-character type code (<code>T</code> text, <code>R</code> display-twin, <code>B</code> checkbox-display, <code>V</code> overlay, <code>S</code> setting&hellip;). Hot loops over all 601 fields branch by <code>indexOf</code> into a position string such as <code>'T|&gt;RLyzBQxKvwoiSjV'</code>. Intriguingly there isn&rsquo;t one canonical ordering&mdash;different functions re-tune the string (<span class="fn">gFCX</span> uses <code>'T|&gt;RoOSijVxBKQvwyz'</code>) so their own index-range tests line up.</li>
+    </ul>
+
+    <h3>The code is packed as PDF string literals</h3>
+    <p>One detail only visible when you decompress the file: the minified JavaScript is stored hard-wrapped, with each wrap point escaped using a PDF <em>line-continuation</em> sequence (a backslash immediately followed by an end-of-line). So <code>var&nbsp;x=0;</code> is physically stored as <code>va\</code>&nbsp;+&nbsp;CR&nbsp;+&nbsp;<code>r&nbsp;x=0;</code>. The reader strips the <code>\</code>+EOL to rebuild the source. It&rsquo;s a reminder that this code wasn&rsquo;t written in a PDF&mdash;it was compiled into one.</p>
+   </div>
+  </section>
+
+  <!-- ============ 04 ============ -->
+  <section id="richfields">
+   <div class="col">
+    <h2><span class="num">04</span>Rich fields &amp; the code languages</h2>
+    <div class="h2title">The twin-field trick, three stacked shortcut systems, and a render engine made of strings</div>
+
+    <p>The card&rsquo;s cells are tiny and its content is dense, so the form needs two things a plain PDF field can&rsquo;t offer: a way to type very little and display a lot, and a way to show coloured suit symbols and formatting. Both are solved by the same architecture.</p>
+
+    <h3>The editable / <code>D_</code> twin split</h3>
+    <p>Every rich entry is actually <strong>two overlapping fields in the same position</strong>: an <em>editable</em> field holding terse codes (e.g. <code>BasicSystem</code> = &ldquo;<code>1</code>&rdquo;), and a <code>D_</code>-prefixed <em>display</em> twin (<code>D_BasicSystem</code>) holding the pre-rendered rich text that is shown and printed. There are <strong>245</strong> such <code>D_</code> twins. The guide (p.6) states the reason plainly: &ldquo;Rich fields now use one field for editing &amp; export, &amp; another &hellip; for display and printing. This is to help minimize the size of the filled form.&rdquo; Only the terse editable field is exported to FDF; the bulky rendered twin is regenerable.</p>
+
+    <div class="call insight">
+      <span class="lab">The decision that radiates everywhere</span>
+      <p>This one storage optimisation is the single most consequential choice in the form&mdash;and the source of most user pain. Because the editable and display fields are separate, the form needs a manual <strong>REFRESH</strong> to repaint, a <strong>&ldquo;View Editable Fields&rdquo;</strong> command to reach the codes, tooltips that live <em>only</em> on the editable twin, a click-to-edit choreography that swaps which twin is visible, a warning to work around an Adobe bug that leaves the raw code exposed, and a destructive two-pass rebuild when switching richness. A web rebuild collapses all of it into one value rendered live&mdash;deleting five pain points at once.</p>
+    </div>
+
+    <h3>Three shortcut languages, stacked on one value</h3>
+    <p>What looks like &ldquo;autocomplete&rdquo; is really three independent expansion stages that can chain&mdash;one keystroke can fire all three:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Layer</th><th>Introducer</th><th>Where it runs</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><b>Tooltip code list</b></td><td>a digit / <code>x</code> / <code>9</code> / <code>?</code></td><td>field <em>Validate</em> script</td><td>typing <code>1</code> in <code>BasicSystem</code> &rarr; &ldquo;Standard&rdquo;; <code>?</code> pops the whole list</td></tr>
+          <tr><td><b>Grave shortcut</b></td><td><code>`</code> (back-tick)</td><td><code>gCdH</code> hash, in Format</td><td><code>`2</code> &rarr; 2<sup>nd</sup>, <code>`@</code> &rarr; ½, <code>`a</code> &rarr; α</td></tr>
+          <tr><td><b>Rich code</b></td><td><code>!</code></td><td>the Format render engine</td><td><code>!S</code> &rarr; ♠ (in the <code>Cards</code> font), <code>!2</code> &rarr; blue, <code>!^</code> superscript, <code>!-</code> smaller</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The most elegant&mdash;and most telling&mdash;part is the first layer. The 2013 version of the card used real PDF combo boxes (dropdowns). The 2015 rich-text rewrite made those impossible (a rich-text field can&rsquo;t also be a combo box), so the dropdown was reimplemented out of the materials already at hand. The list of options is stored <strong>inside the field&rsquo;s own tooltip</strong>, and the Validate script searches that tooltip for the typed code:</p>
+
+<pre><code><span class="k">var</span> bAXhint = bAXf.userName;          <span class="c">// the field's /TU tooltip</span>
+<span class="k">if</span>(bAXv===<span class="s">'?'</span>){
+  app.<span class="f">alert</span>({cMsg:<span class="s">'INFO:'</span>+bAXhint, cTitle:<span class="s">'Field info:'</span>, nIcon:3});
+}<span class="k">else</span>{                                 <span class="c">// search "\r<digit> : phrase"</span>
+  <span class="k">var</span> bAXik = bAXhint.<span class="f">indexOf</span>(<span class="s">'\r'</span>+bAXv+<span class="s">' : '</span>);
+  <span class="k">if</span>(bAXik&gt;=0) bAXzz = bAXhint.<span class="f">substring</span>(bAXik, bAXjk);  <span class="c">// → the expansion</span>
+}</code></pre>
+
+    <div class="call insight">
+      <span class="lab">One string, three jobs</span>
+      <p>The same tooltip text is simultaneously the <strong>hover help</strong>, the <strong>&ldquo;?&rdquo; pop-up reference</strong>, and the <strong>lookup table</strong> for code expansion. The help text <em>is</em> the autocomplete data. It&rsquo;s a beautiful economy&mdash;and also a documented UX regression: a real dropdown became a modal &ldquo;type&nbsp;?, dismiss the alert, retype the digit, tab out&rdquo; dance.</p>
+    </div>
+
+    <h3>The render engine: rich text built by hand</h3>
+    <p>A PDF field has no markup engine, so all formatting is hand-assembled as a <code>richValue</code> span array in JavaScript. The largest single field action (~15.5&nbsp;KB) is the shared Format script: it walks the value on the <code>!</code> introducer, maintains styling state, and emits styled spans&mdash;suit symbols in the embedded <code>Cards</code> font (hard-capped at 11pt), colours from a palette array, bold/italic/underline, super/subscript, size steps (<code>!-</code> floors at 6pt), tabs, and <code>!U+XXXX;</code> Unicode&mdash;then assigns the finished array to the <code>D_</code> twin&rsquo;s <code>richValue</code>. A built-in legend function, <span class="fn">gFVbR</span>, documents the whole <code>!</code>-language; its colour set is exactly what a rebuild needs:</p>
+
+    <div class="palette">
+      <div class="sw"><span class="chip" style="background:#000"></span><span class="mono">!0</span> black</div>
+      <div class="sw"><span class="chip" style="background:#ff0000"></span><span class="mono">!1</span> red</div>
+      <div class="sw"><span class="chip" style="background:#0000ff"></span><span class="mono">!2</span> blue</div>
+      <div class="sw"><span class="chip" style="background:#ff00ff"></span><span class="mono">!3</span> fuchsia</div>
+      <div class="sw"><span class="chip" style="background:#00b34d"></span><span class="mono">!4</span> green</div>
+      <div class="sw"><span class="chip" style="background:#a121f0"></span><span class="mono">!5</span> purple</div>
+      <div class="sw"><span class="chip" style="background:#007aa6"></span><span class="mono">!6</span> cerulean</div>
+      <div class="sw"><span class="chip" style="background:#cc6600"></span><span class="mono">!7</span> brown</div>
+      <div class="sw"><span class="chip" style="background:#663333"></span><span class="mono">!8</span> dk brown</div>
+      <div class="sw"><span class="chip" style="background:#ffb333"></span><span class="mono">!9</span> orange</div>
+    </div>
+
+    <h3>REFRESH: there is no redraw API</h3>
+    <p>Since writing a value is the only render trigger, the whole-card REFRESH command works by re-writing <em>every</em> required field&rsquo;s value back onto itself&mdash;but with a twist. Readers optimise by skipping the Format pass for fields that haven&rsquo;t changed, so REFRESH prepends a <code>^&nbsp;</code> caret (and sometimes appends a character) precisely so each value <em>looks</em> changed and the optimisation is defeated:</p>
+<pre><code><span class="c">// gFiF case 42 — REFRESH, looping this.numFields</span>
+<span class="k">if</span>(fieldName.<span class="f">substr</span>(0,2)===<span class="s">'D_'</span>) <span class="k">continue</span>;   <span class="c">// skip display twins</span>
+<span class="k">if</span>(!f.required) <span class="k">continue</span>;                    <span class="c">// "required" flag == "is a rich field"</span>
+f.value = <span class="s">'^ '</span> + f.value;                     <span class="c">// force a "change" → re-fires Format</span></code></pre>
+    <p>A hack to force a hack&mdash;and a perfect illustration of the whole form&rsquo;s character.</p>
+   </div>
+  </section>
+
+  <!-- ============ 05 ============ -->
+  <section id="commands">
+   <div class="col">
+    <h2><span class="num">05</span>The command surface</h2>
+    <div class="h2title">Three command channels, because no single one suffices</div>
+
+    <p>An AcroForm cannot add toolbar buttons, ribbon items, or application menus. So the author built the app&rsquo;s entire chrome out of three things a PDF <em>does</em> offer&mdash;each with a different trade-off.</p>
+
+    <h3>1 · Bookmarks as a menu (127 entries)</h3>
+    <p>The PDF outline (bookmark) pane is the only built-in, always-visible, off-page surface that can carry a clickable JavaScript action. The guide is candid (p.21): &ldquo;our bookmarks function more like a menu of commands rather than links to other parts of the document.&rdquo; Each bookmark&rsquo;s action is a thin dispatch snippet&mdash;usually a single call into the shared library&mdash;so the menu and the field events reuse the same functions.</p>
+
+    <div class="tree"><span class="dim">▸ Status Check · REFRESH · View editable fields · Popup Messages · Richness = Rich/Basic · Print Preparation · Show Action Areas</span>
+<span class="grp">▾ Enhancements</span>  Richness = None · Manage Styles · Text Colours · Fill Colours · Font = default
+<span class="grp">▾ HELP</span>          Quick Help · Important ▸ · General ▸ · Abbreviations (A–F · G–N · O–S · S–z)
+                Printing Tips · TEXT Field Codes ▸ · Other Programs (Foxit / Nitro / Adobe / MAC / MPE)
+<span class="grp">▾ Load data file:</span> Load an FDF file · <span class="danger">_HANDLE with CARE_ ▸ Clear &amp; Load FDF</span>
+<span class="grp">▾ ToolBox</span>       Set Date · Swap Players · Retired Fields ▸ · Font Sizes ▸ · Encode Unicode · Print the Card
+<span class="grp">▾ The JavaScript Warning</span>  Manage Java Warning
+<span class="grp">▾ Miscellaneous</span> <span class="dim">(&ldquo;most useful for the developer of the form&rdquo;)</span> Expose Java Console · Show Settings · Log many values
+<span class="grp">▾ Date Format</span> · <span class="grp">CheckBox Format</span> (Big X · Small Black · Tick · Cross) · <span class="grp">Shortcuts &amp; More</span></div>
+
+    <p>The cost is discoverability. The pane is hidden by default, so the guide teaches&mdash;repeatedly&mdash;how to reveal it (View &rsaquo; Show/Hide &rsaquo; Navigation Panes &rsaquo; Bookmarks) and to <strong>click the flag icon, not the label</strong> (clicking the name can start a rename). There is no search and the order is fixed; the author mitigates with colour-coding (danger items like <span style="color:var(--red)">Clear &amp; Load FDF</span> are red) and a dedicated <code>_HANDLE with CARE_</code> sub-group that exists purely to wrap one irreversible command. Settings like date and checkbox style are stored by poking hidden fields&mdash;<span class="fn">gFsV</span> maps shorthand codes to a whole family of preference fields:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Code</th><th>Field</th><th>Code</th><th>Field</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">*C</td><td class="mono">My_Colours</td><td class="mono">*O</td><td class="mono">My_Font</td></tr>
+          <tr><td class="mono">*D</td><td class="mono">My_DateFormat</td><td class="mono">*X</td><td class="mono">My_CheckBoxValues</td></tr>
+          <tr><td class="mono">*F</td><td class="mono">My_FillColours</td><td class="mono">*Z</td><td class="mono">My_Codes</td></tr>
+          <tr><td class="mono">*I</td><td class="mono">I_Format</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2 · Action Areas as real PDF layers</h3>
+    <p>Overlaid on the card are pale pink/yellow clickable rectangles&mdash;&ldquo;Action Areas.&rdquo; Uniquely in the whole form, these are <strong>genuine PDF Optional Content Groups (layers)</strong>, named <code>Layer AA&hellip;</code>. Before printing, <span class="fn">gFbP</span> calls <code>this.getOCGs()</code> and hides every such layer so they don&rsquo;t appear on the printed card. But the form is honest about the limits of this: in Adobe Reader &ldquo;the layers will be hidden but the active print process will still print them,&rdquo; so it pops a warning offering a reprint&mdash;a workaround that admits it only fully works in Foxit.</p>
+
+    <h3>3 · Field-event hot-zones</h3>
+    <p>The remaining controls are emulated as fields. The classification circle, the &ldquo;imitation checkboxes&rdquo; (plain text fields cycled through styles by <span class="fn">gFpB</span> and mirrored to a <code>B_</code> display twin), and dynamically-created <code>V_</code>/<code>Box</code> overlay fields all carry mouse/focus actions wired at runtime via <code>setAction(&hellip;)</code>. Clicking a display twin fires <span class="fn">gRFF</span>, which swaps the display flags and moves focus to the editable twin&mdash;the &ldquo;click to edit&rdquo; behaviour. Because these are fakes, buggy readers misfire; the form ships a literal &ldquo;You have touched field &hellip; click the side label at least TWICE&rdquo; alert, and a dedicated <em>For MPE Users</em> bookmark for one reader that needs the label clicked instead of the box.</p>
+   </div>
+  </section>
+
+  <!-- ============ 06 ============ -->
+  <section id="data">
+   <div class="col">
+    <h2><span class="num">06</span>Data, persistence, versioning &amp; sync</h2>
+    <div class="h2title">An offline-first, schema-versioned document database in an AcroForm</div>
+
+    <p>There is no server and no external store. The &ldquo;data model&rdquo; is simply the set of field values, which is exactly what a saved PDF&mdash;and a far smaller exported FDF&mdash;persist. The 601 fields fall into three families: <strong>card content</strong> (editable + <code>D_</code> twin pairs), <strong>settings</strong> (the <code>My_*</code> family), and <strong>provenance</strong> (<code>I_LastSave</code>, <code>A_JN</code>, <code>Date_A</code>).</p>
+
+    <h3>FDF&mdash;and the Adobe Reader export hole</h3>
+    <p>The compact interchange format is FDF (~30&nbsp;KB versus a multi-megabyte filled PDF). Import is straightforward (<code>this.importAnFDF()</code>). Export is where a platform gap bites hard:</p>
+    <div class="call limit">
+      <span class="lab">Limitation &rarr; workaround</span>
+      <p>The recommended <em>free</em> reader&mdash;Adobe Reader&mdash;<strong>cannot write FDF files</strong>. The workaround, the <em>Make FDF in Log</em> bookmark, hand-assembles a syntactically valid FDF document (<code>%FDF-1.2</code>, a Catalog object, trailer, <code>%%EOF</code>) one <code>console.println</code> at a time and dumps it into the JavaScript console for the user to copy out by hand. It even emits synthetic <code>aaNote_*</code> pseudo-fields narrating how many fields were skipped. The happy path for sharing your card requires opening a developer console.</p>
+    </div>
+
+    <h3>Versioning &amp; migration&mdash;a schema-migration DSL inside a bridge card</h3>
+    <p>The 2020 update renamed many fields, which would have broken FDF interchange with older cards. The fix is a tiny <strong>declarative rename language</strong> stored as a string, <code>gRtFL</code>:</p>
+<pre><code>JumpRaiseMinorOther&gt;JumpRaiseMinor   UnusualNTOther&gt;UnusualNoTrump
+Player~.&gt;_   Resp~.O&gt;_O   Over1NTInterfMore&gt;Over1NTInterf   <span class="c">// OLD&gt;NEW (+ templated prefix rules)</span></code></pre>
+    <p>At load, <span class="fn">gMRFL</span> parses these rules and, to actually <em>receive</em> an old field&rsquo;s value (since <code>importAnFDF</code> only fills fields that already exist), the <em>Make Retired Fields</em> command <strong>mutates the form&rsquo;s own AcroForm at runtime</strong>&mdash;<code>addField()</code>-ing hidden, read-only, red-bordered placeholders with the old names, then merging them onto their new partners. It&rsquo;s a self-modifying import shim, and it self-disables (the <code>gAfW</code> flag) the moment <code>addField</code> throws in a reader without editing rights.</p>
+
+    <h3>&ldquo;Partner sync&rdquo; is cosmetic, not replication</h3>
+    <p>A partnership keeps <em>one</em> system file. The <em>Swap Players</em> command (<span class="fn">gFsP</span>) swaps only the two <code>PlayerName_A/B</code> and <code>PlayerNo_A/B</code> slots (carrying their formatting), and <em>Print Partner&rsquo;s Card</em> is just swap&nbsp;&rarr;&nbsp;print&nbsp;&rarr;&nbsp;swap-back. There is no second copy, no merge, no conflict resolution&mdash;the right mental model is &ldquo;one document, two views.&rdquo;</p>
+
+    <div class="call note">
+      <span class="lab">A privacy footnote</span>
+      <p>On every save, <code>I_LastSave</code> is stamped with the form revision and build (<code>21E29.2115</code>), an exact timestamp, the reader&rsquo;s type/version/variation, the OS platform, a refresh counter, <em>and</em> the saving user&rsquo;s <code>identity.name</code> / <code>loginName</code>. A shared card quietly leaks who, what, and where it was last edited&mdash;something a rebuild can and should drop.</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 07 ============ -->
+  <section id="degrade">
+   <div class="col">
+    <h2><span class="num">07</span>Capability detection &amp; graceful degradation</h2>
+    <div class="h2title">PDF-era progressive enhancement</div>
+
+    <p>Rather than assume a reader&rsquo;s capabilities, the form <em>probes</em> them at open and then degrades along a continuous scale. It is unusually disciplined for a PDF:</p>
+    <ul>
+      <li><strong>Rich-text probe.</strong> At open, the form writes a two-span <code>richValue</code> to a test field and reads it back. Success sets the rich ceiling <code>gRMx&nbsp;=&nbsp;8</code> (full rich); failure drops to 5; Nitro is pinned to 5. So &ldquo;Richness&rdquo; isn&rsquo;t a binary&mdash;it&rsquo;s a scale of <strong>8 (Rich) / 5 (enhanced) / 2 (Basic) / 1 (None)</strong>, and unsupported readers auto-downgrade so the card still looks reasonable.</li>
+      <li><strong>Viewer fingerprint.</strong> Five properties (<code>viewerVersion</code>, <code>formsVersion</code>, <code>viewerType</code>, <code>viewerVariation</code>, <code>platform</code>) drive per-reader branches&mdash;Foxit gets four-space tabs instead of <code>\t</code>, no progress thermometer, and the alert-code remap.</li>
+      <li><strong>Self-disabling features.</strong> If <code>addField</code> throws, <code>gAfW</code> flips to false and every feature that needs to create fields (display twins, retired-field shim) quietly stands down rather than crashing.</li>
+      <li><strong>Reaching into the host.</strong> Acrobat&rsquo;s &ldquo;Highlight Form Fields&rdquo; preference paints over the classification circle&rsquo;s fill colour, so <span class="fn">gFcb</span> directly writes <code>app.runtimeHighlight = false</code> for the session&mdash;the form actively toggles a host-application setting to keep its own colours visible.</li>
+    </ul>
+
+    <p>The guide encodes the residue of all this as a per-reader compatibility matrix (p.45): Adobe Reader does rich text but can&rsquo;t export FDF; Acrobat Pro/Standard and Foxit 10.1.3+ do both; Apple&rsquo;s Preview should be avoided because it flattens the form in a way Adobe later misreads.</p>
+   </div>
+  </section>
+
+  <!-- ============ 08 ============ -->
+  <section id="catalogue">
+   <div class="col">
+    <h2><span class="num">08</span>The platform-limit catalogue</h2>
+    <div class="h2title">Every workaround, traced back to the missing primitive</div>
+
+    <p>This is the whole form in one table. Read down the first column and you have a list of everything an app developer takes for granted that a PDF does not provide; read across and you see the price paid for each.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th style="width:30%">Because a PDF can&rsquo;t&hellip;</th><th style="width:42%">&hellip;the form&rsquo;s workaround</th><th style="width:28%">&hellip;and the residual user cost</th></tr></thead>
+        <tbody>
+          <tr><td>run code except via OpenAction / field events</td><td>OpenAction bootstraps everything; field-event &ldquo;probes&rdquo; are flipped at open to self-test that the library compiled</td><td class="cost">must close &amp; restart the reader after enabling JavaScript</td></tr>
+          <tr><td>load modules in order</td><td>78 <code>typeof X==='undefined'</code> idempotency guards so any action can install the library</td><td class="cost">the library is duplicated &rarr; larger file</td></tr>
+          <tr><td>re-render on demand</td><td>writing a value is the only trigger; REFRESH re-writes every field to itself with a <code>^</code> caret to defeat skip-unchanged</td><td class="cost">manual REFRESH; slow full-card repaints</td></tr>
+          <tr><td>add toolbars or menus</td><td>127 bookmarks as a command menu + on-card Action-Area layers</td><td class="cost">menu hidden by default; click the flag, not the name; no search</td></tr>
+          <tr><td>offer a rich-text widget</td><td><code>!</code> / grave / digit code mini-languages parsed into <code>richValue</code> spans; dropdowns became a modal &ldquo;?&rdquo; loop</td><td class="cost">a code language to learn; a UX regression from real dropdowns</td></tr>
+          <tr><td>store preferences</td><td>settings live as hidden <code>My_*</code> fields saved inside the PDF/FDF</td><td class="cost">settings only stick if you Save; a shared FDF carries your prefs</td></tr>
+          <tr><td>show help</td><td>help text stored in fields, shown through <code>app.alert</code> via <span class="fn">gFsH</span></td><td class="cost">modal, paginated help; tooltips only on the editable twin</td></tr>
+          <tr><td>expose a dev console</td><td><em>Expose Java Console</em> bookmark (<code>console.show()</code> + a deliberate null-deref for PDF-XChange)</td><td class="cost">diagnostics require opening a console</td></tr>
+          <tr><td>detect a dead JS engine</td><td>a self-erasing <code>A_JN</code> warning field&mdash;its persistence <em>is</em> the error message</td><td class="cost">a stuck overlay is ambiguous: JS off? error? flattened?</td></tr>
+          <tr><td>save without bloating</td><td>forced Save-As + terse-code/<code>D_</code> split + size nags (~1.55&nbsp;MB)</td><td class="cost">constant Save-As discipline; old-file cleanup</td></tr>
+          <tr><td>export FDF (in Reader)</td><td><em>Make FDF in Log</em> dumps a hand-built FDF to the JS console to copy out</td><td class="cost">clumsy copy-from-console; full export needs Foxit/Acrobat&nbsp;Pro</td></tr>
+          <tr><td>reveal clipped text</td><td>rely on the reader&rsquo;s optional &ldquo;+&rdquo; overflow indicator</td><td class="cost">unconfigured users silently print incomplete cards</td></tr>
+          <tr><td>keep colours under field-highlight</td><td><span class="fn">gFcb</span> toggles <code>app.runtimeHighlight</code> off per session</td><td class="cost">on readers lacking the property, colours stay masked</td></tr>
+          <tr><td>survive signing / flattening</td><td>nothing&mdash;<code>numFields==0</code> kills the app; Status Check detects and reports it</td><td class="cost">a signed card is dead; re-fetch the blank form</td></tr>
+          <tr><td>receive renamed fields on import</td><td>runtime <code>addField()</code> of hidden old-name placeholders, then merge</td><td class="cost">needs editing rights; fails silently in some readers</td></tr>
+        </tbody>
+      </table>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 09 ============ -->
+  <section id="candour">
+   <div class="col">
+    <h2><span class="num">09</span>Self-test, provenance &amp; candid fragility</h2>
+    <div class="h2title">A form that is honest about its own precarity</div>
+
+    <p>What makes the form genuinely interesting&mdash;beyond the engineering&mdash;is how openly it acknowledges that it might not work, and builds tooling around that fact.</p>
+
+    <h3>JavaScript proves it&rsquo;s alive by disappearing</h3>
+    <p>The big pale-yellow panel on page&nbsp;1 isn&rsquo;t decoration&mdash;it&rsquo;s a canary. The field <code>A_JN</code> is shown by default and <strong>deleted by working JavaScript</strong> on open (a two-pass <code>display.noPrint</code> &rarr; <code>display.hidden</code> state machine that even rescales its own text by counting trailing <code>!-</code> markers). If it&rsquo;s still visible, your JavaScript engine never ran. The panel helpfully lists the exact three Acrobat preferences to enable, then erases itself when those preferences take effect. Clicking the ABF logo brings it back on demand.</p>
+
+    <h3>Status Check, and a self-aware &ldquo;I&rsquo;m dead&rdquo; state</h3>
+    <p>The top bookmark, <span class="fn">gFScK</span>, prints a timestamped report&mdash;file size, per-type field counts, the last-save provenance&mdash;and crucially detects the fatal state: <code>if(this.numFields==0)</code> it reports &ldquo;<em>There are no fields in this file - it looks FLATtened/signed &hellip; MOST bookmarks will do nothing.</em>&rdquo; The app can diagnose its own death.</p>
+
+    <h3>Developer tools shipped to end users</h3>
+    <ul>
+      <li><code>gVrbL == 666</code> is a verbosity backdoor that dumps every member of the document object to the console; higher values unlock progressively deeper internal logging. It is present in the shipped product.</li>
+      <li>The <em>Miscellaneous</em> bookmark group is described in the guide as &ldquo;most useful for the developer of the form.&rdquo;</li>
+      <li>At least one genuine bug rides along untouched: <span class="fn">gFpB</span>&rsquo;s error path calls <code>cosole.println</code> (missing the &ldquo;n&rdquo;)&mdash;dead code that would throw if ever reached.</li>
+    </ul>
+
+    <div class="call insight">
+      <span class="lab">Why this matters for the rebuild</span>
+      <p>The candour is the strongest argument for the project. None of this scaffolding&mdash;the canary, the restart ceremony, the console-dump export, the retired-field shim, the per-reader click rules&mdash;is about <em>bridge</em>. It is all overhead the platform imposes. A web page deletes the overhead and keeps only the card.</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ 10 ============ -->
+  <section id="rebuild">
+   <div class="col">
+    <h2><span class="num">10</span>Implications for a web rebuild</h2>
+    <div class="h2title">Keep the card, collapse the cleverness, drop the overhead</div>
+
+    <p>Mapping the analysis onto the project goal&mdash;reimplementing &ldquo;the parts users care about&rdquo; as a web page&mdash;sorts the form&rsquo;s machinery into three buckets.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th style="width:14%">Verdict</th><th>From the PDF</th><th>In the web rebuild</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--green);font-weight:700">KEEP</td>
+            <td>The regulated section/field schema (1&ndash;10), the Classification enum + Brown-Sticker flag, the player identities, the shortcut-code conveniences and suit symbols, the WBF abbreviation glossary, swap-to-print.</td>
+            <td>A typed field schema; an enum + boolean; live suit/colour rendering with a small code language ported from <span class="fn">gFVbR</span> + the <code>gClrA</code> palette; an abbreviation autocomplete.</td></tr>
+          <tr><td style="color:var(--amber);font-weight:700">COLLAPSE</td>
+            <td>The editable/<code>D_</code> twin split; the three render tiers; REFRESH; the three stacked shortcut layers; settings broadcast via Calculate scripts.</td>
+            <td>One value per field, rendered live (CSS handles colour, overflow, fonts); a single reactive update; one input pipeline; a plain settings object.</td></tr>
+          <tr><td style="color:var(--red);font-weight:700">DROP</td>
+            <td>The 127-bookmark menu, the canary field, capability probes, per-reader click rules, the retired-field shim, the console-dump FDF export, the identity/viewer provenance leakage, signing/flatten hazards.</td>
+            <td>Normal UI controls; nothing to probe; a JSON document with a schema-version field and a migration table seeded directly from <code>gRtFL</code>; no surveillance metadata.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>A clean data model</h3>
+    <p>The web version needs only: a flat map of the <em>editable</em> card fields (the <code>D_</code> twins are regenerable); a typed settings object (colours, fonts, checkbox style, date format, custom codes); player identity as a two-element array with a &ldquo;primary&rdquo; pointer instead of physically swapping values; classification as enumerated metadata; and a small provenance block (schema version + timestamp) in place of <code>I_LastSave</code>. Versioning becomes a one-time migration on load, driven by the rules already written down in <code>gRtFL</code>&mdash;no self-modifying fields required.</p>
+
+    <div class="call win">
+      <span class="lab">The opportunity</span>
+      <p>Everything the form fights for&mdash;rich coloured text, live rendering, a real menu, overflow you can see, painless sharing, working dropdowns, no setup ceremony&mdash;is free in a browser. The hard part of the rebuild isn&rsquo;t the technology; it&rsquo;s faithfully reproducing the <em>regulated bridge content and its semantics</em>. This document is the map of which parts of the original are worth carrying across, and which were only ever there to satisfy the PDF.</p>
+    </div>
+   </div>
+  </section>
+
+  <!-- ============ METHOD ============ -->
+  <section id="method">
+   <div class="col">
+    <h2><span class="num">＊</span>How this was analysed</h2>
+    <div class="h2title">From a sealed binary to a readable map</div>
+    <p>The form ships as a compressed binary; none of the above is visible by opening it. The analysis decompressed all 570 FlateDecode streams in <code>ABF_Card_FORM.pdf</code>, recovered the 183 <code>/JS</code> action blocks (unescaping the PDF string literals, including the <code>\</code>+EOL line-continuation packing), beautified the function library, and extracted the 601 field names, 690 tooltips, and 127 bookmark titles. The 53-page <em>Usage Guide</em> was read both as text and as rendered pages. A fan-out of analysis agents then examined seven facets in parallel&mdash;the JS engine, the rich-field system, the bookmark menu, the user workflow, platform limits, the bridge domain, and the data model&mdash;each verified against the source and cross-checked by a completeness pass that corrected several first-draft errors (for example, that <span class="fn">gFsH</span> is the help displayer rather than a show/hide helper, and that PDF page&nbsp;1 is the Outside page). Extraction scripts and intermediate artifacts live alongside this file under <code>abf/extracted/</code>.</p>
+
+    <hr class="soft">
+    <footer>
+      <p><strong>ABF Standard System Card &mdash; architecture notes.</strong> Subject: <code>abf/ABF_Card_FORM.pdf</code> (Form Rev 21E29 &ldquo;by RoL&rdquo;, &copy; ABF 2021) and <code>abf/ABF_Card_Form_Usage_Guide.pdf</code> (Guide Rev 21D24). Prepared as background for the <em>abfssc</em> web reimplementation. All quotations are from the form&rsquo;s own JavaScript and Usage Guide. Suits, naturally: <span style="color:var(--ink)">♠♣</span> <span style="color:var(--red)">♥♦</span>.</p>
+    </footer>
+   </div>
+  </section>
+
+  </main>
+</div>
+
+<script>
+  // Scrollspy: highlight the current section in the TOC
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+    var map = {};
+    links.forEach(function(a){ var id=a.getAttribute('href').slice(1); var el=document.getElementById(id); if(el) map[id]=a; });
+    var ids = Object.keys(map);
+    function onScroll(){
+      var y = window.scrollY + 120, current = ids[0];
+      ids.forEach(function(id){ var el=document.getElementById(id); if(el && el.offsetTop <= y) current = id; });
+      links.forEach(function(a){ a.classList.remove('active'); });
+      if(map[current]) map[current].classList.add('active');
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('load', onScroll);
+    onScroll();
+  })();
+</script>
+</body>
+</html>

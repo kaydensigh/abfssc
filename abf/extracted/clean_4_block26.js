@@ -1,0 +1,208 @@
+if(typeof gRMo=='undefined') {
+  console.println('_ JJ: missing gRMo '+event.targetName+' D='+event.target.display);
+}
+else {
+  var dDXv=event.value;
+  if(gRMo<1) {
+    console.println('No actioning Format :'+dDXv+': when gRMo='+gRMo);
+  }
+  else {
+    if(dDXv.length==0)dDXv='x';
+    if(dDXv.substr(0,1)!=='x') {
+      console.println('Do: Format when gRMo='+gRMo+'   v:'+dDXv+'.');
+      console.println('Do.. Setting Format at '+util.printd('HH:MM:ss',new Date())+'.. r:'+gRfsH);
+      var dDXqtX=color.blue;
+      var dDXttX=color.red;
+      var dDXxtbclr=color.black;
+      if(dDXv.indexOf('Qgra')>=0)dDXxtbclr=color.gray;
+      if(dDXv.indexOf('Qdkg')>=0)dDXxtbclr=color.dkGray;
+      if(dDXv.indexOf('Qltg')>=0)dDXxtbclr=color.ltGray;
+      if(dDXv.indexOf('Qbla')>=0)dDXxtbclr=color.black;
+      if(dDXv.indexOf('Qblu')>=0)dDXxtbclr=color.blue;
+      if(dDXv.indexOf('Qgre')>=0)dDXxtbclr=color.green;
+      var dDXxtfil=0;
+      var dDXxtlin=0;
+      var dDXxtbld=0;
+      var dDXxdlin=0;
+      if(dDXv.indexOf('Tcle')>=0)dDXxtfil=13;
+      if(dDXv.indexOf('Tblu')>=0)dDXxtfil=16;
+      if(dDXv.indexOf('Tyel')>=0)dDXxtfil=17;
+      if(dDXv.indexOf('Tgre')>=0)dDXxtfil=18;
+      if(dDXv.indexOf('Tpur')>=0)dDXxtfil=19;
+      if(dDXv.indexOf('Tpin')>=0)dDXxtfil=20;
+      if(dDXv.indexOf('Tpal')>=0)dDXxtfil=15;
+      if(dDXv.indexOf('Tfil')>=0)dDXxtfil=14;
+      if(dDXv.indexOf('Tbol')>=0)dDXxtbld=1;
+      if(dDXv.indexOf('Tnor')>=0)dDXxtbld=2;
+      var dDXxdc=dDXv.indexOf('Dcle');
+      var dDXxdf=dDXv.indexOf('Dfil');
+      if(dDXv.indexOf('Trec')>=0)dDXxtlin=1;
+      if(dDXv.indexOf('Tund')>=0)dDXxtlin=2;
+      if(dDXv.indexOf('Trem')>=0)dDXxtlin=3;
+      if(dDXv.indexOf('Dund')>=0)dDXxdlin=2;
+      if(dDXv.indexOf('Drem')>=0)dDXxdlin=3;
+      var dDXtsz=gFcZ(dDXv);
+      var dDXxcc=dDXv.indexOf('Ccle');
+      var dDXxcy=dDXv.indexOf('Cyel');
+      gFFc(dDXv);
+      if(dDXxtfil>0) {
+        console.println('Set.default fill index (was:'+gCfX+') = zero for '+dDXxtfil);
+        gCfX=0;
+        gFilA[0]=gFilA[dDXxtfil].slice(0);
+        console.println('FLC: 0 = clone '+dDXxtfil+' '+gFilA[0]);
+      }
+      if(gRfsH==0) {
+        var dDXaltz=1;
+        if(gThRm) {
+          dDXaltz=0;
+          var dDXTzm=app.thermometer;
+          dDXTzm.duration=this.numFields;
+          dDXTzm.begin();
+          var dDXTzz=1;
+          var dDXTzn=0;
+        }
+        if(gRiP==0) {
+          if(dDXaltz>0) {
+            app.alert( {
+              cMsg:'Reformatting may be slow.\r \rA message like this will appear on completion.',cTitle:'System Card PDF Form',nIcon:3,nType:0
+            });
+          }
+          else {
+            dDXaltz=2;
+          }
+        }
+        if(dDXaltz!=1)console.println('Silent..reformatting may be slow.');
+        for(var dDXi=0;
+        dDXi<this.numFields;
+        dDXi++) {
+          var dDXgname=this.getNthFieldName(dDXi);
+          var dDXfldt=0;
+          if(gThRm) {
+            dDXTzn++;
+            if(dDXTzz--<=0) {
+              dDXTzm.text='Reformat progress '+dDXTzn;
+              dDXTzm.value=dDXTzn;
+              dDXTzz=25;
+            }
+          }
+          var dDXg=this.getField(dDXgname);
+          if(dDXg==null)continue;
+          if(dDXg.required)dDXfldt=1;
+          if(dDXgname.substr(0,2)=='B_')dDXfldt=3;
+          if(dDXfldt==0)continue;
+          if(dDXfldt==3) {
+            if(dDXxcc>=0) {
+              var dDXxname=dDXgname.substr(2);
+              var dDXxf=this.getField(dDXxname);
+              dDXg.textColor=['RGB',1,1,0.995];
+              dDXg.value=dDXg.valueAsString;
+              dDXxf.fillColor=color.transparent;
+            }
+            if(dDXxcy>=0)dDXg.fillColor=['RGB',1,1,0.92];
+            continue;
+          }
+          if(dDXfldt==1) {
+            if(dDXgname.substr(0,5)=='Date_') {
+              if(gDFK)dDXg.delay=true;
+              if(dDXxdc>=0)dDXg.fillColor=color.transparent;
+              if(dDXxdf>=0)dDXg.fillColor=['RGB',0.97,0.97,0.97];
+              if(dDXxdlin==2) {
+                dDXg.lineWidth=gLWid;
+                if(dDXg.borderStyle!=border.u) {
+                  console.println('bS..'+dDXg.name+'  '+dDXg.borderStyle+' >> '+border.u);
+                  try {
+                    dDXg.borderStyle=border.u;
+                  }
+                  catch(e) {
+                    console.println('**>>?bL? '+e.message);
+                  }
+                }
+                dDXg.strokeColor=color.gray;
+              }
+              if(dDXxdlin==3) {
+                dDXg.lineWidth=0;
+                if(dDXg.borderStyle!=border.s) {
+                  console.println('bS..'+dDXg.name+'  '+dDXg.borderStyle+' >> '+border.s);
+                  try {
+                    dDXg.borderStyle=border.s;
+                  }
+                  catch(e) {
+                    console.println('**>>?bL? '+e.message);
+                  }
+                }
+                dDXg.strokeColor=color.transparent;
+              }
+              if(gDFK)dDXg.delay=false;
+              continue;
+            }
+            var dDXxzfil=0;
+            if(gDFK)dDXg.delay=true;
+            dDXg.fillColor=gFilA[dDXxzfil];
+            switch(dDXxtlin) {
+              case 1: dDXg.lineWidth=gLWid;
+              if(dDXg.borderStyle!=border.s) {
+                console.println('bS..'+dDXg.name+'  '+dDXg.borderStyle+' >> '+border.s);
+                try {
+                  dDXg.borderStyle=border.s;
+                }
+                catch(e) {
+                  console.println('**>>?bL? '+e.message);
+                }
+              }
+              dDXg.strokeColor=dDXxtbclr;
+              break;
+              case 2: dDXg.lineWidth=gLWid;
+              if(dDXg.borderStyle!=border.u) {
+                console.println('bS..'+dDXg.name+'  '+dDXg.borderStyle+' >> '+border.u);
+                try {
+                  dDXg.borderStyle=border.u;
+                }
+                catch(e) {
+                  console.println('**>>?bL? '+e.message);
+                }
+              }
+              dDXg.strokeColor=dDXxtbclr;
+              break;
+              case 3: dDXg.lineWidth=0;
+              if(dDXg.borderStyle!=border.s) {
+                console.println('bS..'+dDXg.name+'  '+dDXg.borderStyle+' >> '+border.s);
+                try {
+                  dDXg.borderStyle=border.s;
+                }
+                catch(e) {
+                  console.println('**>>?bL? '+e.message);
+                }
+              }
+              dDXg.strokeColor=color.transparent;
+              break;
+            }
+            switch(dDXxtbld) {
+              case 1: dDXg.textFont=font.HelvB;
+              break;
+              case 2: dDXg.textFont=font.Helv;
+              break;
+            }
+            if(dDXtsz>5)dDXg.textSize=dDXtsz;
+            if(gDFK)dDXg.delay=false;
+          }
+        }
+        console.println('Done Setting Format at '+util.printd('HH:MM:ss',new Date())+'.');
+        if(gThRm) {
+          if(dDXTzm.cancelled)console.println('Thermometer.F was cancelled.');
+          dDXTzm.end();
+        }
+        if(gRiP==0) {
+          if(event.value.length>2) {
+            if(dDXaltz==1)app.alert( {
+              cMsg:'Format change has completed.',cTitle:'System Card PDF Form',nIcon:3,nType:0
+            });
+          }
+        }
+        if(dDXaltz!=1)console.println('..silent..format change completed.');
+        if(dDXv.length>0) {
+          if(dDXv.substr(0,1)!=='x')event.value='x? '+dDXv;
+        }
+      }
+    }
+  }
+}
