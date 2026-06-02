@@ -91,6 +91,26 @@ describe("buildCardPdf (export half of the round-trip)", () => {
     const ap = readAp(out, "D_Open1C");
     expect(ap).toContain("/Cards");
     expect(ap).toContain("1 0 0 rg"); // !1 → red "better minor"
+    expect(ap).toContain("(S) Tj"); // ♠ is a solid glyph — drawn from the font
+  });
+
+  it("prints ♥/♦ as a solid filled silhouette, not the font's hollow outline", async () => {
+    // The Cards font draws ♥/♦ as outline glyphs; we fill the solid silhouette
+    // ourselves so they don't print as a red ring with a white centre.
+    const c = createEmptyCard({ id: "suits", now: "2026-06-02T00:00:00.000Z" });
+    c.fields.BasicSystem = "!H!D!S!C"; // one of each suit
+    const r = await buildCardPdf(c, TEMPLATE.slice(0), { now: "2026-06-02T00:00:00.000Z" });
+    const d = await PDFDocument.load(r.bytes, { ignoreEncryption: true, updateMetadata: false });
+    const ap = readAp(d, "D_BasicSystem");
+    // ♥ and ♦ are filled silhouettes (own q…cm…f Q), NOT drawn as Cards glyphs.
+    expect(ap).not.toContain("(H) Tj");
+    expect(ap).not.toContain("(D) Tj");
+    expect(ap).toContain("617 522 m"); // start of the solid ♥ silhouette
+    expect(ap).toContain("540 333 m"); // start of the solid ♦ silhouette
+    expect(ap).toMatch(/q 1 0 0 rg [0-9.]+ 0 0 [0-9.]+ [0-9.]+ [0-9.]+ cm .*f Q/);
+    // ♠ and ♣ are already solid — still drawn straight from the font.
+    expect(ap).toContain("(S) Tj");
+    expect(ap).toContain("(C) Tj");
   });
 
   it("merges an Other field with no twin into the parent's appearance", () => {

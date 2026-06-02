@@ -19,6 +19,13 @@ export interface EncodedRun {
   literal: string;
   /** Advance width of `text` at the requested size, in PDF units. */
   width: number;
+  /**
+   * Optional solid silhouette to fill INSTEAD of drawing the glyph. PDF path
+   * operators in 1000-unit em space (glyph origin at 0,0, y-up). Used for the
+   * Cards font's hollow ♥/♦ outlines: we fill the silhouette ourselves so they
+   * print solid. When set, `literal` is not drawn; the run still advances `width`.
+   */
+  fill?: string;
 }
 
 export interface FontStyle {
@@ -185,17 +192,31 @@ export function buildAppearance(spans: Span[], box: AppearanceBox, opts: Appeara
   const firstBaseline = multiline ? height - PAD_X - baseSizePt * 0.8 : (height - baseSizePt) / 2 + baseSizePt * 0.163;
 
   const underlines: string[] = [];
+  // Suit silhouettes filled as vector paths (the Cards font's ♥/♦ are hollow
+  // outlines). Drawn after the text, outside BT/ET, since paths can't appear
+  // between BT/ET. Each is a full graphics-state snippet (q … Q).
+  const suitFills: string[] = [];
   out.push("BT");
   lines.forEach((line, li) => {
     const y = firstBaseline - li * lineHeight;
     let x = alignOffset(align, line.width, width);
     for (const p of line.pieces) {
-      out.push(rg(p.color));
-      if (p.rise !== 0) out.push(`${fmt(p.rise)} Ts`);
-      out.push(`/${p.run.fontName} ${fmt(p.size)} Tf`);
-      out.push(`1 0 0 1 ${fmt(x)} ${fmt(y)} Tm`);
-      out.push(`(${p.run.literal}) Tj`);
-      if (p.rise !== 0) out.push("0 Ts");
+      if (p.run.fill) {
+        // Fill the solid silhouette ourselves: scale em→pt and place the glyph
+        // origin at the run's baseline (matching where `Tj` would draw it).
+        const s = p.size / 1000;
+        const gy = y + p.rise;
+        suitFills.push(
+          `q ${rg(p.color)} ${fmt(s)} 0 0 ${fmt(s)} ${fmt(x)} ${fmt(gy)} cm ${p.run.fill} f Q`,
+        );
+      } else {
+        out.push(rg(p.color));
+        if (p.rise !== 0) out.push(`${fmt(p.rise)} Ts`);
+        out.push(`/${p.run.fontName} ${fmt(p.size)} Tf`);
+        out.push(`1 0 0 1 ${fmt(x)} ${fmt(y)} Tm`);
+        out.push(`(${p.run.literal}) Tj`);
+        if (p.rise !== 0) out.push("0 Ts");
+      }
       if (p.underline && p.run.width > 0) {
         const uy = y - UNDERLINE_DROP;
         // `rg` sets the non-stroking (fill) colour the following `re f` uses.
@@ -207,6 +228,7 @@ export function buildAppearance(spans: Span[], box: AppearanceBox, opts: Appeara
   out.push("ET");
   // Underlines as thin filled rules, drawn after the text (outside BT/ET).
   for (const u of underlines) out.push(u);
+  for (const sf of suitFills) out.push(sf);
   out.push("Q", "EMC");
   return out.join("\n") + "\n";
 }

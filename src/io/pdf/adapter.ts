@@ -21,7 +21,8 @@ import {
 import type { PDFRef, PDFField, PDFWidgetAnnotation } from "pdf-lib";
 import type { Span, Suit } from "../../render/types.ts";
 import type { CheckboxStyle } from "../../model/index.ts";
-import { buildAppearance, type FontShop, type FontStyle } from "./appearance.ts";
+import { buildAppearance, type EncodedRun, type FontShop, type FontStyle } from "./appearance.ts";
+import { SOLID_SUIT_PATHS } from "./suitGlyphs.ts";
 import {
   bTwin,
   CHECKBOX_GLYPH,
@@ -144,8 +145,14 @@ export async function loadTemplate(bytes: Uint8Array | ArrayBuffer): Promise<Pdf
   const shop: FontShop = {
     encode(text: string, style: FontStyle) {
       if (style.suit) {
-        const code = (style.suit as Suit).charCodeAt(0); // 'S'|'H'|'D'|'C'
-        return { fontName: "Cards", literal: escapeBytes([code]), width: cardsWidth(code, style.sizePt) };
+        const suit = style.suit as Suit;
+        const code = suit.charCodeAt(0); // 'S'|'H'|'D'|'C'
+        const run: EncodedRun = { fontName: "Cards", literal: escapeBytes([code]), width: cardsWidth(code, style.sizePt) };
+        // ♥/♦ are hollow outlines in the Cards font; fill their solid silhouette
+        // ourselves so they print solid. ♠/♣ are solid and draw the glyph as-is.
+        const solid = SOLID_SUIT_PATHS[suit];
+        if (solid) run.fill = solid;
+        return run;
       }
       const font =
         style.bold && style.italic ? helvBO : style.bold ? helvB : style.italic ? helvO : helv;

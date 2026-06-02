@@ -33,6 +33,22 @@ describe("buildAppearance", () => {
     expect(out).toContain("(S) Tj"); // suit letter, not the ♠ glyph
   });
 
+  it("fills a solid silhouette (not a glyph) when the run supplies one", () => {
+    // The Cards font's ♥/♦ are hollow outlines; a shop returns a `fill` path so
+    // the builder paints the solid silhouette instead of drawing the glyph.
+    const fillShop: FontShop = {
+      encode(text, style) {
+        const r = fakeShop.encode(text, style);
+        return style.suit === "H" ? { ...r, fill: "1 2 m 3 4 l h" } : r;
+      },
+    };
+    const out = buildAppearance(renderCoded("!H"), box, { ...opts(), font: fillShop });
+    expect(out).not.toContain("(H) Tj"); // hollow glyph is NOT drawn
+    expect(out).toContain("1 2 m 3 4 l h"); // silhouette path is present…
+    expect(out).toMatch(/q 1 0 0 rg .*1 2 m 3 4 l h f Q/); // …filled red, in its own q…Q
+    expect(out).toContain("0.01 0 0 0.01"); // scaled em→pt (10pt suit / 1000 upem)
+  });
+
   it("renders bold and italic with the right font resource", () => {
     expect(buildAppearance(renderCoded("!bBold!b"), box, opts())).toContain("/Fn1");
     expect(buildAppearance(renderCoded("!iIt!i"), box, opts())).toContain("/HeOb");
