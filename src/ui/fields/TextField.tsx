@@ -15,9 +15,6 @@ export function TextField({ def }: { def: FieldDef }): ReactElement {
   const list = CODE_LISTS[def.key];
   const isCoded = kind === "coded";
   const multiline = kind === "notes" || def.multiline === true;
-  // Background hint: the field's own PDF guidance (def.hint) wins; coded fields
-  // fall back to their code-list prompt.
-  const placeholder = def.hint ?? list?.prompt;
   const style = { "--span": fieldSpan(def) } as CSSProperties;
   const className = `field${def.labelHidden ? " no-label" : ""}${multiline ? " multiline" : ""}`;
   return (
@@ -30,7 +27,6 @@ export function TextField({ def }: { def: FieldDef }): ReactElement {
         onChange={(v) => setField(def.key, v)}
         ariaLabel={def.label}
         multiline={multiline}
-        placeholder={placeholder}
         options={isCoded ? list?.codes : undefined}
         codeList={isCoded ? codeMap(def.key) : undefined}
       />

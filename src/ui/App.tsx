@@ -1,13 +1,13 @@
 import { type ReactElement, useState } from "react";
 import { PAGES, PAGE_BY_ID, SECTION_BY_ID } from "../model/index.ts";
 import { Section } from "./sections/index.ts";
-import { ExportButton, ImportButton, PageNav, StorageIndicator } from "./common/index.ts";
+import { ExportButton, ImportButton, NewCardButton, PageNav, StorageIndicator } from "./common/index.ts";
 
 /**
- * App shell: brand + 4-page nav in a sticky header, then the active page — a
- * header row (page title left, storage indicator right) above its stacked
- * sections. The four pages mirror the printed card's panels; within a page the
- * sections keep natural 1→10 order and their own sub-headings.
+ * App shell: brand + save indicator + actions, then the 4-page nav, in a sticky
+ * header; the active page is just its stacked sections (no per-page heading — the
+ * page nav names the page). The four pages mirror the printed card's panels;
+ * within a page the sections keep natural 1→10 order and their own sub-headings.
  */
 export function App(): ReactElement {
   const [activeId, setActiveId] = useState<string>(PAGES[0].id);
@@ -23,9 +23,11 @@ export function App(): ReactElement {
               <span className="r">♦</span>
               <span>♣</span>
             </span>
-            ABF System Card
+            <span className="brand-name">ABF System Card</span>
+            <StorageIndicator />
           </div>
           <div className="actions">
+            <NewCardButton />
             <ImportButton />
             <ExportButton />
           </div>
@@ -34,16 +36,11 @@ export function App(): ReactElement {
       </header>
 
       <main className="page" id={`page-${page.id}`} aria-labelledby={`page-${page.id}-title`}>
-        <div className="page-header">
-          <h1 className="page-heading" id={`page-${page.id}-title`}>
-            <span className="page-num" aria-hidden="true">
-              {page.number}
-            </span>
-            <span className="page-name">{page.title}</span>
-          </h1>
-          <StorageIndicator />
-        </div>
-
+        {/* No visible page heading (the nav names the page), but keep a level-1
+            heading for the document outline / screen-reader navigation. */}
+        <h1 className="visually-hidden" id={`page-${page.id}-title`}>
+          {page.title}
+        </h1>
         <div className="page-sections">
           {page.sectionIds.map((sid) => (
             <Section key={sid} section={SECTION_BY_ID[sid]} />

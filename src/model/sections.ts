@@ -33,9 +33,10 @@ export interface FieldDef {
   /** Optional sub-heading rendered once before a run of fields sharing this label. */
   group?: string;
   /**
-   * Placeholder / background-hint text shown in the empty field — the form's own
-   * per-field guidance (the PDF tooltip question, or the faint in-field hint).
-   * Coded fields fall back to their code-list prompt when this is omitted.
+   * The form's own per-field guidance (the PDF tooltip question / faint in-field
+   * hint). Retained as reference data extracted from the original card, but no
+   * longer surfaced in the UI — the on-screen card mirrors the printed card's
+   * clean blank boxes (the in-field hint text was removed by request).
    */
   hint?: string;
 }
