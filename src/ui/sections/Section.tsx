@@ -27,6 +27,7 @@ export function Section({ section }: { section: SectionDef }): ReactElement {
       <h2 className="section-title" id={`${section.id}-title`}>
         {section.title}
       </h2>
+      {section.caption && <p className="sec-caption">{section.caption}</p>}
       {body}
     </section>
   );

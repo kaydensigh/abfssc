@@ -2,6 +2,7 @@ export type { Align, RenderOptions, Span, Suit } from "./types.ts";
 export { renderCoded, renderPlain } from "./engine.ts";
 export { CodedText, renderSpans } from "./toReact.tsx";
 export type { CodedTextProps } from "./toReact.tsx";
+export { SuitText, colorizeSuits } from "./SuitText.tsx";
 export {
   DEFAULT_COLOR,
   PALETTE_HEX,

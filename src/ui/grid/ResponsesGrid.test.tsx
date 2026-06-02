@@ -13,7 +13,9 @@ describe("§8 responses grid", () => {
   it("renders the response and Other columns", () => {
     expect(screen.queryByRole("columnheader", { name: "Other" })).toBeNull(); // not yet rendered
     render(<ResponsesGrid />);
-    expect(screen.getByRole("columnheader", { name: "1♦" })).toBeInTheDocument();
+    // Suit glyphs carry a VS-15 (text-presentation) char so CSS colour applies,
+    // so match the header by substring rather than exact accessible name.
+    expect(screen.getByRole("columnheader", { name: /1♦/ })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Other" })).toBeInTheDocument();
   });
 

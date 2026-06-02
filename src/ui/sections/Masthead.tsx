@@ -3,8 +3,8 @@ import type { FieldDef, SectionDef } from "../../model/index.ts";
 import { useCardStore } from "../../state/index.ts";
 import { CheckboxField, ClassificationSwatch, TextField } from "../fields/index.ts";
 
-/** The masthead band: partnership, basic system, classification + system flags,
- *  and the revision — laid out like the printed card's front-cover header. */
+/** The masthead band: partnership (ABF Nos. / & Names:), basic system, the
+ *  classification + system flags — laid out like the printed card's front cover. */
 export function Masthead({ section }: { section: SectionDef }): ReactElement {
   const byKey = (k: string): FieldDef => section.fields.find((f) => f.key === k)!;
   const primary = useCardStore((s) => s.card.primaryPlayer);
@@ -21,10 +21,10 @@ export function Masthead({ section }: { section: SectionDef }): ReactElement {
         </div>
         <div className="player-row">
           <TextField def={byKey("PlayerNo_A")} />
-          <TextField def={byKey("PlayerName_A")} />
+          <TextField def={byKey("PlayerNo_B")} />
         </div>
         <div className="player-row">
-          <TextField def={byKey("PlayerNo_B")} />
+          <TextField def={byKey("PlayerName_A")} />
           <TextField def={byKey("PlayerName_B")} />
         </div>
         <div className="field-grid">
@@ -38,7 +38,6 @@ export function Masthead({ section }: { section: SectionDef }): ReactElement {
         <ClassificationSwatch />
         <div className="mast-flags">
           <CheckboxField def={byKey("IsBrownSticker")} />
-          <CheckboxField def={byKey("OneNTMayHave5Major")} />
           <CheckboxField def={byKey("IsCanape")} />
         </div>
       </div>

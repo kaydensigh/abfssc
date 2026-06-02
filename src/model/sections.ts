@@ -29,6 +29,12 @@ export interface FieldDef {
   width?: FieldWidth;
   /** Optional sub-heading rendered once before a run of fields sharing this label. */
   group?: string;
+  /**
+   * Placeholder / background-hint text shown in the empty field — the form's own
+   * per-field guidance (the PDF tooltip question, or the faint in-field hint).
+   * Coded fields fall back to their code-list prompt when this is omitted.
+   */
+  hint?: string;
 }
 
 /** A vs-NT / vs-suit field pair for the §5 two-column layout. */
@@ -36,6 +42,10 @@ export interface FieldPair {
   label: string;
   ntKey: string;
   sKey: string;
+  /** Optional sub-heading rendered once before a run of pairs sharing this label. */
+  group?: string;
+  /** Faint in-row hint after the label (the PDF's "Sequences:" / "on … lead:"). */
+  note?: string;
 }
 
 export type SectionLayout = "generic" | "masthead" | "grid" | "playPairs";
@@ -45,6 +55,8 @@ export interface SectionDef {
   /** 1..10 for the regulated sections; absent for the masthead. */
   number?: number;
   title: string;
+  /** Faint caption under the title — the PDF's instruction line for the section. */
+  caption?: string;
   layout: SectionLayout;
   /** Fields rendered generically (and enumerated by the empty-card factory). */
   fields: FieldDef[];
@@ -78,117 +90,134 @@ const half: Extra = { width: "half" };
 export const SECTIONS: readonly SectionDef[] = [
   {
     id: "masthead",
-    title: "Players & system",
+    title: "Standard System Card",
+    caption: "Australian Bridge Federation Ltd.",
     layout: "masthead",
+    // PDF front cover: ABF Nos. / & Names: (one column per partner), Basic System,
+    // and the Classification row (Brown Sticker · Green/Blue/Red/Yellow · Canapé).
     fields: [
-      f("PlayerNo_A", "Player A — no.", { kind: "player", width: "half" }),
-      f("PlayerName_A", "Player A — name", { kind: "player", width: "half" }),
-      f("PlayerNo_B", "Player B — no.", { kind: "player", width: "half" }),
-      f("PlayerName_B", "Player B — name", { kind: "player", width: "half" }),
-      f("BasicSystem", "Basic system"),
-      f("Date_A", "Revision / date"),
-      cb("OneNTMayHave5Major", "1NT may contain a 5-card major"),
-      cb("IsCanape", "Canapé style"),
-      cb("IsBrownSticker", "Brown sticker convention(s)"),
+      f("PlayerNo_A", "ABF no. (you)", { kind: "player", width: "half", hint: "Your ABF number" }),
+      f("PlayerNo_B", "ABF no. (partner)", { kind: "player", width: "half", hint: "Your partner's ABF number" }),
+      f("PlayerName_A", "Name (you)", { kind: "player", width: "half", hint: "Your name" }),
+      f("PlayerName_B", "Name (partner)", { kind: "player", width: "half", hint: "Your partner's name" }),
+      f("BasicSystem", "Basic System"),
+      f("Date_A", "MyRev.", { hint: "Optional revision code — date or version number" }),
+      cb("IsBrownSticker", "Brown Sticker"),
+      cb("IsCanape", "Canapé"),
     ],
   },
   {
     id: "s1",
     number: 1,
-    title: "Opening bids",
+    title: "Opening Bids",
+    caption: "Describe strength, min.length, or specific meaning",
     layout: "generic",
-    // PDF rows: 1♣|1♥, 1♦|1♠, 1NT full, 2♣/2♦/2♥/2♠ full, 2NT|3NT, Other full.
+    // PDF rows: 1♣|1♥, 1♦|1♠, 1NT (+ "may contain 5 card Major"), the boxed
+    // "1NT Responses" block, then 2♣/2♦/2♥/2♠, 2NT|3NT, other.
     fields: [
       f("Open1C", "1♣", half),
       f("Open1H", "1♥", half),
       f("Open1D", "1♦", half),
       f("Open1S", "1♠", half),
       f("Open1NT", "1NT"),
+      cb("OneNTMayHave5Major", "may contain 5 card Major"),
+      f("Resp1NT2CStyle", "2♣", { group: "1NT Responses" }),
+      f("Resp1NT2D", "2♦", { width: "half", group: "1NT Responses" }),
+      f("Resp1NT2S", "2♠", { width: "half", group: "1NT Responses" }),
+      f("Resp1NT2H", "2♥", { width: "half", group: "1NT Responses" }),
+      f("Resp1NT2NT", "2NT", { width: "half", group: "1NT Responses" }),
+      f("Resp1NTDoubled", "(Dbl)", { width: "half", group: "1NT Responses" }),
+      f("Resp1NTOther", "other", { width: "half", group: "1NT Responses", hint: "Add notes about responses to 1NT" }),
       f("Open2C", "2♣"),
       f("Open2D", "2♦"),
       f("Open2H", "2♥"),
       f("Open2S", "2♠"),
       f("Open2NT", "2NT", half),
       f("Open3NT", "3NT", half),
-      f("OpenOther", "Other openings"),
+      f("OpenOther", "other", { hint: "Describe your other opening bids" }),
     ],
   },
   {
     id: "s2",
     number: 2,
-    title: "Pre-alerts",
+    title: "Pre-Alerts",
     layout: "generic",
     // PDF: a summary line over a 2-col × 3-row grid (left = _1_n, right = _2_n).
     fields: [
-      notes("PreAlert_0", "Pre-alert summary"),
-      f("PreAlert_1_1", "Pre-alert 1", half),
-      f("PreAlert_2_1", "Pre-alert 4", half),
-      f("PreAlert_1_2", "Pre-alert 2", half),
-      f("PreAlert_2_2", "Pre-alert 5", half),
-      f("PreAlert_1_3", "Pre-alert 3", half),
-      f("PreAlert_2_3", "Pre-alert 6", half),
+      notes("PreAlert_0", "Pre-alerts", { hint: "Describe your pre-alerts" }),
+      f("PreAlert_1_1", "Pre-alert 1", { width: "half", hint: "Describe your pre-alerts" }),
+      f("PreAlert_2_1", "Pre-alert 4", { width: "half", hint: "Describe your pre-alerts" }),
+      f("PreAlert_1_2", "Pre-alert 2", { width: "half", hint: "Describe your pre-alerts" }),
+      f("PreAlert_2_2", "Pre-alert 5", { width: "half", hint: "Describe your pre-alerts" }),
+      f("PreAlert_1_3", "Pre-alert 3", { width: "half", hint: "Describe your pre-alerts" }),
+      f("PreAlert_2_3", "Pre-alert 6", { width: "half", hint: "Describe your pre-alerts" }),
     ],
   },
   {
     id: "s3",
     number: 3,
-    title: "Competitive bids & overcalls",
+    title: "Competitive Bids / Overcalls",
     layout: "generic",
-    // Reordered into PDF printed-row order (sections.ts previously grouped by topic).
+    // PDF printed-row order. "Negative/Responsive DBL thru" sit in the right
+    // column; the "1NT overcall / immediate cue / Over:" rows pair left|right.
     fields: [
+      f("Doubles_1", "Doubles", { width: "half", hint: "Other doubles and redoubles" }),
+      f("NegXLimit", "Negative DBL thru", { width: "half", hint: "Highest bid where your double is negative (not for penalties)" }),
+      f("Doubles_2", "Other doubles & redoubles", { width: "half", hint: "e.g. support doubles and redoubles" }),
+      f("RespXLimit", "Responsive DBL thru", { width: "half", hint: "Highest bid where your double is responsive (not for penalties)" }),
+      f("JumpOvercall", "Jump overcalls", half),
+      f("UnusualNT", "Unusual NT", half),
+      f("Overcall1NT", "1NT overcall: (immediate)", half),
+      f("Reopen1NT", "(re-opening)", half),
+      f("ImmedCueMinor", "Immediate cue: (minor)", half),
+      f("ImmedCueMajor", "(Major)", half),
+      f("CompeteWeak2", "Over: Weak Twos", { width: "half", hint: "How do you compete over natural weak 2 openings?" }),
+      f("CompeteOpen3", "Opening Threes", { width: "half", hint: "How do you compete over 3-level openings?" }),
+      f("Transfers_1", "Opponent's transfers", { hint: "i.e. over opponent's transfer bids" }),
+      f("Compete1NT_1", "Opponent's 1NT", { hint: "How do you compete over their 1NT opening?" }),
+      f("Compete1NT_2", "Opponent's 1NT (continued)", { hint: "How do you compete over their 1NT opening?" }),
+      f("Compete1NT_3", "Opponent's 1NT (more)", { hint: "How do you compete over their 1NT opening?" }),
       notes("Competitive_0", "Notes"),
-      f("Doubles_1", "Doubles & redoubles", half),
-      f("NegXLimit", "Neg. X limit", half),
-      f("Doubles_2", "More doubles / redoubles"),
-      f("JumpOvercall", "Jump overcall", half),
-      f("UnusualNT", "Unusual notrump", half),
-      f("Overcall1NT", "1NT overcall (direct)", half),
-      f("Reopen1NT", "1NT overcall (re-opening)", half),
-      f("ImmedCueMinor", "Cue of their minor", half),
-      f("ImmedCueMajor", "Cue of their major", half),
-      f("CompeteWeak2", "Defence to weak twos", half),
-      f("CompeteOpen3", "Defence to three-openings", half),
-      f("Transfers_1", "Over their transfers"),
-      f("Compete1NT_1", "Defence to their 1NT (1)"),
-      f("Compete1NT_2", "Defence to their 1NT (2)"),
-      f("Compete1NT_3", "Defence to their 1NT (3)"),
-      f("Over1NTInterf", "Over interference to our 1NT", half),
-      f("Over1NTInterfMore", "Over interference — more", half),
     ],
   },
   {
     id: "s4",
     number: 4,
-    title: "Basic responses",
+    title: "Basic Responses",
     layout: "generic",
+    // PDF: six full-width rows. The "…Other" overflow fields (merged into their
+    // parent's print appearance) follow as extra space, then the notes.
     fields: [
+      f("JumpRaiseMinor", "Jump raises - minors"),
+      f("JumpRaiseMajor", "Jump raises - Majors"),
+      f("MinorJumpShift", "Jump shifts after minor opening"),
+      f("MajorJumpShift", "Jump shifts after Major opening"),
+      f("ResponseStrong2", "Responses to strong 2 suit open.", { hint: "Responses to any strong 2-level suit opening in your system" }),
+      f("Response2NT", "Responses to 2NT opening", { hint: "Describe responses to your opening 2NT bid" }),
+      f("JumpRaiseMinorOther", "Jump raises - minors (more)", { hint: "More space for your minor-suit jump raise" }),
+      f("JumpRaiseMajorOther", "Jump raises - Majors (more)", { hint: "More space for your major-suit jump raise" }),
       notes("BasicResponses_0", "Notes"),
-      f("JumpRaiseMinor", "Jump raise of a minor", half),
-      f("JumpRaiseMinorOther", "Jump raise of a minor — other", half),
-      f("JumpRaiseMajor", "Jump raise of a major", half),
-      f("JumpRaiseMajorOther", "Jump raise of a major — other", half),
-      f("MinorJumpShift", "Jump shift over a minor", half),
-      f("MajorJumpShift", "Jump shift over a major", half),
     ],
   },
   {
     id: "s5",
     number: 5,
-    title: "Play conventions — leads & carding",
+    title: "Play Conventions",
     layout: "playPairs",
-    // Pair order follows the printed card (discards before count; signal last).
+    // PDF columns: Show priorities | Versus Suit (or both) | Versus NoTrump
+    // (if different). The lead agreements are grouped under "Leads".
     pairs: [
-      { label: "Lead from a sequence", ntKey: "SeqLead_NT", sKey: "SeqLead_S" },
-      { label: "Lead from 4+ to an honour", ntKey: "FourHonourLead_NT", sKey: "FourHonourLead_S" },
-      { label: "Lead from four small", ntKey: "FourSmallLead_NT", sKey: "FourSmallLead_S" },
-      { label: "Lead from three small", ntKey: "ThreeSmallLead_NT", sKey: "ThreeSmallLead_S" },
-      { label: "Lead in partner's suit", ntKey: "LeadPartnersSuit_NT", sKey: "LeadPartnersSuit_S" },
-      { label: "Discard signal", ntKey: "DiscardType_NT", sKey: "DiscardType_S" },
-      { label: "Count signal", ntKey: "CountType_NT", sKey: "CountType_S" },
-      { label: "Signal on partner's lead", ntKey: "SignalPartnerLead_NT", sKey: "SignalPartnerLead_S" },
+      { label: "Sequences:", group: "Leads", ntKey: "SeqLead_NT", sKey: "SeqLead_S" },
+      { label: "Four or more with an honour", group: "Leads", ntKey: "FourHonourLead_NT", sKey: "FourHonourLead_S" },
+      { label: "From 4 small", group: "Leads", ntKey: "FourSmallLead_NT", sKey: "FourSmallLead_S" },
+      { label: "From 3 cards (no honour)", group: "Leads", ntKey: "ThreeSmallLead_NT", sKey: "ThreeSmallLead_S" },
+      { label: "In partner's suit", group: "Leads", ntKey: "LeadPartnersSuit_NT", sKey: "LeadPartnersSuit_S" },
+      { label: "Discards", ntKey: "DiscardType_NT", sKey: "DiscardType_S" },
+      { label: "Count", ntKey: "CountType_NT", sKey: "CountType_S" },
+      { label: "Signal", note: "on partner's lead:", ntKey: "SignalPartnerLead_NT", sKey: "SignalPartnerLead_S" },
     ],
     fields: [
-      f("SignalDeclarerLead", "Signal when declarer leads"),
+      f("SignalDeclarerLead", "Signal on declarer's lead:"),
       notes("PlayConventions_0", "Notes"),
       notes("PlayNotes_1", "Play notes 1"),
       notes("PlayNotes_2", "Play notes 2"),
@@ -198,16 +227,17 @@ export const SECTIONS: readonly SectionDef[] = [
   {
     id: "s6",
     number: 6,
-    title: "Slam conventions",
+    title: "Slam Conventions",
     layout: "generic",
+    // PDF: 4♣ Gerber ☐ {when}; 4NT: Blackwood ☐ RKCB; Asking Bids ☐ Cue Bids ☐.
     fields: [
-      cb("IsBlackwood", "Blackwood", half),
-      cb("IsGerber", "Gerber", half),
-      cb("IsCueBids", "Cue bids", half),
-      cb("IsAskingBids", "Asking bids", half),
-      f("GerberWhen", "Gerber applies when"),
-      f("RKCBStyle", "RKCB style", half),
-      f("FourNTOther", "Other uses of 4NT", half),
+      cb("IsGerber", "4♣ Gerber", half),
+      f("GerberWhen", "Gerber applies when", { width: "half", hint: "When is Gerber used?" }),
+      cb("IsBlackwood", "4NT: Blackwood", half),
+      f("RKCBStyle", "RKCB", half),
+      f("FourNTOther", "Other 4NT meanings", { hint: "4NT other meanings?" }),
+      cb("IsAskingBids", "Asking Bids", half),
+      cb("IsCueBids", "Cue Bids", half),
       notes("SlamNotes_1", "Slam notes 1"),
       notes("SlamNotes_2", "Slam notes 2"),
       notes("SlamNotes_3", "Slam notes 3"),
@@ -216,44 +246,35 @@ export const SECTIONS: readonly SectionDef[] = [
   {
     id: "s7",
     number: 7,
-    title: "Other conventions",
+    title: "Other Conventions",
     layout: "generic",
-    // PDF: a summary note over a 2-col × 5-row grid (left = _1_n, right = _2_n).
+    // PDF: a 2-col × 5-row grid (left = _1_n, right = _2_n) plus overflow notes.
     fields: [
+      f("Other_1_1", "Convention 1", { width: "half", hint: "Space for other conventions" }),
+      f("Other_2_1", "Convention 6", { width: "half", hint: "Space for other conventions" }),
+      f("Other_1_2", "Convention 2", { width: "half", hint: "Space for other conventions" }),
+      f("Other_2_2", "Convention 7", { width: "half", hint: "Space for other conventions" }),
+      f("Other_1_3", "Convention 3", { width: "half", hint: "Space for other conventions" }),
+      f("Other_2_3", "Convention 8", { width: "half", hint: "Space for other conventions" }),
+      f("Other_1_4", "Convention 4", { width: "half", hint: "Space for other conventions" }),
+      f("Other_2_4", "Convention 9", { width: "half", hint: "Space for other conventions" }),
+      f("Other_1_5", "Convention 5", { width: "half", hint: "Space for other conventions" }),
+      f("Other_2_5", "Convention 10", { width: "half", hint: "Space for other conventions" }),
       notes("Other_0", "Notes"),
-      f("Other_1_1", "Convention 1", half),
-      f("Other_2_1", "Convention 6", half),
-      f("Other_1_2", "Convention 2", half),
-      f("Other_2_2", "Convention 7", half),
-      f("Other_1_3", "Convention 3", half),
-      f("Other_2_3", "Convention 8", half),
-      f("Other_1_4", "Convention 4", half),
-      f("Other_2_4", "Convention 9", half),
-      f("Other_1_5", "Convention 5", half),
-      f("Other_2_5", "Convention 10", half),
     ],
   },
   {
     id: "s8",
     number: 8,
-    title: "Responses to opening bids",
+    title: "Responses to Opening Bids",
+    caption: "Describe strength, minimum length, or specific meaning",
     layout: "grid",
-    // The matrix is rendered above these; the coded fields fall into two PDF
-    // blocks (responses to 1NT, then to strong twos / 2NT) plus the notes.
+    // The matrix is rendered above; the only fields are the closing notes (the
+    // 2-level 1NT responses now live in §1, the strong-two responses in §4).
     fields: [
-      f("Resp1NT2CStyle", "2♣ response to 1NT", { group: "Responses to 1NT" }),
-      f("Resp1NT2D", "2♦ response to 1NT", { width: "half", group: "Responses to 1NT" }),
-      f("Resp1NT2S", "2♠ response to 1NT", { width: "half", group: "Responses to 1NT" }),
-      f("Resp1NT2H", "2♥ response to 1NT", { width: "half", group: "Responses to 1NT" }),
-      f("Resp1NT2NT", "2NT response to 1NT", { width: "half", group: "Responses to 1NT" }),
-      f("Resp1NTDoubled", "When our 1NT is doubled", { width: "half", group: "Responses to 1NT" }),
-      f("Resp1NTOther", "Other responses to 1NT", { width: "half", group: "Responses to 1NT" }),
-      f("ResponseStrong2", "Responses to a strong two", { group: "Responses to strong twos & 2NT" }),
-      f("Response2NT", "Responses to 2NT (general)", { group: "Responses to strong twos & 2NT" }),
-      f("RespXLimit", "Responsive double — upper limit", { width: "half", group: "Responses to strong twos & 2NT" }),
-      notes("ResponseNotes_1", "Response notes 1", { group: "Notes" }),
-      notes("ResponseNotes_2", "Response notes 2", { group: "Notes" }),
-      notes("ResponseNotes_3", "Response notes 3", { group: "Notes" }),
+      notes("ResponseNotes_1", "Notes", { group: "Notes", hint: "Space for more notes about responses" }),
+      notes("ResponseNotes_2", "Notes (continued)", { group: "Notes" }),
+      notes("ResponseNotes_3", "Notes (more)", { group: "Notes" }),
     ],
   },
   {
@@ -262,36 +283,38 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Conventions",
     layout: "generic",
     fields: [
+      f("UnusualNoTrump", "Unusual NT:"),
+      f("UnusualNTOther", "Unusual NT — more", { hint: "More space for your unusual NT methods" }),
+      cb("Is4thForcing1Round", "One round", { width: "half", group: "Fourth Suit Forcing" }),
+      cb("Is4thForcingGame", "Game force", { width: "half", group: "Fourth Suit Forcing" }),
+      f("FourthSuitForcing", "Notes", { group: "Fourth Suit Forcing", hint: "Additional notes on your use of 4th suit forcing" }),
+      cb("IsNTCheckback", "NT Checkback", half),
+      f("CheckbackPriorities", "Priorities:", { width: "half", hint: "Priority sequence for checkback replies (e.g. 2-way Checkback, NMF, XYZ)" }),
+      f("Defence3NT", "Defence to 3NT opening", { hint: "How do you bid after an opponent opens 3NT?" }),
+      f("DefenceOpening2", "Defence to Opening Twos", { hint: "Common notes on your defences to opening two bids" }),
+      f("DefenceMulti", "Multi 2♦", { hint: "Describe your defence to multi-two opening bids" }),
+      f("DefenceRCO", "RCO style 2-s", { hint: "Defence to unanchored two-level openings (R=Rank C=Colour O=Odd)" }),
+      f("DefenceOtherTwos", "Other 2-s", { hint: "Describe your defence to other two-level opening bids" }),
+      f("DefenceStrongC_1", "(1♣) :", { group: "Defence to strong 1♣ / 2♣", hint: "Replace with your defence to strong 1♣ openings" }),
+      f("DefenceStrongC_2", "(1♣) — more", { group: "Defence to strong 1♣ / 2♣", hint: "More space for your defence to strong 1♣" }),
+      f("DefenceStrongC_3", "(2♣) :", { group: "Defence to strong 1♣ / 2♣", hint: "Your defence to strong 2♣ openings" }),
+      f("DefenceStrongC_4", "(2♣) — more", { group: "Defence to strong 1♣ / 2♣", hint: "More space for your defence to strong 2♣" }),
+      f("Over1NTInterf", "Over 1NT Interference"),
+      f("Over1NTInterfMore", "Over 1NT Interference — more", { hint: "More space for methods after interference over your 1NT" }),
+      f("LebensohlOther", "Lebensohl - other uses", { hint: "Other uses of lebensohl (e.g. vs 2-level openings)" }),
+      f("TakeOutOf4C4D", "Take out of 4 level pre-empts — 4♣/4♦", { hint: "Takeout after a 4-minor opening (e.g. DBL and/or 4NT)" }),
+      f("TakeOutOf4H", "4♥", { width: "half", hint: "Takeout after 4♥ (e.g. DBL and/or 4NT)" }),
+      f("TakeOutOf4S", "4♠", { width: "half", hint: "Takeout after 4♠ (e.g. DBL and/or 4NT)" }),
       notes("Conventions_0", "Notes"),
-      f("UnusualNoTrump", "Unusual notrump (detail)"),
-      f("UnusualNTOther", "Unusual notrump — other"),
-      f("FourthSuitForcing", "Fourth suit forcing"),
-      cb("Is4thForcing1Round", "4SF — forcing one round", half),
-      cb("Is4thForcingGame", "4SF — forcing to game", half),
-      f("CheckbackPriorities", "Checkback priorities"),
-      cb("IsNTCheckback", "NT checkback"),
-      f("Defence3NT", "Defence to 3NT openings"),
-      f("DefenceOpening2", "Defence to two-openings"),
-      f("DefenceMulti", "Defence to Multi 2♦"),
-      f("DefenceRCO", "Defence to RCO twos"),
-      f("DefenceOtherTwos", "Defence to other twos"),
-      f("DefenceStrongC_1", "Defence to strong ♣ (1)"),
-      f("DefenceStrongC_2", "Defence to strong ♣ (2)"),
-      f("DefenceStrongC_3", "Defence to strong ♣ (3)"),
-      f("DefenceStrongC_4", "Defence to strong ♣ (4)"),
-      f("LebensohlOther", "Lebensohl / other"),
-      f("TakeOutOf4C4D", "Takeout of 4♣ / 4♦"),
-      f("TakeOutOf4H", "Takeout of 4♥", half),
-      f("TakeOutOf4S", "Takeout of 4♠", half),
     ],
   },
   {
     id: "s10",
     number: 10,
-    title: "Other notes",
+    title: "Other Notes",
     layout: "generic",
     fields: [
-      notes("OtherNotes_0", "Notes 1"),
+      notes("OtherNotes_0", "Notes", { hint: "Space for other notes (e.g. define abbreviations used on this side of the card)" }),
       notes("OtherNotes_1", "Notes 2"),
       notes("OtherNotes_2", "Notes 3"),
       notes("OtherNotes_3", "Notes 4"),

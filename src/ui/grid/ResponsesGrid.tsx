@@ -2,7 +2,7 @@ import { type ReactElement, memo, useCallback, useEffect, useRef, useState } fro
 import { GRID_CELLS, OPENINGS, RESPONSE_BIDS, bidLabel, cellExists, openingLabel } from "../../model/index.ts";
 import type { ResponseBid, SuitOpening } from "../../model/index.ts";
 import { useCardStore } from "../../state/index.ts";
-import { CodedText } from "../../render/index.ts";
+import { CodedText, SuitText } from "../../render/index.ts";
 import { CodedInput } from "../fields/index.ts";
 
 const cellKey = (op: SuitOpening, bid: ResponseBid) => `${op}|${bid}`;
@@ -74,7 +74,9 @@ function AccordionCell({ opening, bid }: { opening: SuitOpening; bid: ResponseBi
   const setResponse = useCardStore((s) => s.setResponse);
   return (
     <div className="field">
-      <label>{bidLabel(bid)}</label>
+      <label>
+        <SuitText>{bidLabel(bid)}</SuitText>
+      </label>
       <CodedInput value={value} onChange={(v) => setResponse(opening, bid, v)} ariaLabel={`${openingLabel(opening)} ${bidLabel(bid)}`} />
     </div>
   );
@@ -162,7 +164,7 @@ export function ResponsesGrid(): ReactElement {
               <th scope="col">Opening</th>
               {RESPONSE_BIDS.map((b) => (
                 <th key={b} scope="col">
-                  {bidLabel(b)}
+                  <SuitText>{bidLabel(b)}</SuitText>
                 </th>
               ))}
             </tr>
@@ -170,7 +172,9 @@ export function ResponsesGrid(): ReactElement {
           <tbody>
             {OPENINGS.map((op) => (
               <tr key={op}>
-                <th scope="row">{openingLabel(op)}</th>
+                <th scope="row">
+                  <SuitText>{openingLabel(op)}</SuitText>
+                </th>
                 {RESPONSE_BIDS.map((b) =>
                   cellExists(op, b) ? (
                     <td key={b}>
@@ -195,7 +199,9 @@ export function ResponsesGrid(): ReactElement {
       <div className="grid-accordion">
         {OPENINGS.map((op) => (
           <details key={op}>
-            <summary>{openingLabel(op)} — responses</summary>
+            <summary>
+              <SuitText>{openingLabel(op)}</SuitText> — responses
+            </summary>
             <div className="acc-body">
               {GRID_CELLS[op].map((bid) => (
                 <AccordionCell key={bid} opening={op} bid={bid} />

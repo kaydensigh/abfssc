@@ -1,5 +1,6 @@
 import { type ReactElement, Fragment } from "react";
 import type { FieldDef } from "../../model/index.ts";
+import { SuitText } from "../../render/index.ts";
 import { CheckboxField, TextField } from "../fields/index.ts";
 
 function renderField(def: FieldDef): ReactElement {
@@ -21,7 +22,11 @@ export function FieldList({ fields }: { fields: readonly FieldDef[] }): ReactEle
         lastGroup = def.group;
         return (
           <Fragment key={def.key}>
-            {head && <h3 className="group-head">{head}</h3>}
+            {head && (
+              <h3 className="group-head">
+                <SuitText>{head}</SuitText>
+              </h3>
+            )}
             {renderField(def)}
           </Fragment>
         );

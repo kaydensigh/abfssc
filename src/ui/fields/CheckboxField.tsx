@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import { useCardStore } from "../../state/index.ts";
 import { type CardFlags, type FieldDef, fieldWidth } from "../../model/index.ts";
+import { SuitText } from "../../render/index.ts";
 
 /** A boolean agreement bound to Card.flags[key] (a text "checkbox" in the PDF). */
 export function CheckboxField({ def }: { def: FieldDef }): ReactElement {
@@ -10,7 +11,9 @@ export function CheckboxField({ def }: { def: FieldDef }): ReactElement {
   return (
     <label className={`checkbox ${fieldWidth(def)}`}>
       <input type="checkbox" checked={checked} onChange={(e) => setFlag(key, e.target.checked)} />
-      <span>{def.label}</span>
+      <span>
+        <SuitText>{def.label}</SuitText>
+      </span>
     </label>
   );
 }
