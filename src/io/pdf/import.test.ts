@@ -5,7 +5,15 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { PDFDocument } from "pdf-lib";
-import { createEmptyCard, type Card } from "../../model/index.ts";
+import {
+  createEmptyCard,
+  allTextFieldKeys,
+  FLAG_KEYS,
+  OPENINGS,
+  GRID_CELLS,
+  type Card,
+  type ResponseBid,
+} from "../../model/index.ts";
 import { buildCardPdf } from "./export.ts";
 import { importCardFromPdf } from "./import.ts";
 
@@ -33,6 +41,27 @@ function populated(): Card {
   return card;
 }
 
+/**
+ * Every field, flag, and grid cell carrying a DISTINCT value — so the round-trip
+ * proves each one has a real editable home and maps to/from the right name. (The
+ * `populated()` card above only fills a handful, so an empty field's "" → "" hides
+ * a silently-dropped or mis-named field; this card cannot.)
+ */
+function fullyPopulated(): Card {
+  const card = createEmptyCard({ id: "22222222-2222-4222-8222-222222222222", now: NOW });
+  for (const key of allTextFieldKeys()) card.fields[key] = `v ${key}`;
+  for (const flag of FLAG_KEYS) card.flags[flag] = true;
+  card.classification = "yellow";
+  for (const opening of OPENINGS) {
+    const row: Partial<Record<ResponseBid, string>> = {};
+    for (const bid of GRID_CELLS[opening]) row[bid] = `r ${opening} ${bid}`;
+    card.responses[opening] = row;
+  }
+  card.settings.checkboxStyle = "cross";
+  card.settings.suitColours = false;
+  return card;
+}
+
 describe("importCardFromPdf — the M1+M2 round-trip contract", () => {
   it("re-imports our own export losslessly (export → import deep-equals)", async () => {
     const card = populated();
@@ -40,6 +69,14 @@ describe("importCardFromPdf — the M1+M2 round-trip contract", () => {
     const { card: back, stampPresent } = await importCardFromPdf(bytes);
     expect(stampPresent).toBe(true);
     expect(back).toEqual(card); // THE gate: nothing lost across the round-trip
+  });
+
+  it("round-trips EVERY field, flag, and grid cell with a distinct value", async () => {
+    const card = fullyPopulated();
+    const { bytes, warnings } = await buildCardPdf(card, TEMPLATE.slice(0), { now: NOW });
+    const { card: back } = await importCardFromPdf(bytes);
+    expect(back).toEqual(card); // no field silently dropped, mis-named, or swapped
+    expect(warnings).toEqual([]); // …and every field has a real editable + D_ home
   });
 
   it("recovers identity/version/settings from the app-state stamp", async () => {
