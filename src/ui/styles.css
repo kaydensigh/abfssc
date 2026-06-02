@@ -262,23 +262,52 @@ section.card-section {
   border-top: 0;
   padding-top: 0;
 }
-section.card-section > .sec-eyebrow {
-  font-size: 12px;
-  letter-spacing: 0.12em;
+/* Numbered sections: a themed banner bar (number badge + title; caption trails). */
+section.card-section > .section-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 7px 14px;
+  background: var(--blue);
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 700;
   text-transform: uppercase;
-  color: var(--blue);
-  margin: 0 0 2px;
+  letter-spacing: 0.04em;
 }
-section.card-section > .section-title {
-  font-size: 19px;
-  font-weight: 600;
-  margin: 0 0 12px;
+section.card-section > .section-banner .sec-num {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 13px;
+}
+section.card-section > .section-banner .sec-cap {
+  margin-left: auto;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.88);
+  text-align: right;
+}
+/* Masthead cover title (no section number). */
+section.card-section > .section-cover {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 2px;
 }
 section.card-section > .sec-caption {
   font-size: 13px;
   font-style: italic;
   color: var(--muted);
-  margin: -8px 0 12px;
+  margin: 0 0 14px;
 }
 
 /* ---- Storage indicator (icon button + popover) -------------------------- */
@@ -381,15 +410,13 @@ section.card-section > .sec-caption {
 /* ---- Form rows: span-aware 2-col grid ----------------------------------- */
 .field-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 20px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 18px;
   row-gap: 0;
 }
-.field-grid > .full {
-  grid-column: 1 / -1;
-}
-.field-grid > .half {
-  grid-column: span 1;
+/* Each field claims `span` of the 12 columns (set inline as --span); default 12. */
+.field-grid > .field {
+  grid-column: span var(--span, 12);
 }
 .group-head {
   grid-column: 1 / -1;
@@ -398,30 +425,53 @@ section.card-section > .sec-caption {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--blue);
-  margin: 18px 0 4px;
+  margin: 14px 0 2px;
 }
 .group-head:first-child {
-  margin-top: 4px;
+  margin-top: 2px;
+}
+/* A boxed sub-group (the PDF's "1NT Responses" / "Defence to strong" panels). */
+.group-box {
+  grid-column: 1 / -1;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  margin: 8px 0;
+  padding: 2px 12px 8px;
+  min-inline-size: 0; /* let the inner grid shrink (fieldset min-content quirk) */
+}
+.group-box > legend {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--blue);
+  padding: 0 6px;
 }
 
-/* A field is a ruled row, not a card. Label stacks above the value by default
-   (mobile + untagged); full-width fields go label-left on wider screens. */
+/* A field is a ruled row: label in an intrinsic-width gutter on the left, the
+   click-to-edit control filling the rest — mirroring the printed card. */
 .field {
   display: grid;
-  grid-template-columns: 1fr;
-  row-gap: 3px;
-  padding: 8px 2px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  padding: 6px 2px;
   border-bottom: 1px solid var(--line);
 }
-.field.coded {
-  border-left: 3px solid var(--blue);
-  padding-left: 9px;
+.field.no-label {
+  grid-template-columns: minmax(0, 1fr);
+}
+.field.multiline {
+  align-items: start;
 }
 .field > label {
   font-size: 12.5px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.35;
   color: var(--ink-soft);
+}
+.field.multiline > label {
+  padding-top: 6px;
 }
 .field-display {
   width: 100%;
@@ -473,19 +523,6 @@ section.card-section > .sec-caption {
   text-transform: uppercase;
   color: var(--muted);
   margin-right: 6px;
-}
-
-@media (min-width: 721px) {
-  /* full-width rows: label in a fixed gutter, value fills the rest */
-  .field.full {
-    grid-template-columns: var(--label-col) minmax(0, 1fr);
-    column-gap: 14px;
-    row-gap: 0;
-    align-items: start;
-  }
-  .field.full > label {
-    padding-top: 6px;
-  }
 }
 
 /* ---- Markup toolbar ----------------------------------------------------- */
@@ -551,22 +588,22 @@ section.card-section > .sec-caption {
 }
 
 /* ---- Checkbox & classification ------------------------------------------ */
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 12px;
-  margin: 5px 0;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+/* Checkbox field: label on the left, box to its right (like the print). It also
+   carries the .field class, so it inherits the ruled-row chrome. */
+.checkbox-field {
+  grid-template-columns: minmax(0, 1fr) auto;
   cursor: pointer;
-  align-self: start;
 }
-.checkbox input {
+.checkbox-field .lbl {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.checkbox-field input {
   width: 18px;
   height: 18px;
   accent-color: var(--blue);
+  justify-self: end;
 }
 .classification {
   display: flex;
@@ -616,13 +653,19 @@ section.card-section > .sec-caption {
   align-items: center;
   margin-bottom: 6px;
 }
-.player-row {
+/* Two rows of [row-label][ABF number][name] — the printed cover layout. */
+.abf-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: auto 5.5em minmax(0, 1fr);
   column-gap: 12px;
+  align-items: center;
 }
-.player-row .field {
-  border-bottom: 0;
+.abf-grid .row-lbl {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.abf-grid .field {
   padding: 6px 0;
 }
 .col-head {
@@ -726,88 +769,39 @@ section.card-section > .sec-caption {
   border: 0;
 }
 
-/* ---- §8 response grid --------------------------------------------------- */
-.grid-wrap {
-  overflow-x: auto;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+/* ---- §8 response blocks (one per opening, 3 sub-columns) ---------------- */
+.response-blocks {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 8px;
 }
-table.responses {
-  border-collapse: collapse;
-  font-size: 12.5px;
-  min-width: 720px;
-}
-table.responses th,
-table.responses td {
-  border: 1px solid var(--line);
-  padding: 0;
-  vertical-align: top;
-}
-table.responses thead th {
-  position: sticky;
-  top: 0;
-  background: var(--paper-2);
-  padding: 5px 8px;
-  font-weight: 700;
-  white-space: nowrap;
-  z-index: 2;
-}
-table.responses tbody th {
-  position: sticky;
-  left: 0;
-  background: var(--paper-2);
-  padding: 5px 10px;
-  text-align: left;
-  white-space: nowrap;
-  z-index: 1;
-}
-table.responses td.hole {
-  background: repeating-linear-gradient(45deg, #f6f3ec, #f6f3ec 4px, #f0ece2 4px, #f0ece2 8px);
-}
-table.responses td .cell-display {
-  min-height: 28px;
-  padding: 3px 6px;
-  cursor: text;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: 0;
-  font: inherit;
-}
-table.responses td input {
-  width: 100%;
-  border: 1px solid var(--focus);
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 3px 4px;
-}
-
-/* ---- Mobile accordion for the grid ------------------------------------- */
-.grid-accordion {
-  display: none;
-}
-.grid-accordion details {
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  margin-bottom: 8px;
-  background: var(--card);
-}
-.grid-accordion summary {
-  padding: 10px 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.grid-accordion .acc-body {
-  padding: 4px 12px 12px;
+.response-block {
   display: grid;
-  gap: 8px;
+  grid-template-columns: 2.5em minmax(0, 1fr);
+  column-gap: 10px;
+  align-items: start;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
 }
-.grid-accordion .acc-body .field {
-  padding: 8px 0;
+.response-block:first-child {
+  border-top: 0;
 }
-.grid-accordion .acc-body .field:last-child {
-  border-bottom: 0;
+.response-block > .rb-open {
+  font-weight: 700;
+  font-size: 15px;
+  padding-top: 5px;
+}
+.rb-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 16px;
+}
+.rb-cell {
+  padding: 3px 2px;
+  column-gap: 8px;
+}
+.rb-cell > label {
+  min-width: 2.4em;
 }
 
 @media (max-width: 900px) {
@@ -841,18 +835,27 @@ table.responses td input {
     gap: 24px;
   }
 
+  /* Every field claims the full width; spans collapse to one column. */
   .field-grid {
     grid-template-columns: 1fr;
     column-gap: 0;
   }
-  .field-grid > .full,
-  .field-grid > .half {
+  .field-grid > .field {
     grid-column: 1 / -1;
   }
 
   .masthead-form {
     grid-template-columns: 1fr;
     gap: 18px;
+  }
+  /* §8 blocks: stack the opening label above its single response column. */
+  .response-block {
+    grid-template-columns: 1fr;
+    row-gap: 4px;
+  }
+  .rb-cols {
+    grid-template-columns: 1fr;
+    column-gap: 0;
   }
 
   /* §5 pairs collapse: stack the two inputs and re-show their labels */
@@ -878,12 +881,5 @@ table.responses td input {
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--muted);
-  }
-
-  .grid-wrap {
-    display: none;
-  }
-  .grid-accordion {
-    display: block;
   }
 }

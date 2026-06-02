@@ -22,8 +22,8 @@ export {
   gridFieldName,
 } from "./grid.ts";
 
-export type { FieldDef, FieldKind, FieldPair, FieldWidth, SectionDef, SectionLayout } from "./sections.ts";
-export { SECTIONS, SECTION_BY_ID, fieldKind, fieldWidth, allTextFieldKeys } from "./sections.ts";
+export type { FieldDef, FieldKind, FieldPair, SectionDef, SectionLayout } from "./sections.ts";
+export { SECTIONS, SECTION_BY_ID, fieldKind, fieldSpan, allTextFieldKeys } from "./sections.ts";
 
 export type { PageDef } from "./pages.ts";
 export { PAGES, PAGE_BY_ID } from "./pages.ts";

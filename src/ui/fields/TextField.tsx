@@ -1,11 +1,13 @@
-import type { ReactElement } from "react";
+import type { CSSProperties, ReactElement } from "react";
 import { useCardStore } from "../../state/index.ts";
-import { type FieldDef, fieldKind, fieldWidth } from "../../model/index.ts";
+import { type FieldDef, fieldKind, fieldSpan } from "../../model/index.ts";
 import { CODE_LISTS, codeMap } from "../../content/codelists.ts";
 import { SuitText } from "../../render/index.ts";
 import { CodedInput } from "./CodedInput.tsx";
 
-/** A rich / coded / notes / player text field bound to Card.fields[key]. */
+/** A rich / coded / notes / player text field bound to Card.fields[key].
+ *  Laid out label-left: the label sits in an intrinsic-width gutter, the control
+ *  fills the rest. The field claims `span` of its parent grid's 12 columns. */
 export function TextField({ def }: { def: FieldDef }): ReactElement {
   const kind = fieldKind(def);
   const value = useCardStore((s) => s.card.fields[def.key] ?? "");
@@ -16,9 +18,11 @@ export function TextField({ def }: { def: FieldDef }): ReactElement {
   // Background hint: the field's own PDF guidance (def.hint) wins; coded fields
   // fall back to their code-list prompt.
   const placeholder = def.hint ?? list?.prompt;
+  const style = { "--span": fieldSpan(def) } as CSSProperties;
+  const className = `field${def.labelHidden ? " no-label" : ""}${multiline ? " multiline" : ""}`;
   return (
-    <div className={`field ${fieldWidth(def)}${isCoded ? " coded" : ""}`}>
-      <label>
+    <div className={className} style={style}>
+      <label className={def.labelHidden ? "visually-hidden" : undefined}>
         <SuitText>{def.label}</SuitText>
       </label>
       <CodedInput

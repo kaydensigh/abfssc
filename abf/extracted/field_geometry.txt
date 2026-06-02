@@ -1,0 +1,903 @@
+===== PAGE 1  (842 x 595 pt) =====
+  --- row @top≈10 ---
+    Z_MyClass                    x=786..829 w= 43 (5% pg) (inherited)
+    BasicResponses_0             x=190..410 w=220 (26% pg) /Tx
+    D_BasicResponses_0           x=190..410 w=220 (26% pg) /Tx
+    Z_Sticker                    x=749..783 w= 34 (4% pg) (inherited)
+  --- row @top≈27 ---
+    JumpRaiseMinor               x= 82..411 w=329 (39% pg) /Tx
+    D_JumpRaiseMinor             x= 82..411 w=329 (39% pg) /Tx
+  --- row @top≈43 ---
+    JumpRaiseMajor               x= 82..411 w=329 (39% pg) /Tx
+    D_JumpRaiseMajor             x= 82..411 w=329 (39% pg) /Tx
+  --- row @top≈53 ---
+    V_PlayerNo_A                 x=488..546 w= 58 (7% pg) /Tx
+    V_PlayerName_A               x=551..832 w=281 (33% pg) /Tx
+    PlayerNo_A                   x=489..545 w= 56 (7% pg) /Tx
+    D_PlayerNo_A                 x=489..545 w= 56 (7% pg) /Tx
+    PlayerName_A                 x=552..831 w=279 (33% pg) /Tx
+    D_PlayerName_A               x=552..831 w=279 (33% pg) /Tx
+    MinorJumpShift               x=117..410 w=293 (35% pg) /Tx
+    D_MinorJumpShift             x=117..410 w=293 (35% pg) /Tx
+    A_JN                         x= 60..804 w=744 (88% pg) /Tx
+  --- row @top≈69 ---
+    V_PlayerName_B               x=551..832 w=281 (33% pg) /Tx
+    PlayerNo_B                   x=489..545 w= 56 (7% pg) /Tx
+    D_PlayerNo_B                 x=489..545 w= 56 (7% pg) /Tx
+    PlayerName_B                 x=552..831 w=279 (33% pg) /Tx
+    D_PlayerName_B               x=552..831 w=279 (33% pg) /Tx
+    MajorJumpShift               x=117..410 w=293 (35% pg) /Tx
+    D_MajorJumpShift             x=117..410 w=293 (35% pg) /Tx
+  --- row @top≈85 ---
+    V_BasicSystem                x=496..832 w=336 (40% pg) /Tx
+    BasicSystem                  x=497..831 w=334 (40% pg) /Tx
+    D_BasicSystem                x=497..831 w=334 (40% pg) /Tx
+    ResponseStrong2              x=117..410 w=293 (35% pg) /Tx
+    D_ResponseStrong2            x=117..410 w=293 (35% pg) /Tx
+  --- row @top≈99 ---
+    Q_Brown                      x=492..510 w= 18 (2% pg) /Tx
+    Q_Green                      x=625..643 w= 18 (2% pg) /Tx
+    Q_Blue                       x=684..702 w= 18 (2% pg) /Tx
+    Q_Red                        x=745..763 w= 18 (2% pg) /Tx
+    Q_Yellow                     x=808..826 w= 18 (2% pg) /Tx
+  --- row @top≈106 ---
+    Response2NT                  x=117..410 w=293 (35% pg) /Tx
+    D_Response2NT                x=117..410 w=293 (35% pg) /Tx
+  --- row @top≈116 ---
+    B_IsCanape                   x=813..827 w= 14 (2% pg) /Tx
+  --- row @top≈123 ---
+    PlayConventions_0            x=200..410 w=210 (25% pg) /Tx
+    D_PlayConventions_0          x=200..410 w=210 (25% pg) /Tx
+  --- row @top≈131 ---
+    Open1C                       x=447..628 w=181 (21% pg) /Tx
+    D_Open1C                     x=447..628 w=181 (21% pg) /Tx
+    Open1H                       x=650..831 w=181 (21% pg) /Tx
+    D_Open1H                     x=650..831 w=181 (21% pg) /Tx
+  --- row @top≈147 ---
+    Open1D                       x=447..628 w=181 (21% pg) /Tx
+    D_Open1D                     x=447..628 w=181 (21% pg) /Tx
+    Open1S                       x=650..831 w=181 (21% pg) /Tx
+    D_Open1S                     x=650..831 w=181 (21% pg) /Tx
+    SeqLead_S                    x=111..258 w=147 (17% pg) /Tx
+    D_SeqLead_S                  x=111..258 w=147 (17% pg) /Tx
+    SeqLead_NT                   x=264..411 w=147 (17% pg) /Tx
+    D_SeqLead_NT                 x=264..411 w=147 (17% pg) /Tx
+  --- row @top≈162 ---
+    Open1NT                      x=453..713 w=260 (31% pg) /Tx
+    D_Open1NT                    x=453..713 w=260 (31% pg) /Tx
+    B_OneNTMayHave5Major         x=811..825 w= 14 (2% pg) /Tx
+    FourHonourLead_S             x=111..258 w=147 (17% pg) /Tx
+    D_FourHonourLead_S           x=111..258 w=147 (17% pg) /Tx
+    FourHonourLead_NT            x=264..411 w=147 (17% pg) /Tx
+    D_FourHonourLead_NT          x=264..411 w=147 (17% pg) /Tx
+  --- row @top≈180 ---
+    Resp1NT2CStyle               x=514..829 w=315 (37% pg) /Tx
+    D_Resp1NT2CStyle             x=514..829 w=315 (37% pg) /Tx
+    FourSmallLead_S              x=111..258 w=147 (17% pg) /Tx
+    D_FourSmallLead_S            x=111..258 w=147 (17% pg) /Tx
+    FourSmallLead_NT             x=264..411 w=147 (17% pg) /Tx
+    D_FourSmallLead_NT           x=264..411 w=147 (17% pg) /Tx
+  --- row @top≈196 ---
+    Resp1NT2D                    x=458..632 w=174 (21% pg) /Tx
+    D_Resp1NT2D                  x=458..632 w=174 (21% pg) /Tx
+    Resp1NT2S                    x=655..829 w=174 (21% pg) /Tx
+    D_Resp1NT2S                  x=655..829 w=174 (21% pg) /Tx
+    ThreeSmallLead_S             x=111..258 w=147 (17% pg) /Tx
+    D_ThreeSmallLead_S           x=111..258 w=147 (17% pg) /Tx
+    ThreeSmallLead_NT            x=264..411 w=147 (17% pg) /Tx
+    D_ThreeSmallLead_NT          x=264..411 w=147 (17% pg) /Tx
+  --- row @top≈212 ---
+    Resp1NT2H                    x=458..632 w=174 (21% pg) /Tx
+    D_Resp1NT2H                  x=458..632 w=174 (21% pg) /Tx
+    Resp1NT2NT                   x=655..829 w=174 (21% pg) /Tx
+    D_Resp1NT2NT                 x=655..829 w=174 (21% pg) /Tx
+    LeadPartnersSuit_S           x=111..258 w=147 (17% pg) /Tx
+    D_LeadPartnersSuit_S         x=111..258 w=147 (17% pg) /Tx
+    LeadPartnersSuit_NT          x=264..411 w=147 (17% pg) /Tx
+    D_LeadPartnersSuit_NT        x=264..411 w=147 (17% pg) /Tx
+  --- row @top≈228 ---
+    Resp1NTDoubled               x=455..631 w=176 (21% pg) /Tx
+    D_Resp1NTDoubled             x=455..631 w=176 (21% pg) /Tx
+    Resp1NTOther                 x=653..829 w=176 (21% pg) /Tx
+    D_Resp1NTOther               x=653..829 w=176 (21% pg) /Tx
+    DiscardType_S                x=111..258 w=147 (17% pg) /Tx
+    D_DiscardType_S              x=111..258 w=147 (17% pg) /Tx
+    DiscardType_NT               x=264..411 w=147 (17% pg) /Tx
+    D_DiscardType_NT             x=264..411 w=147 (17% pg) /Tx
+  --- row @top≈247 ---
+    CountType_S                  x=111..258 w=147 (17% pg) /Tx
+    D_CountType_S                x=111..258 w=147 (17% pg) /Tx
+    CountType_NT                 x=264..411 w=147 (17% pg) /Tx
+    D_CountType_NT               x=264..411 w=147 (17% pg) /Tx
+    Open2C                       x=447..831 w=384 (46% pg) /Tx
+    D_Open2C                     x=447..831 w=384 (46% pg) /Tx
+  --- row @top≈262 ---
+    Open2D                       x=447..831 w=384 (46% pg) /Tx
+    D_Open2D                     x=447..831 w=384 (46% pg) /Tx
+    SignalPartnerLead_S          x=111..258 w=147 (17% pg) /Tx
+    D_SignalPartnerLead_S        x=111..258 w=147 (17% pg) /Tx
+    SignalPartnerLead_NT         x=264..411 w=147 (17% pg) /Tx
+    D_SignalPartnerLead_NT       x=264..411 w=147 (17% pg) /Tx
+  --- row @top≈278 ---
+    SignalDeclarerLead           x=111..411 w=300 (36% pg) /Tx
+    D_SignalDeclarerLead         x=111..411 w=300 (36% pg) /Tx
+    Open2H                       x=447..831 w=384 (46% pg) /Tx
+    D_Open2H                     x=447..831 w=384 (46% pg) /Tx
+  --- row @top≈294 ---
+    PlayNotes_1                  x= 41..411 w=370 (44% pg) /Tx
+    D_PlayNotes_1                x= 41..411 w=370 (44% pg) /Tx
+    Open2S                       x=447..831 w=384 (46% pg) /Tx
+    D_Open2S                     x=447..831 w=384 (46% pg) /Tx
+  --- row @top≈309 ---
+    Open2NT                      x=451..628 w=177 (21% pg) /Tx
+    D_Open2NT                    x=451..628 w=177 (21% pg) /Tx
+    Open3NT                      x=654..831 w=177 (21% pg) /Tx
+    D_Open3NT                    x=654..831 w=177 (21% pg) /Tx
+    PlayNotes_2                  x= 10..410 w=400 (48% pg) /Tx
+    D_PlayNotes_2                x= 10..410 w=400 (48% pg) /Tx
+  --- row @top≈325 ---
+    OpenOther                    x=451..831 w=380 (45% pg) /Tx
+    D_OpenOther                  x=451..831 w=380 (45% pg) /Tx
+    PlayNotes_3                  x= 10..410 w=400 (48% pg) /Tx
+    D_PlayNotes_3                x= 10..410 w=400 (48% pg) /Tx
+  --- row @top≈340 ---
+    PreAlert_0                   x=555..831 w=276 (33% pg) /Tx
+    D_PreAlert_0                 x=555..831 w=276 (33% pg) /Tx
+    GerberWhen                   x=275..411 w=136 (16% pg) /Tx
+    D_GerberWhen                 x=275..411 w=136 (16% pg) /Tx
+    B_IsGerber                   x=256..270 w= 14 (2% pg) /Tx
+  --- row @top≈353 ---
+    BoxPA113                     x=429..629 w=200 (24% pg) /Tx
+    BoxPA213                     x=633..833 w=200 (24% pg) /Tx
+    PreAlert_1_1                 x=431..628 w=197 (23% pg) /Tx
+    D_PreAlert_1_1               x=431..628 w=197 (23% pg) /Tx
+    PreAlert_2_1                 x=634..831 w=197 (23% pg) /Tx
+    D_PreAlert_2_1               x=634..831 w=197 (23% pg) /Tx
+    RKCBStyle                    x=127..185 w= 58 (7% pg) /Tx
+    D_RKCBStyle                  x=127..185 w= 58 (7% pg) /Tx
+    FourNTOther                  x=192..410 w=218 (26% pg) /Tx
+    D_FourNTOther                x=192..410 w=218 (26% pg) /Tx
+    B_IsBlackwood                x= 77.. 91 w= 14 (2% pg) /Tx
+  --- row @top≈369 ---
+    BoxPA123                     x=429..629 w=200 (24% pg) /Tx
+    BoxPA223                     x=633..833 w=200 (24% pg) /Tx
+    PreAlert_1_2                 x=431..628 w=197 (23% pg) /Tx
+    D_PreAlert_1_2               x=431..628 w=197 (23% pg) /Tx
+    PreAlert_2_2                 x=634..831 w=197 (23% pg) /Tx
+    D_PreAlert_2_2               x=634..831 w=197 (23% pg) /Tx
+    SlamNotes_1                  x=136..410 w=274 (33% pg) /Tx
+    D_SlamNotes_1                x=136..410 w=274 (33% pg) /Tx
+    B_IsAskingBids               x= 52.. 66 w= 14 (2% pg) /Tx
+    B_IsCueBids                  x=118..132 w= 14 (2% pg) /Tx
+  --- row @top≈386 ---
+    PreAlert_1_3                 x=431..628 w=197 (23% pg) /Tx
+    D_PreAlert_1_3               x=431..628 w=197 (23% pg) /Tx
+    PreAlert_2_3                 x=634..831 w=197 (23% pg) /Tx
+    D_PreAlert_2_3               x=634..831 w=197 (23% pg) /Tx
+    SlamNotes_2                  x= 10..410 w=400 (48% pg) /Tx
+    D_SlamNotes_2                x= 10..410 w=400 (48% pg) /Tx
+  --- row @top≈404 ---
+    SlamNotes_3                  x= 10..410 w=400 (48% pg) /Tx
+    D_SlamNotes_3                x= 10..410 w=400 (48% pg) /Tx
+    Competitive_0                x=655..831 w=176 (21% pg) /Tx
+    D_Competitive_0              x=655..831 w=176 (21% pg) /Tx
+  --- row @top≈419 ---
+    Other_0                      x=213..411 w=198 (24% pg) /Tx
+    D_Other_0                    x=213..411 w=198 (24% pg) /Tx
+    Doubles_1                    x=466..718 w=252 (30% pg) /Tx
+    D_Doubles_1                  x=466..718 w=252 (30% pg) /Tx
+    NegXLimit                    x=787..831 w= 44 (5% pg) /Tx
+    D_NegXLimit                  x=787..831 w= 44 (5% pg) /Tx
+  --- row @top≈434 ---
+    BoxOC115                     x=  9..210 w=201 (24% pg) /Tx
+    BoxOC215                     x=212..413 w=201 (24% pg) /Tx
+    Other_1_1                    x= 10..207 w=197 (23% pg) /Tx
+    D_Other_1_1                  x= 10..207 w=197 (23% pg) /Tx
+    Other_2_1                    x=214..411 w=197 (23% pg) /Tx
+    D_Other_2_1                  x=214..411 w=197 (23% pg) /Tx
+    Doubles_2                    x=431..719 w=288 (34% pg) /Tx
+    D_Doubles_2                  x=431..719 w=288 (34% pg) /Tx
+    RespXLimit                   x=796..831 w= 35 (4% pg) /Tx
+    D_RespXLimit                 x=796..831 w= 35 (4% pg) /Tx
+  --- row @top≈451 ---
+    Other_1_2                    x= 10..207 w=197 (23% pg) /Tx
+    D_Other_1_2                  x= 10..207 w=197 (23% pg) /Tx
+    Other_2_2                    x=214..411 w=197 (23% pg) /Tx
+    D_Other_2_2                  x=214..411 w=197 (23% pg) /Tx
+    JumpOvercall                 x=484..641 w=157 (19% pg) /Tx
+    D_JumpOvercall               x=484..641 w=157 (19% pg) /Tx
+    UnusualNT                    x=701..832 w=131 (16% pg) /Tx
+    D_UnusualNT                  x=701..832 w=131 (16% pg) /Tx
+  --- row @top≈466 ---
+    Other_1_3                    x= 10..207 w=197 (23% pg) /Tx
+    D_Other_1_3                  x= 10..207 w=197 (23% pg) /Tx
+    Other_2_3                    x=214..411 w=197 (23% pg) /Tx
+    D_Other_2_3                  x=214..411 w=197 (23% pg) /Tx
+    Overcall1NT                  x=518..649 w=131 (16% pg) /Tx
+    D_Overcall1NT                x=518..649 w=131 (16% pg) /Tx
+    Reopen1NT                    x=700..831 w=131 (16% pg) /Tx
+    D_Reopen1NT                  x=700..831 w=131 (16% pg) /Tx
+  --- row @top≈482 ---
+    Other_1_4                    x= 10..207 w=197 (23% pg) /Tx
+    D_Other_1_4                  x= 10..207 w=197 (23% pg) /Tx
+    Other_2_4                    x=214..411 w=197 (23% pg) /Tx
+    D_Other_2_4                  x=214..411 w=197 (23% pg) /Tx
+    ImmedCueMinor                x=512..655 w=143 (17% pg) /Tx
+    D_ImmedCueMinor              x=512..655 w=143 (17% pg) /Tx
+    ImmedCueMajor                x=688..831 w=143 (17% pg) /Tx
+    D_ImmedCueMajor              x=688..831 w=143 (17% pg) /Tx
+  --- row @top≈498 ---
+    Other_1_5                    x= 10..207 w=197 (23% pg) /Tx
+    D_Other_1_5                  x= 10..207 w=197 (23% pg) /Tx
+    Other_2_5                    x=214..411 w=197 (23% pg) /Tx
+    D_Other_2_5                  x=214..411 w=197 (23% pg) /Tx
+    CompeteWeak2                 x=501..617 w=116 (14% pg) /Tx
+    D_CompeteWeak2               x=501..617 w=116 (14% pg) /Tx
+    CompeteOpen3                 x=679..831 w=152 (18% pg) /Tx
+    D_CompeteOpen3               x=679..831 w=152 (18% pg) /Tx
+  --- row @top≈512 ---
+    BoxMN14                      x=150..413 w=263 (31% pg) /Tx
+    MoreNotes_1                  x=152..411 w=259 (31% pg) /Tx
+    D_MoreNotes_1                x=152..411 w=259 (31% pg) /Tx
+    Transfers_1                  x=506..831 w=325 (39% pg) /Tx
+    D_Transfers_1                x=506..831 w=325 (39% pg) /Tx
+  --- row @top≈529 ---
+    MoreNotes_2                  x=152..411 w=259 (31% pg) /Tx
+    D_MoreNotes_2                x=152..411 w=259 (31% pg) /Tx
+    Compete1NT_1                 x=494..832 w=338 (40% pg) /Tx
+    D_Compete1NT_1               x=494..832 w=338 (40% pg) /Tx
+  --- row @top≈543 ---
+    BoxMN34                      x=150..413 w=263 (31% pg) /Tx
+    Date_A                       x= 50..142 w= 92 (11% pg) /Tx
+    D_Date_A                     x= 50..142 w= 92 (11% pg) /Tx
+    MoreNotes_3                  x=152..411 w=259 (31% pg) /Tx
+    D_MoreNotes_3                x=152..411 w=259 (31% pg) /Tx
+    Compete1NT_2                 x=431..831 w=400 (48% pg) /Tx
+    D_Compete1NT_2               x=431..831 w=400 (48% pg) /Tx
+  --- row @top≈560 ---
+    MoreNotes_4                  x=152..411 w=259 (31% pg) /Tx
+    D_MoreNotes_4                x=152..411 w=259 (31% pg) /Tx
+    Compete1NT_3                 x=431..831 w=400 (48% pg) /Tx
+    D_Compete1NT_3               x=431..831 w=400 (48% pg) /Tx
+  --- row @top≈639 ---
+    PlayerName.A                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈653 ---
+    PlayerName.B                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈667 ---
+    PlayerNo.A                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈681 ---
+    PlayerNo.B                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈695 ---
+    Resp1C.Other                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈709 ---
+    Resp1D.Other                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈723 ---
+    Resp1H.Other                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈737 ---
+    Resp1NT.Other                x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈751 ---
+    Resp1S.Other                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈765 ---
+    Resp2C.Other                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈779 ---
+    Resp2D.Other                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈793 ---
+    Resp2H.Other                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈807 ---
+    Resp2NT.Other                x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈821 ---
+    Resp2S.Other                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈835 ---
+    Resp1C._1D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈849 ---
+    Resp1C._1H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈863 ---
+    Resp1C._1NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈877 ---
+    Resp1C._1S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈891 ---
+    Resp1C._2C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈905 ---
+    Resp1C._2D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈919 ---
+    Resp1C._2H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈933 ---
+    Resp1C._2NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈947 ---
+    Resp1C._2S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈961 ---
+    Resp1C._3C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈975 ---
+    Resp1C._3D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈989 ---
+    Resp1C._3H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1003 ---
+    Resp1C._3NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1017 ---
+    Resp1C._3S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1031 ---
+    Resp1C._4C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1045 ---
+    Resp1D._1H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1059 ---
+    Resp1D._1NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1073 ---
+    Resp1D._1S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1087 ---
+    Resp1D._2C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1101 ---
+    Resp1D._2D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1115 ---
+    Resp1D._2H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1129 ---
+    Resp1D._2NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1143 ---
+    Resp1D._2S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1157 ---
+    Resp1D._3C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1171 ---
+    Resp1D._3D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1185 ---
+    Resp1D._3H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1199 ---
+    Resp1D._3NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1213 ---
+    Resp1D._3S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1227 ---
+    Resp1D._4C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1241 ---
+    Resp1D._4D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1255 ---
+    Resp1H._1NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1269 ---
+    Resp1H._1S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1277 ---
+    A_Help                       x= 36..576 w=540 (64% pg) /Tx
+    Resp1H._2C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1293 ---
+    A_Help2                      x= 36..576 w=540 (64% pg) /Tx
+    Resp1H._2D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1309 ---
+    A_Help3                      x= 36..576 w=540 (64% pg) /Tx
+    Resp1H._2H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1325 ---
+    Resp1H._2NT                  x=  2..402 w=400 (48% pg) /Tx
+    A_Help4                      x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1339 ---
+    Resp1H._2S                   x=  2..402 w=400 (48% pg) /Tx
+    A_Help5                      x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1353 ---
+    Resp1H._3C                   x=  2..402 w=400 (48% pg) /Tx
+    A_MyHelp                     x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1367 ---
+    Resp1H._3D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1374 ---
+    I_Format                     x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1381 ---
+    Resp1H._3H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1390 ---
+    I_InfoMessage                x= 36..576 w=540 (64% pg) /Tx
+    Resp1H._3NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1406 ---
+    I_LastSave                   x= 36..576 w=540 (64% pg) /Tx
+    Resp1H._3S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1422 ---
+    I_LogMessage                 x= 36..576 w=540 (64% pg) /Tx
+    Resp1NT._3C                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1437 ---
+    Resp1NT._3D                  x=  2..402 w=400 (48% pg) /Tx
+    I_TextColours                x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1451 ---
+    Resp1NT._3H                  x=  2..402 w=400 (48% pg) /Tx
+    My_Codes                     x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1465 ---
+    Resp1NT._3NT                 x=  2..402 w=400 (48% pg) /Tx
+    My_FillColours               x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1479 ---
+    Resp1NT._3S                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1487 ---
+    My_FormatA                   x= 36..576 w=540 (64% pg) /Tx
+    Resp1NT._4C                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1503 ---
+    My_FormatB                   x= 36..576 w=540 (64% pg) /Tx
+    Resp1NT._4D                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1519 ---
+    My_Options                   x= 36..576 w=540 (64% pg) /Tx
+    Resp1NT._4H                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1535 ---
+    Resp1NT._4S                  x=  2..402 w=400 (48% pg) /Tx
+    My_Rectangles                x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1549 ---
+    Resp1S._1NT                  x=  2..402 w=400 (48% pg) /Tx
+    My_Styles                    x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1563 ---
+    Resp1S._2C                   x=  2..402 w=400 (48% pg) /Tx
+    My_Symbols                   x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1577 ---
+    Resp1S._2D                   x=  2..402 w=400 (48% pg) /Tx
+    T_OMD                        x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1591 ---
+    Resp1S._2H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1600 ---
+    T_ONE                        x= 36..576 w=540 (64% pg) /Tx
+    Resp1S._2NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1616 ---
+    T_OOF                        x= 36..576 w=540 (64% pg) /Tx
+    Resp1S._2S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1632 ---
+    H_Colours                    x= 36..576 w=540 (64% pg) /Tx
+    Resp1S._3C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1647 ---
+    Resp1S._3D                   x=  2..402 w=400 (48% pg) /Tx
+    I_Tag                        x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1661 ---
+    Resp1S._3H                   x=  2..402 w=400 (48% pg) /Tx
+    My_CheckBoxValues            x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1675 ---
+    Resp1S._3NT                  x=  2..402 w=400 (48% pg) /Tx
+    My_Colours                   x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1689 ---
+    Resp1S._3S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1696 ---
+    My_DateFormat                x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1703 ---
+    Resp1S._4C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1713 ---
+    My_Font                      x= 36..576 w=540 (64% pg) /Tx
+    Resp2C._2D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1729 ---
+    My_Richness                  x= 36..576 w=540 (64% pg) /Tx
+    Resp2C._2H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1745 ---
+    Resp2C._2NT                  x=  2..402 w=400 (48% pg) /Tx
+    T_SPANs                      x= 36..576 w=540 (64% pg) /Tx
+  --- row @top≈1759 ---
+    Resp2C._2S                   x=  2..402 w=400 (48% pg) /Tx
+    IsNTCheckback                x= 36.. 99 w= 63 (7% pg) /Tx
+    Is4thForcingGame             x=216..279 w= 63 (7% pg) /Tx
+    Is4thForcing1Round           x=432..495 w= 63 (7% pg) /Tx
+  --- row @top≈1773 ---
+    Resp2C._3C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1780 ---
+    IsCueBids                    x= 36.. 99 w= 63 (7% pg) /Tx
+    IsAskingBids                 x=216..279 w= 63 (7% pg) /Tx
+    IsBlackwood                  x=432..495 w= 63 (7% pg) /Tx
+  --- row @top≈1787 ---
+    Resp2C._3D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1799 ---
+    IsGerber                     x= 36.. 99 w= 63 (7% pg) /Tx
+    OneNTMayHave5Major           x=216..279 w= 63 (7% pg) /Tx
+    IsCanape                     x=432..495 w= 63 (7% pg) /Tx
+    Resp2C._3H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1815 ---
+    Resp2C._3NT                  x=  2..402 w=400 (48% pg) /Tx
+    Classification               x= 36.. 99 w= 63 (7% pg) /Tx
+    IsBrownSticker               x=216..279 w= 63 (7% pg) /Tx
+  --- row @top≈1829 ---
+    Resp2C._3S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1843 ---
+    Resp2D._2H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1857 ---
+    Resp2D._2NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1871 ---
+    Resp2D._2S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1885 ---
+    Resp2D._3C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1899 ---
+    Resp2D._3D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1913 ---
+    Resp2D._3H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1927 ---
+    Resp2D._3NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1941 ---
+    Resp2D._3S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1955 ---
+    Resp2D._4C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1969 ---
+    Resp2H._2NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1983 ---
+    Resp2H._2S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈1997 ---
+    Resp2H._3C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2011 ---
+    Resp2H._3D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2025 ---
+    Resp2H._3H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2039 ---
+    Resp2H._3NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2053 ---
+    Resp2H._3S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2067 ---
+    Resp2H._4C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2081 ---
+    Resp2H._4H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2095 ---
+    Resp2NT._3C                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2109 ---
+    Resp2NT._3D                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2123 ---
+    Resp2NT._3H                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2137 ---
+    Resp2NT._3NT                 x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2151 ---
+    Resp2NT._3S                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2165 ---
+    Resp2NT._4C                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2179 ---
+    Resp2NT._4D                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2193 ---
+    Resp2NT._4H                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2207 ---
+    Resp2NT._4S                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2221 ---
+    Resp2S._2NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2235 ---
+    Resp2S._3C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2249 ---
+    Resp2S._3D                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2263 ---
+    Resp2S._3H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2277 ---
+    Resp2S._3NT                  x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2291 ---
+    Resp2S._3S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2305 ---
+    Resp2S._4C                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2319 ---
+    Resp2S._4H                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2333 ---
+    Resp2S._4S                   x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2347 ---
+    Resp1NT2COther               x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2361 ---
+    JumpRaiseMinorOther          x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2375 ---
+    JumpRaiseMajorOther          x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2389 ---
+    UnusualNTOther               x=  2..402 w=400 (48% pg) /Tx
+  --- row @top≈2403 ---
+    Over1NTInterfMore            x=  2..402 w=400 (48% pg) /Tx
+
+===== PAGE 2  (842 x 595 pt) =====
+  --- row @top≈4 ---
+    T_TWO                        x= 36..324 w=288 (34% pg) /Tx
+  --- row @top≈12 ---
+    Resp2H_2S                    x=467..572 w=105 (12% pg) /Tx
+    D_Resp2H_2S                  x=467..572 w=105 (12% pg) /Tx
+    Resp2H_3D                    x=595..700 w=105 (12% pg) /Tx
+    D_Resp2H_3D                  x=595..700 w=105 (12% pg) /Tx
+    Resp2H_3NT                   x=723..828 w=105 (12% pg) /Tx
+    D_Resp2H_3NT                 x=723..828 w=105 (12% pg) /Tx
+  --- row @top≈26 ---
+    Resp2H_2NT                   x=467..572 w=105 (12% pg) /Tx
+    D_Resp2H_2NT                 x=467..572 w=105 (12% pg) /Tx
+    Resp2H_3H                    x=595..700 w=105 (12% pg) /Tx
+    D_Resp2H_3H                  x=595..700 w=105 (12% pg) /Tx
+    Resp2H_4C                    x=723..828 w=105 (12% pg) /Tx
+    D_Resp2H_4C                  x=723..828 w=105 (12% pg) /Tx
+  --- row @top≈40 ---
+    Resp2H_3C                    x=467..572 w=105 (12% pg) /Tx
+    D_Resp2H_3C                  x=467..572 w=105 (12% pg) /Tx
+    Resp2H_3S                    x=595..700 w=105 (12% pg) /Tx
+    D_Resp2H_3S                  x=595..700 w=105 (12% pg) /Tx
+    Resp2H_4H                    x=723..828 w=105 (12% pg) /Tx
+    D_Resp2H_4H                  x=723..828 w=105 (12% pg) /Tx
+    Resp1C_1D                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1C_1D                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1C_2D                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1C_2D                  x=176..281 w=105 (12% pg) /Tx
+    Resp1C_3D                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1C_3D                  x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈54 ---
+    Resp2H_Other                 x=467..828 w=361 (43% pg) /Tx
+    D_Resp2H_Other               x=467..828 w=361 (43% pg) /Tx
+    Resp1C_1H                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1C_1H                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1C_2H                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1C_2H                  x=176..281 w=105 (12% pg) /Tx
+    Resp1C_3H                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1C_3H                  x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈70 ---
+    Resp1C_1S                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1C_1S                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1C_2S                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1C_2S                  x=176..281 w=105 (12% pg) /Tx
+    Resp1C_3S                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1C_3S                  x=303..408 w=105 (12% pg) /Tx
+    Resp2S_2NT                   x=467..572 w=105 (12% pg) /Tx
+    D_Resp2S_2NT                 x=467..572 w=105 (12% pg) /Tx
+    Resp2S_3H                    x=595..700 w=105 (12% pg) /Tx
+    D_Resp2S_3H                  x=595..700 w=105 (12% pg) /Tx
+    Resp2S_4C                    x=723..828 w=105 (12% pg) /Tx
+    D_Resp2S_4C                  x=723..828 w=105 (12% pg) /Tx
+  --- row @top≈84 ---
+    Resp1C_1NT                   x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1C_1NT                 x= 48..153 w=105 (12% pg) /Tx
+    Resp1C_2NT                   x=176..281 w=105 (12% pg) /Tx
+    D_Resp1C_2NT                 x=176..281 w=105 (12% pg) /Tx
+    Resp1C_3NT                   x=303..408 w=105 (12% pg) /Tx
+    D_Resp1C_3NT                 x=303..408 w=105 (12% pg) /Tx
+    Resp2S_3C                    x=467..572 w=105 (12% pg) /Tx
+    D_Resp2S_3C                  x=467..572 w=105 (12% pg) /Tx
+    Resp2S_3S                    x=595..700 w=105 (12% pg) /Tx
+    D_Resp2S_3S                  x=595..700 w=105 (12% pg) /Tx
+    Resp2S_4H                    x=723..828 w=105 (12% pg) /Tx
+    D_Resp2S_4H                  x=723..828 w=105 (12% pg) /Tx
+  --- row @top≈98 ---
+    Resp1C_2C                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1C_2C                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1C_3C                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1C_3C                  x=176..281 w=105 (12% pg) /Tx
+    Resp1C_4C                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1C_4C                  x=303..408 w=105 (12% pg) /Tx
+    Resp2S_3D                    x=467..572 w=105 (12% pg) /Tx
+    D_Resp2S_3D                  x=467..572 w=105 (12% pg) /Tx
+    Resp2S_3NT                   x=595..700 w=105 (12% pg) /Tx
+    D_Resp2S_3NT                 x=595..700 w=105 (12% pg) /Tx
+    Resp2S_4S                    x=723..828 w=105 (12% pg) /Tx
+    D_Resp2S_4S                  x=723..828 w=105 (12% pg) /Tx
+  --- row @top≈112 ---
+    Resp1C_Other                 x= 48..409 w=361 (43% pg) /Tx
+    D_Resp1C_Other               x= 48..409 w=361 (43% pg) /Tx
+    Resp2S_Other                 x=467..828 w=361 (43% pg) /Tx
+    D_Resp2S_Other               x=467..828 w=361 (43% pg) /Tx
+  --- row @top≈129 ---
+    Resp1D_1H                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1D_1H                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1D_2H                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1D_2H                  x=176..281 w=105 (12% pg) /Tx
+    Resp1D_3H                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1D_3H                  x=303..408 w=105 (12% pg) /Tx
+    Resp2NT_3C                   x=467..572 w=105 (12% pg) /Tx
+    D_Resp2NT_3C                 x=467..572 w=105 (12% pg) /Tx
+    Resp2NT_3S                   x=595..700 w=105 (12% pg) /Tx
+    D_Resp2NT_3S                 x=595..700 w=105 (12% pg) /Tx
+    Resp2NT_4D                   x=723..828 w=105 (12% pg) /Tx
+    D_Resp2NT_4D                 x=723..828 w=105 (12% pg) /Tx
+  --- row @top≈143 ---
+    Resp1D_1S                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1D_1S                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1D_2S                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1D_2S                  x=176..281 w=105 (12% pg) /Tx
+    Resp1D_3S                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1D_3S                  x=303..408 w=105 (12% pg) /Tx
+    Resp2NT_3D                   x=467..572 w=105 (12% pg) /Tx
+    D_Resp2NT_3D                 x=467..572 w=105 (12% pg) /Tx
+    Resp2NT_3NT                  x=595..700 w=105 (12% pg) /Tx
+    D_Resp2NT_3NT                x=595..700 w=105 (12% pg) /Tx
+    Resp2NT_4H                   x=723..828 w=105 (12% pg) /Tx
+    D_Resp2NT_4H                 x=723..828 w=105 (12% pg) /Tx
+  --- row @top≈158 ---
+    Resp1D_1NT                   x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1D_1NT                 x= 48..153 w=105 (12% pg) /Tx
+    Resp1D_2NT                   x=176..281 w=105 (12% pg) /Tx
+    D_Resp1D_2NT                 x=176..281 w=105 (12% pg) /Tx
+    Resp1D_3NT                   x=303..408 w=105 (12% pg) /Tx
+    D_Resp1D_3NT                 x=303..408 w=105 (12% pg) /Tx
+    Resp2NT_3H                   x=467..572 w=105 (12% pg) /Tx
+    D_Resp2NT_3H                 x=467..572 w=105 (12% pg) /Tx
+    Resp2NT_4C                   x=595..700 w=105 (12% pg) /Tx
+    D_Resp2NT_4C                 x=595..700 w=105 (12% pg) /Tx
+    Resp2NT_4S                   x=723..828 w=105 (12% pg) /Tx
+    D_Resp2NT_4S                 x=723..828 w=105 (12% pg) /Tx
+  --- row @top≈172 ---
+    Resp1D_2C                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1D_2C                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1D_3C                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1D_3C                  x=176..281 w=105 (12% pg) /Tx
+    Resp1D_4C                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1D_4C                  x=303..408 w=105 (12% pg) /Tx
+    Resp2NT_Other                x=467..828 w=361 (43% pg) /Tx
+    D_Resp2NT_Other              x=467..828 w=361 (43% pg) /Tx
+  --- row @top≈186 ---
+    Resp1D_2D                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1D_2D                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1D_3D                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1D_3D                  x=176..281 w=105 (12% pg) /Tx
+    Resp1D_4D                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1D_4D                  x=303..408 w=105 (12% pg) /Tx
+    Conventions_0                x=577..831 w=254 (30% pg) /Tx
+    D_Conventions_0              x=577..831 w=254 (30% pg) /Tx
+  --- row @top≈200 ---
+    Resp1D_Other                 x= 48..409 w=361 (43% pg) /Tx
+    D_Resp1D_Other               x= 48..409 w=361 (43% pg) /Tx
+    UnusualNoTrump               x=491..831 w=340 (40% pg) /Tx
+    D_UnusualNoTrump             x=491..831 w=340 (40% pg) /Tx
+  --- row @top≈217 ---
+    Resp1H_1S                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1H_1S                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1H_2H                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1H_2H                  x=176..281 w=105 (12% pg) /Tx
+    Resp1H_3D                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1H_3D                  x=303..408 w=105 (12% pg) /Tx
+    FourthSuitForcing            x=564..763 w=199 (24% pg) /Tx
+    D_FourthSuitForcing          x=564..763 w=199 (24% pg) /Tx
+    B_Is4thForcing1Round         x=544..558 w= 14 (2% pg) /Tx
+    B_Is4thForcingGame           x=812..826 w= 14 (2% pg) /Tx
+  --- row @top≈231 ---
+    Resp1H_1NT                   x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1H_1NT                 x= 48..153 w=105 (12% pg) /Tx
+    Resp1H_2S                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1H_2S                  x=176..281 w=105 (12% pg) /Tx
+    Resp1H_3H                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1H_3H                  x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈238 ---
+    CheckbackPriorities          x=559..830 w=271 (32% pg) /Tx
+    D_CheckbackPriorities        x=559..830 w=271 (32% pg) /Tx
+    B_IsNTCheckback              x=503..517 w= 14 (2% pg) /Tx
+    Resp1H_2C                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1H_2C                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1H_2NT                   x=176..281 w=105 (12% pg) /Tx
+    D_Resp1H_2NT                 x=176..281 w=105 (12% pg) /Tx
+    Resp1H_3S                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1H_3S                  x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈253 ---
+    Defence3NT                   x=543..830 w=287 (34% pg) /Tx
+    D_Defence3NT                 x=543..830 w=287 (34% pg) /Tx
+    Resp1H_2D                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1H_2D                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1H_3C                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1H_3C                  x=176..281 w=105 (12% pg) /Tx
+    Resp1H_3NT                   x=303..408 w=105 (12% pg) /Tx
+    D_Resp1H_3NT                 x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈269 ---
+    DefenceOpening2              x=551..830 w=279 (33% pg) /Tx
+    D_DefenceOpening2            x=551..830 w=279 (33% pg) /Tx
+    Resp1H_Other                 x= 48..409 w=361 (43% pg) /Tx
+    D_Resp1H_Other               x= 48..409 w=361 (43% pg) /Tx
+  --- row @top≈285 ---
+    DefenceMulti                 x=486..830 w=344 (41% pg) /Tx
+    D_DefenceMulti               x=486..830 w=344 (41% pg) /Tx
+    Resp1S_1NT                   x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1S_1NT                 x= 48..153 w=105 (12% pg) /Tx
+    Resp1S_2S                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1S_2S                  x=176..281 w=105 (12% pg) /Tx
+    Resp1S_3H                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1S_3H                  x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈300 ---
+    DefenceRCO                   x=486..830 w=344 (41% pg) /Tx
+    D_DefenceRCO                 x=486..830 w=344 (41% pg) /Tx
+    Resp1S_2C                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1S_2C                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1S_2NT                   x=176..281 w=105 (12% pg) /Tx
+    D_Resp1S_2NT                 x=176..281 w=105 (12% pg) /Tx
+    Resp1S_3S                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1S_3S                  x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈316 ---
+    DefenceOtherTwos             x=486..830 w=344 (41% pg) /Tx
+    D_DefenceOtherTwos           x=486..830 w=344 (41% pg) /Tx
+    Resp1S_2D                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1S_2D                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1S_3C                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1S_3C                  x=176..281 w=105 (12% pg) /Tx
+    Resp1S_3NT                   x=303..408 w=105 (12% pg) /Tx
+    D_Resp1S_3NT                 x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈332 ---
+    DefenceStrongC_1             x=474..828 w=354 (42% pg) /Tx
+    D_DefenceStrongC_1           x=474..828 w=354 (42% pg) /Tx
+    Resp1S_2H                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1S_2H                  x= 48..153 w=105 (12% pg) /Tx
+    Resp1S_3D                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp1S_3D                  x=176..281 w=105 (12% pg) /Tx
+    Resp1S_4C                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp1S_4C                  x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈347 ---
+    Resp1S_Other                 x= 48..409 w=361 (43% pg) /Tx
+    D_Resp1S_Other               x= 48..409 w=361 (43% pg) /Tx
+    DefenceStrongC_2             x=474..828 w=354 (42% pg) /Tx
+    D_DefenceStrongC_2           x=474..828 w=354 (42% pg) /Tx
+  --- row @top≈363 ---
+    DefenceStrongC_3             x=474..828 w=354 (42% pg) /Tx
+    D_DefenceStrongC_3           x=474..828 w=354 (42% pg) /Tx
+    Resp1NT_3C                   x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1NT_3C                 x= 48..153 w=105 (12% pg) /Tx
+    Resp1NT_3S                   x=176..281 w=105 (12% pg) /Tx
+    D_Resp1NT_3S                 x=176..281 w=105 (12% pg) /Tx
+    Resp1NT_4D                   x=303..408 w=105 (12% pg) /Tx
+    D_Resp1NT_4D                 x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈378 ---
+    Resp1NT_3D                   x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1NT_3D                 x= 48..153 w=105 (12% pg) /Tx
+    Resp1NT_3NT                  x=176..281 w=105 (12% pg) /Tx
+    D_Resp1NT_3NT                x=176..281 w=105 (12% pg) /Tx
+    Resp1NT_4H                   x=303..408 w=105 (12% pg) /Tx
+    D_Resp1NT_4H                 x=303..408 w=105 (12% pg) /Tx
+    DefenceStrongC_4             x=474..828 w=354 (42% pg) /Tx
+    D_DefenceStrongC_4           x=474..828 w=354 (42% pg) /Tx
+  --- row @top≈392 ---
+    Resp1NT_3H                   x= 48..153 w=105 (12% pg) /Tx
+    D_Resp1NT_3H                 x= 48..153 w=105 (12% pg) /Tx
+    Resp1NT_4C                   x=176..281 w=105 (12% pg) /Tx
+    D_Resp1NT_4C                 x=176..281 w=105 (12% pg) /Tx
+    Resp1NT_4S                   x=303..408 w=105 (12% pg) /Tx
+    D_Resp1NT_4S                 x=303..408 w=105 (12% pg) /Tx
+    Over1NTInterf                x=534..831 w=297 (35% pg) /Tx
+    D_Over1NTInterf              x=534..831 w=297 (35% pg) /Tx
+  --- row @top≈407 ---
+    Resp1NT_Other                x= 48..409 w=361 (43% pg) /Tx
+    D_Resp1NT_Other              x= 48..409 w=361 (43% pg) /Tx
+    LebensohlOther               x=541..830 w=289 (34% pg) /Tx
+    D_LebensohlOther             x=541..830 w=289 (34% pg) /Tx
+  --- row @top≈424 ---
+    Resp2C_2D                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp2C_2D                  x= 48..153 w=105 (12% pg) /Tx
+    Resp2C_2NT                   x=176..281 w=105 (12% pg) /Tx
+    D_Resp2C_2NT                 x=176..281 w=105 (12% pg) /Tx
+    Resp2C_3H                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp2C_3H                  x=303..408 w=105 (12% pg) /Tx
+    TakeOutOf4C4D                x=601..830 w=229 (27% pg) /Tx
+    D_TakeOutOf4C4D              x=601..830 w=229 (27% pg) /Tx
+  --- row @top≈438 ---
+    Resp2C_2H                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp2C_2H                  x= 48..153 w=105 (12% pg) /Tx
+    Resp2C_3C                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp2C_3C                  x=176..281 w=105 (12% pg) /Tx
+    Resp2C_3S                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp2C_3S                  x=303..408 w=105 (12% pg) /Tx
+    TakeOutOf4H                  x=457..629 w=172 (20% pg) /Tx
+    D_TakeOutOf4H                x=457..629 w=172 (20% pg) /Tx
+    TakeOutOf4S                  x=658..831 w=173 (21% pg) /Tx
+    D_TakeOutOf4S                x=658..831 w=173 (21% pg) /Tx
+  --- row @top≈452 ---
+    Resp2C_2S                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp2C_2S                  x= 48..153 w=105 (12% pg) /Tx
+    Resp2C_3D                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp2C_3D                  x=176..281 w=105 (12% pg) /Tx
+    Resp2C_3NT                   x=303..408 w=105 (12% pg) /Tx
+    D_Resp2C_3NT                 x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈459 ---
+    OtherNotes_0                 x=583..830 w=247 (29% pg) /Tx
+    D_OtherNotes_0               x=583..830 w=247 (29% pg) /Tx
+  --- row @top≈466 ---
+    Resp2C_Other                 x= 48..409 w=361 (43% pg) /Tx
+    D_Resp2C_Other               x= 48..409 w=361 (43% pg) /Tx
+  --- row @top≈475 ---
+    OtherNotes_1                 x=431..830 w=399 (47% pg) /Tx
+    D_OtherNotes_1               x=431..830 w=399 (47% pg) /Tx
+  --- row @top≈483 ---
+    Resp2D_2H                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp2D_2H                  x= 48..153 w=105 (12% pg) /Tx
+    Resp2D_3C                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp2D_3C                  x=176..281 w=105 (12% pg) /Tx
+    Resp2D_3S                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp2D_3S                  x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈491 ---
+    OtherNotes_2                 x=431..830 w=399 (47% pg) /Tx
+    D_OtherNotes_2               x=431..830 w=399 (47% pg) /Tx
+    Resp2D_2S                    x= 48..153 w=105 (12% pg) /Tx
+    D_Resp2D_2S                  x= 48..153 w=105 (12% pg) /Tx
+    Resp2D_3D                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp2D_3D                  x=176..281 w=105 (12% pg) /Tx
+    Resp2D_3NT                   x=303..408 w=105 (12% pg) /Tx
+    D_Resp2D_3NT                 x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈505 ---
+    BoxON34                      x=429..832 w=403 (48% pg) /Tx
+    OtherNotes_3                 x=431..830 w=399 (47% pg) /Tx
+    D_OtherNotes_3               x=431..830 w=399 (47% pg) /Tx
+    Resp2D_2NT                   x= 48..153 w=105 (12% pg) /Tx
+    D_Resp2D_2NT                 x= 48..153 w=105 (12% pg) /Tx
+    Resp2D_3H                    x=176..281 w=105 (12% pg) /Tx
+    D_Resp2D_3H                  x=176..281 w=105 (12% pg) /Tx
+    Resp2D_4C                    x=303..408 w=105 (12% pg) /Tx
+    D_Resp2D_4C                  x=303..408 w=105 (12% pg) /Tx
+  --- row @top≈522 ---
+    OtherNotes_4                 x=431..830 w=399 (47% pg) /Tx
+    D_OtherNotes_4               x=431..830 w=399 (47% pg) /Tx
+    Resp2D_Other                 x= 48..409 w=361 (43% pg) /Tx
+    D_Resp2D_Other               x= 48..409 w=361 (43% pg) /Tx
+  --- row @top≈537 ---
+    BoxON57                      x=429..832 w=403 (48% pg) /Tx
+    OtherNotes_5                 x=431..830 w=399 (47% pg) /Tx
+    D_OtherNotes_5               x=431..830 w=399 (47% pg) /Tx
+    ResponseNotes_1              x= 41..410 w=369 (44% pg) /Tx
+    D_ResponseNotes_1            x= 41..410 w=369 (44% pg) /Tx
+  --- row @top≈554 ---
+    OtherNotes_6                 x=431..830 w=399 (47% pg) /Tx
+    D_OtherNotes_6               x=431..830 w=399 (47% pg) /Tx
+    ResponseNotes_2              x= 11..410 w=399 (47% pg) /Tx
+    D_ResponseNotes_2            x= 11..410 w=399 (47% pg) /Tx
+  --- row @top≈569 ---
+    OtherNotes_7                 x=431..830 w=399 (47% pg) /Tx
+    D_OtherNotes_7               x=431..830 w=399 (47% pg) /Tx
+    ResponseNotes_3              x= 11..410 w=399 (47% pg) /Tx
+    D_ResponseNotes_3            x= 11..410 w=399 (47% pg) /Tx

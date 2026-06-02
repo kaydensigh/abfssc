@@ -22,7 +22,7 @@ describe("App shell", () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole("button", { name: "Responses to Openings" }));
-    expect(screen.getByRole("columnheader", { name: "Other" })).toBeInTheDocument(); // §8 grid
+    expect(screen.getByRole("textbox", { name: "1♣ → Other" })).toBeInTheDocument(); // §8 response block
     await user.click(screen.getByRole("button", { name: "Openings & Competitive" }));
     expect(screen.getByText("1NT")).toBeInTheDocument(); // §1 opening field label
   });

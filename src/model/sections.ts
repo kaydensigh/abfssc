@@ -3,21 +3,22 @@ import { hasCodeList } from "../content/codelists.ts";
 // The regulated card, section by section. The UI is data-driven from this
 // registry: a generic renderer walks each section's fields and picks a control
 // by `kind`. Sections that need bespoke layout carry a `layout` discriminator
-// (the masthead, the §8 grid, the §5 vs-NT/vs-suit pairing).
+// (the masthead, the §8 response blocks, the §5 vs-NT/vs-suit pairing).
 //
 // Field keys are the canonical names from abf/extracted/field_names.txt and are
 // also the keys of Card.fields (text fields) or Card.flags (checkboxes).
 //
-// Field ORDER and `width` reproduce the printed PDF layout (recovered from the
-// form's AcroForm rectangles): a `half` field shares a desktop row with the next
-// `half` (the card's side-by-side pairings — 1♣|1♥, the §7 two-column grid); a
-// `full` field spans the row. On mobile every field stacks to one column. The §5
-// vs-suit/vs-notrump leads are NOT `width` pairs — they use the bespoke PlayPairs
-// layout. `group` inserts a sub-heading before a run of like-grouped fields (used
-// by §8 to separate the 1NT / strong-two response blocks).
+// Field ORDER and `span` reproduce the printed PDF layout (recovered from the
+// form's AcroForm rectangles — see abf/extracted/field_geometry.txt). Fields
+// flow left→right across a 12-column grid: `span` is how many of the 12 columns
+// the field (label + control) occupies, so two `span:6` fields share a row, a
+// `span:8` + `span:4` make an uneven split, and `span:12` is a full row. On
+// mobile every field collapses to the full width. The §5 vs-suit/vs-notrump
+// leads use the bespoke PlayPairs layout. `group` inserts a sub-heading before a
+// run of like-grouped fields; groups named in `boxedGroups` are drawn inside a
+// bordered box (the PDF's "1NT Responses" / "Defence to strong" panels).
 
 export type FieldKind = "rich" | "coded" | "notes" | "player" | "checkbox";
-export type FieldWidth = "full" | "half";
 
 export interface FieldDef {
   key: string;
@@ -25,8 +26,10 @@ export interface FieldDef {
   /** Omitted → resolved as "coded" when the field ships a code list, else "rich". */
   kind?: FieldKind;
   multiline?: boolean;
-  /** Desktop column span. Omitted → "full" (single column, always safe on mobile). */
-  width?: FieldWidth;
+  /** Columns (1..12) the field spans on desktop. Omitted → 12 (full row). */
+  span?: number;
+  /** Render the label visually-hidden (kept for a11y) — for the PDF's unlabelled boxes. */
+  labelHidden?: boolean;
   /** Optional sub-heading rendered once before a run of fields sharing this label. */
   group?: string;
   /**
@@ -60,6 +63,8 @@ export interface SectionDef {
   layout: SectionLayout;
   /** Fields rendered generically (and enumerated by the empty-card factory). */
   fields: FieldDef[];
+  /** Group names (see FieldDef.group) drawn inside a bordered box. */
+  boxedGroups?: readonly string[];
   /** §5 only: the vs-NT/vs-suit pairs rendered side by side. */
   pairs?: FieldPair[];
 }
@@ -69,9 +74,9 @@ export function fieldKind(def: FieldDef): FieldKind {
   return def.kind ?? (hasCodeList(def.key) ? "coded" : "rich");
 }
 
-/** Resolve a field's desktop column span (defaults to full-width). */
-export function fieldWidth(def: FieldDef): FieldWidth {
-  return def.width ?? "full";
+/** Resolve a field's desktop column span (1..12, defaults to a full 12-col row). */
+export function fieldSpan(def: FieldDef): number {
+  return def.span ?? 12;
 }
 
 type Extra = Omit<FieldDef, "key" | "label">;
@@ -81,11 +86,10 @@ const notes = (key: string, label: string, extra: Extra = {}): FieldDef => ({
   label,
   kind: "notes",
   multiline: true,
-  width: "full",
   ...extra,
 });
 const cb = (key: string, label: string, extra: Extra = {}): FieldDef => ({ key, label, kind: "checkbox", ...extra });
-const half: Extra = { width: "half" };
+const half: Extra = { span: 6 };
 
 export const SECTIONS: readonly SectionDef[] = [
   {
@@ -93,15 +97,16 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Standard System Card",
     caption: "Australian Bridge Federation Ltd.",
     layout: "masthead",
-    // PDF front cover: ABF Nos. / & Names: (one column per partner), Basic System,
-    // and the Classification row (Brown Sticker · Green/Blue/Red/Yellow · Canapé).
+    // PDF front cover: "ABF Nos." / "& Names:" each a row of [number][name] for a
+    // partner, Basic System, and the Classification row. The player fields' own
+    // labels are hidden — the row labels ("ABF Nos." / "& Names:") name them.
     fields: [
-      f("PlayerNo_A", "ABF no. (you)", { kind: "player", width: "half", hint: "Your ABF number" }),
-      f("PlayerNo_B", "ABF no. (partner)", { kind: "player", width: "half", hint: "Your partner's ABF number" }),
-      f("PlayerName_A", "Name (you)", { kind: "player", width: "half", hint: "Your name" }),
-      f("PlayerName_B", "Name (partner)", { kind: "player", width: "half", hint: "Your partner's name" }),
+      f("PlayerNo_A", "ABF no. (you)", { kind: "player", labelHidden: true, hint: "Your ABF number" }),
+      f("PlayerName_A", "Name (you)", { kind: "player", labelHidden: true, hint: "Your name" }),
+      f("PlayerNo_B", "ABF no. (partner)", { kind: "player", labelHidden: true, hint: "Partner's ABF number" }),
+      f("PlayerName_B", "Name (partner)", { kind: "player", labelHidden: true, hint: "Partner's name" }),
       f("BasicSystem", "Basic System"),
-      f("Date_A", "MyRev.", { hint: "Optional revision code — date or version number" }),
+      f("Date_A", "MyRev.", { span: 6, hint: "Optional revision code — date or version number" }),
       cb("IsBrownSticker", "Brown Sticker"),
       cb("IsCanape", "Canapé"),
     ],
@@ -112,22 +117,23 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Opening Bids",
     caption: "Describe strength, min.length, or specific meaning",
     layout: "generic",
+    boxedGroups: ["1NT Responses"],
     // PDF rows: 1♣|1♥, 1♦|1♠, 1NT (+ "may contain 5 card Major"), the boxed
-    // "1NT Responses" block, then 2♣/2♦/2♥/2♠, 2NT|3NT, other.
+    // "1NT Responses" block, then 2♣/2♦/2♥/2♠ (full), 2NT|3NT, other.
     fields: [
       f("Open1C", "1♣", half),
       f("Open1H", "1♥", half),
       f("Open1D", "1♦", half),
       f("Open1S", "1♠", half),
-      f("Open1NT", "1NT"),
-      cb("OneNTMayHave5Major", "may contain 5 card Major"),
+      f("Open1NT", "1NT", { span: 8 }),
+      cb("OneNTMayHave5Major", "may contain 5 card Major", { span: 4 }),
       f("Resp1NT2CStyle", "2♣", { group: "1NT Responses" }),
-      f("Resp1NT2D", "2♦", { width: "half", group: "1NT Responses" }),
-      f("Resp1NT2S", "2♠", { width: "half", group: "1NT Responses" }),
-      f("Resp1NT2H", "2♥", { width: "half", group: "1NT Responses" }),
-      f("Resp1NT2NT", "2NT", { width: "half", group: "1NT Responses" }),
-      f("Resp1NTDoubled", "(Dbl)", { width: "half", group: "1NT Responses" }),
-      f("Resp1NTOther", "other", { width: "half", group: "1NT Responses", hint: "Add notes about responses to 1NT" }),
+      f("Resp1NT2D", "2♦", { span: 6, group: "1NT Responses" }),
+      f("Resp1NT2S", "2♠", { span: 6, group: "1NT Responses" }),
+      f("Resp1NT2H", "2♥", { span: 6, group: "1NT Responses" }),
+      f("Resp1NT2NT", "2NT", { span: 6, group: "1NT Responses" }),
+      f("Resp1NTDoubled", "(Dbl)", { span: 6, group: "1NT Responses" }),
+      f("Resp1NTOther", "other", { span: 6, group: "1NT Responses", hint: "Add notes about responses to 1NT" }),
       f("Open2C", "2♣"),
       f("Open2D", "2♦"),
       f("Open2H", "2♥"),
@@ -142,15 +148,15 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 2,
     title: "Pre-Alerts",
     layout: "generic",
-    // PDF: a summary line over a 2-col × 3-row grid (left = _1_n, right = _2_n).
+    // PDF: a summary line over a 2-col × 3-row grid of unlabelled boxes.
     fields: [
-      notes("PreAlert_0", "Pre-alerts", { hint: "Describe your pre-alerts" }),
-      f("PreAlert_1_1", "Pre-alert 1", { width: "half", hint: "Describe your pre-alerts" }),
-      f("PreAlert_2_1", "Pre-alert 4", { width: "half", hint: "Describe your pre-alerts" }),
-      f("PreAlert_1_2", "Pre-alert 2", { width: "half", hint: "Describe your pre-alerts" }),
-      f("PreAlert_2_2", "Pre-alert 5", { width: "half", hint: "Describe your pre-alerts" }),
-      f("PreAlert_1_3", "Pre-alert 3", { width: "half", hint: "Describe your pre-alerts" }),
-      f("PreAlert_2_3", "Pre-alert 6", { width: "half", hint: "Describe your pre-alerts" }),
+      notes("PreAlert_0", "Pre-alerts", { labelHidden: true, hint: "Describe your pre-alerts" }),
+      f("PreAlert_1_1", "Pre-alert 1", { span: 6, labelHidden: true, hint: "Pre-alert" }),
+      f("PreAlert_2_1", "Pre-alert 4", { span: 6, labelHidden: true, hint: "Pre-alert" }),
+      f("PreAlert_1_2", "Pre-alert 2", { span: 6, labelHidden: true, hint: "Pre-alert" }),
+      f("PreAlert_2_2", "Pre-alert 5", { span: 6, labelHidden: true, hint: "Pre-alert" }),
+      f("PreAlert_1_3", "Pre-alert 3", { span: 6, labelHidden: true, hint: "Pre-alert" }),
+      f("PreAlert_2_3", "Pre-alert 6", { span: 6, labelHidden: true, hint: "Pre-alert" }),
     ],
   },
   {
@@ -158,21 +164,21 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 3,
     title: "Competitive Bids / Overcalls",
     layout: "generic",
-    // PDF printed-row order. "Negative/Responsive DBL thru" sit in the right
-    // column; the "1NT overcall / immediate cue / Over:" rows pair left|right.
+    // PDF printed-row order. "Negative/Responsive DBL thru" are narrow bid-level
+    // fields in the right column; the cue / 1NT-overcall rows pair left|right.
     fields: [
-      f("Doubles_1", "Doubles", { width: "half", hint: "Other doubles and redoubles" }),
-      f("NegXLimit", "Negative DBL thru", { width: "half", hint: "Highest bid where your double is negative (not for penalties)" }),
-      f("Doubles_2", "Other doubles & redoubles", { width: "half", hint: "e.g. support doubles and redoubles" }),
-      f("RespXLimit", "Responsive DBL thru", { width: "half", hint: "Highest bid where your double is responsive (not for penalties)" }),
+      f("Doubles_1", "Doubles", { span: 8, hint: "Other doubles and redoubles" }),
+      f("NegXLimit", "Negative DBL thru", { span: 4, hint: "Highest bid where your double is negative (not for penalties)" }),
+      f("Doubles_2", "Other doubles & redoubles", { span: 8, hint: "e.g. support doubles and redoubles" }),
+      f("RespXLimit", "Responsive DBL thru", { span: 4, hint: "Highest bid where your double is responsive (not for penalties)" }),
       f("JumpOvercall", "Jump overcalls", half),
       f("UnusualNT", "Unusual NT", half),
       f("Overcall1NT", "1NT overcall: (immediate)", half),
       f("Reopen1NT", "(re-opening)", half),
       f("ImmedCueMinor", "Immediate cue: (minor)", half),
       f("ImmedCueMajor", "(Major)", half),
-      f("CompeteWeak2", "Over: Weak Twos", { width: "half", hint: "How do you compete over natural weak 2 openings?" }),
-      f("CompeteOpen3", "Opening Threes", { width: "half", hint: "How do you compete over 3-level openings?" }),
+      f("CompeteWeak2", "Over: Weak Twos", { span: 6, hint: "How do you compete over natural weak 2 openings?" }),
+      f("CompeteOpen3", "Opening Threes", { span: 6, hint: "How do you compete over 3-level openings?" }),
       f("Transfers_1", "Opponent's transfers", { hint: "i.e. over opponent's transfer bids" }),
       f("Compete1NT_1", "Opponent's 1NT", { hint: "How do you compete over their 1NT opening?" }),
       f("Compete1NT_2", "Opponent's 1NT (continued)", { hint: "How do you compete over their 1NT opening?" }),
@@ -232,7 +238,7 @@ export const SECTIONS: readonly SectionDef[] = [
     // PDF: 4♣ Gerber ☐ {when}; 4NT: Blackwood ☐ RKCB; Asking Bids ☐ Cue Bids ☐.
     fields: [
       cb("IsGerber", "4♣ Gerber", half),
-      f("GerberWhen", "Gerber applies when", { width: "half", hint: "When is Gerber used?" }),
+      f("GerberWhen", "Gerber applies when", { span: 6, hint: "When is Gerber used?" }),
       cb("IsBlackwood", "4NT: Blackwood", half),
       f("RKCBStyle", "RKCB", half),
       f("FourNTOther", "Other 4NT meanings", { hint: "4NT other meanings?" }),
@@ -248,18 +254,18 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 7,
     title: "Other Conventions",
     layout: "generic",
-    // PDF: a 2-col × 5-row grid (left = _1_n, right = _2_n) plus overflow notes.
+    // PDF: a 2-col × 5-row grid of unlabelled boxes plus overflow notes.
     fields: [
-      f("Other_1_1", "Convention 1", { width: "half", hint: "Space for other conventions" }),
-      f("Other_2_1", "Convention 6", { width: "half", hint: "Space for other conventions" }),
-      f("Other_1_2", "Convention 2", { width: "half", hint: "Space for other conventions" }),
-      f("Other_2_2", "Convention 7", { width: "half", hint: "Space for other conventions" }),
-      f("Other_1_3", "Convention 3", { width: "half", hint: "Space for other conventions" }),
-      f("Other_2_3", "Convention 8", { width: "half", hint: "Space for other conventions" }),
-      f("Other_1_4", "Convention 4", { width: "half", hint: "Space for other conventions" }),
-      f("Other_2_4", "Convention 9", { width: "half", hint: "Space for other conventions" }),
-      f("Other_1_5", "Convention 5", { width: "half", hint: "Space for other conventions" }),
-      f("Other_2_5", "Convention 10", { width: "half", hint: "Space for other conventions" }),
+      f("Other_1_1", "Convention 1", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
+      f("Other_2_1", "Convention 6", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
+      f("Other_1_2", "Convention 2", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
+      f("Other_2_2", "Convention 7", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
+      f("Other_1_3", "Convention 3", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
+      f("Other_2_3", "Convention 8", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
+      f("Other_1_4", "Convention 4", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
+      f("Other_2_4", "Convention 9", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
+      f("Other_1_5", "Convention 5", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
+      f("Other_2_5", "Convention 10", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
       notes("Other_0", "Notes"),
     ],
   },
@@ -269,8 +275,8 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Responses to Opening Bids",
     caption: "Describe strength, minimum length, or specific meaning",
     layout: "grid",
-    // The matrix is rendered above; the only fields are the closing notes (the
-    // 2-level 1NT responses now live in §1, the strong-two responses in §4).
+    // The per-opening response blocks are rendered above; the only fields are the
+    // closing notes (the 2-level 1NT responses live in §1, strong-two in §4).
     fields: [
       notes("ResponseNotes_1", "Notes", { group: "Notes", hint: "Space for more notes about responses" }),
       notes("ResponseNotes_2", "Notes (continued)", { group: "Notes" }),
@@ -282,14 +288,15 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 9,
     title: "Conventions",
     layout: "generic",
+    boxedGroups: ["Defence to strong 1♣ / 2♣"],
     fields: [
       f("UnusualNoTrump", "Unusual NT:"),
       f("UnusualNTOther", "Unusual NT — more", { hint: "More space for your unusual NT methods" }),
-      cb("Is4thForcing1Round", "One round", { width: "half", group: "Fourth Suit Forcing" }),
-      cb("Is4thForcingGame", "Game force", { width: "half", group: "Fourth Suit Forcing" }),
-      f("FourthSuitForcing", "Notes", { group: "Fourth Suit Forcing", hint: "Additional notes on your use of 4th suit forcing" }),
-      cb("IsNTCheckback", "NT Checkback", half),
-      f("CheckbackPriorities", "Priorities:", { width: "half", hint: "Priority sequence for checkback replies (e.g. 2-way Checkback, NMF, XYZ)" }),
+      cb("Is4thForcing1Round", "One round", { span: 6, group: "4th Suit Forcing" }),
+      cb("Is4thForcingGame", "Game force", { span: 6, group: "4th Suit Forcing" }),
+      f("FourthSuitForcing", "Notes", { group: "4th Suit Forcing", hint: "Additional notes on your use of 4th suit forcing" }),
+      cb("IsNTCheckback", "NT Checkback", { span: 5 }),
+      f("CheckbackPriorities", "Priorities:", { span: 7, hint: "Priority sequence for checkback replies (e.g. 2-way Checkback, NMF, XYZ)" }),
       f("Defence3NT", "Defence to 3NT opening", { hint: "How do you bid after an opponent opens 3NT?" }),
       f("DefenceOpening2", "Defence to Opening Twos", { hint: "Common notes on your defences to opening two bids" }),
       f("DefenceMulti", "Multi 2♦", { hint: "Describe your defence to multi-two opening bids" }),
@@ -303,8 +310,8 @@ export const SECTIONS: readonly SectionDef[] = [
       f("Over1NTInterfMore", "Over 1NT Interference — more", { hint: "More space for methods after interference over your 1NT" }),
       f("LebensohlOther", "Lebensohl - other uses", { hint: "Other uses of lebensohl (e.g. vs 2-level openings)" }),
       f("TakeOutOf4C4D", "Take out of 4 level pre-empts — 4♣/4♦", { hint: "Takeout after a 4-minor opening (e.g. DBL and/or 4NT)" }),
-      f("TakeOutOf4H", "4♥", { width: "half", hint: "Takeout after 4♥ (e.g. DBL and/or 4NT)" }),
-      f("TakeOutOf4S", "4♠", { width: "half", hint: "Takeout after 4♠ (e.g. DBL and/or 4NT)" }),
+      f("TakeOutOf4H", "4♥", { span: 6, hint: "Takeout after 4♥ (e.g. DBL and/or 4NT)" }),
+      f("TakeOutOf4S", "4♠", { span: 6, hint: "Takeout after 4♠ (e.g. DBL and/or 4NT)" }),
       notes("Conventions_0", "Notes"),
     ],
   },

@@ -4,7 +4,8 @@ import { useCardStore } from "../../state/index.ts";
 import { CheckboxField, ClassificationSwatch, TextField } from "../fields/index.ts";
 
 /** The masthead band: partnership (ABF Nos. / & Names:), basic system, the
- *  classification + system flags — laid out like the printed card's front cover. */
+ *  classification + system flags — laid out like the printed card's front cover.
+ *  Each partner is a row of [number][name]; the row labels name the columns. */
 export function Masthead({ section }: { section: SectionDef }): ReactElement {
   const byKey = (k: string): FieldDef => section.fields.find((f) => f.key === k)!;
   const primary = useCardStore((s) => s.card.primaryPlayer);
@@ -19,12 +20,12 @@ export function Masthead({ section }: { section: SectionDef }): ReactElement {
             Swap print order
           </button>
         </div>
-        <div className="player-row">
+        <div className="abf-grid">
+          <span className="row-lbl">ABF Nos.</span>
           <TextField def={byKey("PlayerNo_A")} />
-          <TextField def={byKey("PlayerNo_B")} />
-        </div>
-        <div className="player-row">
           <TextField def={byKey("PlayerName_A")} />
+          <span className="row-lbl">&amp; Names:</span>
+          <TextField def={byKey("PlayerNo_B")} />
           <TextField def={byKey("PlayerName_B")} />
         </div>
         <div className="field-grid">
