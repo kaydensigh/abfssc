@@ -79,12 +79,69 @@ a {
   border-bottom: 1px solid var(--line);
   padding: 12px 0 0;
 }
+.masthead-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
   font-weight: 700;
   font-size: 18px;
+}
+
+/* ---- Export ("the real save") ------------------------------------------- */
+.export {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--green);
+  background: var(--green);
+  color: #fff;
+  font: inherit;
+  font-weight: 650;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.export-btn:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+.export-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.export-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.export-error {
+  font-size: 13px;
+  color: var(--red);
+  max-width: 22ch;
+}
+.export-notice {
+  font-size: 13px;
+  color: var(--amber);
+  max-width: 26ch;
+}
+@media (max-width: 560px) {
+  .export-btn span:last-child {
+    display: none;
+  }
+  .export-btn {
+    padding: 8px 11px;
+  }
 }
 .brand .suits {
   font-size: 18px;

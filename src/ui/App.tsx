@@ -1,7 +1,7 @@
 import { type ReactElement, useState } from "react";
 import { PAGES, PAGE_BY_ID, SECTION_BY_ID } from "../model/index.ts";
 import { Section } from "./sections/index.ts";
-import { PageNav, StorageIndicator } from "./common/index.ts";
+import { ExportButton, PageNav, StorageIndicator } from "./common/index.ts";
 
 /**
  * App shell: brand + 4-page nav in a sticky header, then the active page — a
@@ -15,14 +15,17 @@ export function App(): ReactElement {
   return (
     <div className="app">
       <header className="masthead-bar">
-        <div className="brand">
-          <span className="suits">
-            <span>♠</span>
-            <span className="r">♥</span>
-            <span className="r">♦</span>
-            <span>♣</span>
-          </span>
-          ABF System Card
+        <div className="masthead-top">
+          <div className="brand">
+            <span className="suits">
+              <span>♠</span>
+              <span className="r">♥</span>
+              <span className="r">♦</span>
+              <span>♣</span>
+            </span>
+            ABF System Card
+          </div>
+          <ExportButton />
         </div>
         <PageNav activeId={activeId} onSelect={setActiveId} />
       </header>
