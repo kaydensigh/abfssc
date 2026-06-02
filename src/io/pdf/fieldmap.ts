@@ -80,3 +80,62 @@ export const PLAYER_SWAP: Readonly<Record<string, string>> = {
 /** Custom Info-dict key + hidden-field name carrying our app-state stamp. */
 export const STAMP_INFO_KEY = "ABFCardState";
 export const STAMP_FIELD = "ABF_AppState";
+
+// ---------------------------------------------------------------------------
+// Import direction (M2). The inverse of the export maps above.
+// ---------------------------------------------------------------------------
+
+/** Reverse of CLASSIFICATION_LITERAL: the form's Classification text → our enum. */
+export const CLASSIFICATION_BY_LITERAL: Readonly<Record<string, Classification>> = Object.fromEntries(
+  Object.entries(CLASSIFICATION_LITERAL).map(([cls, literal]) => [literal, cls as Classification]),
+);
+
+/**
+ * Blank sentinels that occur on CURRENT editable fields. The blank template
+ * parks `^ ` in 231 fields and a lone space in the four "Other/More" overflow
+ * inputs; our own export writes a true empty string. These three are the only
+ * blanks that ever sit on a native field, so they normalise to "" universally.
+ */
+export const NATIVE_EMPTY_VALUES: ReadonlySet<string> = new Set(["", " ", "^ "]);
+
+/**
+ * The wider sentinel set the form's *retired-field migration* uses (gFaRFs in
+ * abf/extracted/beautified_1_block37.js iterates gOfPH — the OLD placeholder
+ * map — and blanks these). Crucially the original applies them ONLY to retired
+ * fields, never to current editable ones: `!+`, `!-`, `!=`, `!n` and a lone
+ * space-run are meaningful rich-code / user content on a live field. So these
+ * extra entries apply ONLY to renamed legacy aliases, not native fields.
+ */
+export const LEGACY_EMPTY_VALUES: ReadonlySet<string> = new Set([
+  ...NATIVE_EMPTY_VALUES,
+  "  ",
+  "!n ",
+  "!= ",
+  "!+",
+  "!+ ",
+  "!-",
+  "!- ",
+]);
+
+/**
+ * Normalise a raw imported /V to "" when it is a blank sentinel. A native
+ * (un-renamed) field only ever blanks to "", " ", or "^ " in the real form, so
+ * for those we must NOT strip legacy-migration sentinels like "!+" / "!- " —
+ * they are legitimate values a current field can hold and must round-trip.
+ */
+export function normalizeFieldValue(raw: string, native: boolean): string {
+  const set = native ? NATIVE_EMPTY_VALUES : LEGACY_EMPTY_VALUES;
+  return set.has(raw) ? "" : raw;
+}
+
+/**
+ * A handful of machinery fields present on every ABF card (and on no ordinary
+ * PDF). Used to reject "this isn't an ABF System Card" before producing a card
+ * full of empty defaults from an unrelated form.
+ */
+export const ABF_SIGNATURE_FIELDS: readonly string[] = [
+  "My_Options",
+  "My_CheckBoxValues",
+  "Classification",
+  "BasicSystem",
+];

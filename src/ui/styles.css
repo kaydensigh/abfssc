@@ -143,6 +143,52 @@ a {
     padding: 8px 11px;
   }
 }
+/* ---- Import (secondary to the green "real save") ----------------------- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.import {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.import-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.import-btn:hover:not(:disabled) {
+  border-color: var(--green);
+  color: var(--green);
+}
+.import-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.import-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+@media (max-width: 560px) {
+  .import-btn span:last-child {
+    display: none;
+  }
+  .import-btn {
+    padding: 8px 11px;
+  }
+}
+
 .brand .suits {
   font-size: 18px;
   letter-spacing: 3px;

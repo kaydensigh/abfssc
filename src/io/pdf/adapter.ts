@@ -10,6 +10,7 @@ import {
   PDFDocument,
   PDFName,
   PDFNumber,
+  PDFString,
   PDFHexString,
   PDFDict,
   PDFArray,
@@ -26,6 +27,8 @@ import {
   CHECKBOX_GLYPH,
   CHECKBOX_OFF,
   CHECKBOX_ON,
+  D_PREFIX,
+  B_PREFIX,
   STAMP_FIELD,
   STAMP_INFO_KEY,
   Z_MY_CLASS,
@@ -309,4 +312,53 @@ export async function loadTemplate(bytes: Uint8Array | ArrayBuffer): Promise<Pdf
       /* button mirror is best-effort */
     }
   }
+}
+
+/** What a read pass extracts from a filled form — pure data, no pdf-lib past here. */
+export interface FormReadResult {
+  /** Number of AcroForm fields (0 ⇒ flattened/signed/printed — not importable). */
+  numFields: number;
+  /** Raw field name → decoded /V text (string-valued fields only; D_/B_ skipped). */
+  fields: Map<string, string>;
+  /** Our embedded app-state JSON (Info-dict key, else the hidden field), or null. */
+  stampJson: string | null;
+}
+
+/**
+ * Read a filled ABF form into raw field values + our app-state stamp. The ONLY
+ * read entry point through the pdf-lib quarantine; all interpretation (name
+ * normalisation, sentinel handling, model shaping) lives above in pdf-lib-free
+ * code. We read /V straight off each field dict — never field.getText(), which
+ * throws RichTextFieldReadError on the 245 RichText D_ twins.
+ */
+export async function readForm(bytes: Uint8Array | ArrayBuffer): Promise<FormReadResult> {
+  const doc = await PDFDocument.load(bytes, { ignoreEncryption: true, updateMetadata: false });
+  const ctx = doc.context;
+  const form = doc.getForm();
+  const all = form.getFields();
+
+  const fields = new Map<string, string>();
+  for (const f of all) {
+    const name = f.getName();
+    if (name.startsWith(D_PREFIX) || name.startsWith(B_PREFIX)) continue; // display twins carry no data
+    const v = f.acroField.dict.lookup(PDFName.of("V"));
+    if (v instanceof PDFString || v instanceof PDFHexString) fields.set(name, v.decodeText());
+  }
+
+  // App-state stamp: prefer the Info-dict key (survives a plain save), then fall
+  // back to the redundant hidden ABF_AppState field.
+  let stampJson: string | null = null;
+  const infoRef = ctx.trailerInfo.Info;
+  const info = infoRef ? ctx.lookup(infoRef) : undefined;
+  if (info instanceof PDFDict) {
+    const s = info.lookup(PDFName.of(STAMP_INFO_KEY));
+    if (s instanceof PDFString || s instanceof PDFHexString) stampJson = s.decodeText();
+  }
+  if (stampJson === null) {
+    const hidden = fields.get(STAMP_FIELD);
+    if (hidden) stampJson = hidden;
+  }
+  fields.delete(STAMP_FIELD); // machinery, not card data
+
+  return { numFields: all.length, fields, stampJson };
 }
