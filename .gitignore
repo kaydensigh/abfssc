@@ -4,3 +4,7 @@ dist/
 .DS_Store
 .vite/
 coverage/
+
+# Generated app screenshots (npm run shots). The reference PDF pages directly
+# under abf/screenshots/ are tracked; the app captures under app/ are not.
+abf/screenshots/app/

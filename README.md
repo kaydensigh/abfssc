@@ -18,7 +18,19 @@ npm run dev        # local dev server
 npm run build      # static production build → dist/
 npm test           # vitest (render engine, model, store, components)
 npm run typecheck  # tsc project build, no emit
+npm run shots      # screenshot all 4 pages → abf/screenshots/app/page-1..4.png
 ```
+
+### Visual inspection
+
+`npm run shots` boots Vite in-process and drives a headless Chromium over all
+four page tabs, writing one full-height PNG per page to `abf/screenshots/app/`
+(git-ignored). It's the quick way to eyeball the browser-rendered card — e.g.
+diffing it against the blank reference pages tracked directly under
+`abf/screenshots/1-4.png` (those are the four pages of the printed ABF PDF).
+Pass a directory to write elsewhere: `node scripts/screenshot.mjs <out-dir>`.
+
+It needs the one-time Playwright browser download: `npx playwright install chromium`.
 
 ### Layout
 
