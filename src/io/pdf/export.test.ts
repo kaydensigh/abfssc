@@ -53,7 +53,7 @@ function populated(): Card {
   card.flags.IsBlackwood = true;
   card.flags.IsBrownSticker = true;
   card.classification = "green";
-  card.responses["1C"] = { General: "natural-ish", "1H": "forcing 1 round" };
+  card.responses["1C"] = { "1H": "forcing 1 round" };
   return card;
 }
 
@@ -113,10 +113,10 @@ describe("buildCardPdf (export half of the round-trip)", () => {
     expect(readAS(out, "Z_Sticker.undefined")).toBe("/"); // brown sticker set
   });
 
-  it("fills the §8 grid cell and drops the unmapped General approach", () => {
+  it("fills the §8 grid cell and authors its D_ twin", () => {
     expect(readV(out, "Resp1C_1H")).toBe("forcing 1 round");
     expect(readAp(out, "D_Resp1C_1H")).toContain("(forcing 1 round)");
-    expect(warnings.some((w) => /General/.test(w))).toBe(true);
+    expect(warnings).toEqual([]); // a fully-mapped card emits no warnings
   });
 
   it("embeds the app-state stamp in the Info dict", () => {

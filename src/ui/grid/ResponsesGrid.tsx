@@ -88,7 +88,7 @@ function AccordionCell({ opening, bid }: { opening: SuitOpening; bid: ResponseBi
  * not-applicable holes and are skipped by keyboard navigation.
  */
 export function ResponsesGrid(): ReactElement {
-  const [active, setActive] = useState<{ op: SuitOpening; bid: ResponseBid }>({ op: OPENINGS[0], bid: "General" });
+  const [active, setActive] = useState<{ op: SuitOpening; bid: ResponseBid }>({ op: OPENINGS[0], bid: GRID_CELLS[OPENINGS[0]][0] });
   const refs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   const registerRef = useCallback((key: string, el: HTMLButtonElement | null) => {

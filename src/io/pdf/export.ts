@@ -99,10 +99,6 @@ export async function buildCardPdf(
     for (const bid of GRID_CELLS[opening]) {
       const raw = row[bid];
       if (raw === undefined || raw === "") continue;
-      if (bid === "General") {
-        warnings.push(`§8 ${opening} "General" approach has no field in the form — dropped`);
-        continue;
-      }
       const name = gridFieldName(opening, bid);
       tpl.setEditableValue(name, raw);
       const spans = render(raw, name, false);

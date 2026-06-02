@@ -11,9 +11,9 @@ describe("§8 grid axes", () => {
     expect(OPENINGS).toEqual(["1C", "1D", "1H", "1S", "1NT", "2C", "2D", "2H", "2S", "2NT"]);
   });
   it("matches the ragged cell sets from the field tree", () => {
-    expect(GRID_CELLS["1C"]).toHaveLength(17); // General + 16 cells
-    expect(GRID_CELLS["1H"]).toHaveLength(14); // General + 13 cells
-    expect(GRID_CELLS["1NT"]).toEqual(["General", "3C", "3D", "3H", "3S", "3NT", "4C", "4D", "4H", "4S", "Other"]);
+    expect(GRID_CELLS["1C"]).toHaveLength(16); // 16 response cells
+    expect(GRID_CELLS["1H"]).toHaveLength(13); // 13 response cells
+    expect(GRID_CELLS["1NT"]).toEqual(["3C", "3D", "3H", "3S", "3NT", "4C", "4D", "4H", "4S", "Other"]);
   });
   it("every cell is a member of the column union", () => {
     for (const opening of OPENINGS) {
@@ -28,7 +28,6 @@ describe("§8 grid axes", () => {
     expect(cellExists("1H", "1D")).toBe(false);
   });
   it("maps grid coordinates to canonical PDF field names", () => {
-    expect(gridFieldName("1C", "General")).toBe("Resp1C");
     expect(gridFieldName("1C", "2D")).toBe("Resp1C_2D");
     expect(gridFieldName("2S", "Other")).toBe("Resp2S_Other");
   });
@@ -96,7 +95,7 @@ describe("migration guard", () => {
     original.classification = "green";
     original.primaryPlayer = 1;
     original.revision = { label: "v2", counter: 4, parent: 3 };
-    original.responses = { "1C": { General: "natural", "2D": "inverted" } };
+    original.responses = { "1C": { "1D": "natural", "2D": "inverted" } };
 
     const restored = migrate(JSON.parse(JSON.stringify(original)));
     expect(restored.id).toBe("abc");
@@ -128,5 +127,11 @@ describe("migration guard", () => {
     expect("NotAnOpening" in c.responses).toBe(false);
     expect(c.flags.IsBlackwood).toBe(false); // "yes" is not a boolean
     expect(c.flags.IsGerber).toBe(true);
+  });
+  it("drops a legacy 'General' approach cell (removed from the §8 grid)", () => {
+    // Old autosaves may carry responses[opening].General; sanitizeResponses keeps
+    // only cells still present in GRID_CELLS, so the stray key is cleaned on load.
+    const c = migrate({ responses: { "1C": { General: "old approach", "1D": "keep" } } });
+    expect(c.responses["1C"]).toEqual({ "1D": "keep" });
   });
 });

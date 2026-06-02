@@ -10,10 +10,10 @@ beforeEach(() => {
 });
 
 describe("§8 responses grid", () => {
-  it("renders the general and Other columns", () => {
-    expect(screen.queryByRole("columnheader", { name: "Gen." })).toBeNull(); // not yet rendered
+  it("renders the response and Other columns", () => {
+    expect(screen.queryByRole("columnheader", { name: "Other" })).toBeNull(); // not yet rendered
     render(<ResponsesGrid />);
-    expect(screen.getByRole("columnheader", { name: "Gen." })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "1♦" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Other" })).toBeInTheDocument();
   });
 
@@ -36,9 +36,9 @@ describe("§8 responses grid", () => {
   it("moves between existing cells with the arrow keys, skipping holes", async () => {
     const user = userEvent.setup();
     render(<ResponsesGrid />);
-    screen.getByRole("button", { name: "1♣ → Gen." }).focus();
+    screen.getByRole("button", { name: "1♣ → 1♦" }).focus();
     await user.keyboard("{ArrowRight}");
-    expect(screen.getByRole("button", { name: "1♣ → 1♦" })).toHaveFocus(); // next existing cell
+    expect(screen.getByRole("button", { name: "1♣ → 1♥" })).toHaveFocus(); // next existing cell
 
     screen.getByRole("button", { name: "1♣ → 2♦" }).focus();
     await user.keyboard("{ArrowDown}");
@@ -47,10 +47,10 @@ describe("§8 responses grid", () => {
 
   it("does not enter edit mode merely on focus (keyboard-navigable)", () => {
     render(<ResponsesGrid />);
-    const cell = screen.getByRole("button", { name: "1♣ → Gen." });
+    const cell = screen.getByRole("button", { name: "1♣ → 1♦" });
     cell.focus();
     // still a button (display), not an input
     expect(cell.tagName).toBe("BUTTON");
-    expect(screen.queryByRole("textbox", { name: "1♣ → Gen." })).toBeNull();
+    expect(screen.queryByRole("textbox", { name: "1♣ → 1♦" })).toBeNull();
   });
 });

@@ -5,16 +5,14 @@ export type { Classification };
 /** Raw !-code source the user typed; the rendered form is DERIVED, never stored. */
 export type CodedText = string;
 
-/** The ten opening bids that head the §8 response grid (the bare Resp<x> rows). */
+/** The ten opening bids that head the §8 response grid (one row of Resp<x>_<bid> cells each). */
 export type SuitOpening = "1C" | "1D" | "1H" | "1S" | "1NT" | "2C" | "2D" | "2H" | "2S" | "2NT";
 
 /**
- * §8 response columns. "General" is the per-row "general approach" cell (the
- * bare `Resp<opening>` field, a distinct logical field, not a bid). "Other" is
- * the catch-all. The rest are response bids in bridge order.
+ * §8 response columns. "Other" is the catch-all; the rest are response bids in
+ * bridge order.
  */
 export type ResponseBid =
-  | "General"
   | "1D"
   | "1H"
   | "1S"
