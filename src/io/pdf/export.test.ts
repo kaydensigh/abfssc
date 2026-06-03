@@ -42,6 +42,20 @@ function readAp(doc: PDFDocument, name: string): string {
   return new TextDecoder("latin1").decode(decodePDFRawStream(n as any).decode());
 }
 
+/** Decode a radio widget's on-state ("/") N appearance stream to operator text. */
+function readRadioAp(doc: PDFDocument, name: string): string {
+  const f = doc.getForm().getFields().find((x) => x.getName() === name);
+  const w = f?.acroField.getWidgets()[0];
+  const ap = w?.dict.lookup(PDFName.of("AP"));
+  if (!(ap instanceof PDFDict)) return "";
+  const n = ap.lookup(PDFName.of("N"));
+  if (!(n instanceof PDFDict)) return "";
+  const s = n.lookup(PDFName.of(""));
+  if (!s || !("dict" in (s as object))) return "";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new TextDecoder("latin1").decode(decodePDFRawStream(s as any).decode());
+}
+
 function populated(): Card {
   const card = createEmptyCard({ id: "11111111-1111-4111-8111-111111111111", now: "2026-06-02T00:00:00.000Z" });
   card.fields.BasicSystem = "2 over 1";
@@ -128,9 +142,36 @@ describe("buildCardPdf (export half of the round-trip)", () => {
 
   it("writes the classification literal and turns on the cover boxes", () => {
     expect(readV(out, "Classification")).toBe("Green");
-    // the printed mirror is the Z_MyClass/Z_Sticker button (on-state name = "/")
-    expect(readAS(out, "Z_MyClass.undefined")).toBe("/");
-    expect(readAS(out, "Z_Sticker.undefined")).toBe("/"); // brown sticker set
+    // /AS stays on the safe "/Off" state (Acrobat/PDFium drop the empty-name
+    // "/" state); the colour lives in that state's appearance, on/off in /V.
+    expect(readAS(out, "Z_MyClass.undefined")).toBe("/Off");
+    expect(readV(out, "Z_MyClass.undefined")).toBe("/"); // logically on
+    expect(readAS(out, "Z_Sticker.undefined")).toBe("/Off");
+    expect(readV(out, "Z_Sticker.undefined")).toBe("/"); // brown sticker set
+  });
+
+  it("ticks the chosen classification colour box and the brown-sticker box", () => {
+    // Green selected → its imitation-checkbox shows an X, the others stay blank.
+    expect(readAp(out, "Q_Green")).toContain("(X) Tj");
+    expect(readV(out, "Q_Green")).toBe("X");
+    expect(readAp(out, "Q_Blue")).not.toContain("(X) Tj");
+    expect(readAp(out, "Q_Red")).not.toContain("(X) Tj");
+    expect(readAp(out, "Q_Yellow")).not.toContain("(X) Tj");
+    // Brown sticker set → its box is ticked too.
+    expect(readAp(out, "Q_Brown")).toContain("(X) Tj");
+    expect(readV(out, "Q_Brown")).toBe("X");
+  });
+
+  it("paints the top-right classification + sticker circles in colour", () => {
+    // Green classification → a green filled disc with a black ring (not white).
+    const myClass = readRadioAp(out, "Z_MyClass.undefined");
+    expect(myClass).toContain("0.03 0.97 0.03 rg"); // green fill
+    expect(myClass).toContain("0 G"); // black ring
+    expect(myClass).not.toContain("1 1 1 rg"); // not the invisible white default
+    // Brown sticker → the orange-brown disc.
+    const sticker = readRadioAp(out, "Z_Sticker.undefined");
+    expect(sticker).toContain("0.937 0.463 0.129 rg");
+    expect(sticker).toContain("0 G");
   });
 
   it("fills the §8 grid cell and authors its D_ twin", () => {
@@ -176,7 +217,22 @@ describe("buildCardPdf (export half of the round-trip)", () => {
     const r = await buildCardPdf(blank, TEMPLATE.slice(0));
     const d = await PDFDocument.load(r.bytes, { ignoreEncryption: true, updateMetadata: false });
     expect(readAS(d, "Z_MyClass.undefined")).toBe("/Off");
+    expect(readV(d, "Z_MyClass.undefined")).toBe("/Off"); // logically off
     expect(readAS(d, "Z_Sticker.undefined")).toBe("/Off");
+    expect(readV(d, "Z_Sticker.undefined")).toBe("/Off");
+    // No colour box is ticked, and the literal reads "not set".
+    expect(readV(d, "Classification")).toBe("not set");
+    for (const q of ["Q_Green", "Q_Blue", "Q_Red", "Q_Yellow", "Q_Brown"]) {
+      expect(readAp(d, q)).not.toContain("(X) Tj");
+    }
+    // Z_MyClass keeps the empty black-ringed outline (white fill); Z_Sticker is
+    // a white disc with no ring (fully invisible) — matching the form's scripts.
+    const myClass = readRadioAp(d, "Z_MyClass.undefined");
+    expect(myClass).toContain("1 1 1 rg"); // white fill
+    expect(myClass).toContain("0 G"); // but still ringed
+    const sticker = readRadioAp(d, "Z_Sticker.undefined");
+    expect(sticker).toContain("1 1 1 rg");
+    expect(sticker).not.toContain("0 G"); // no ring when off
   });
 
   it("honours swap-to-print: B prints in slot A while editable /V stays canonical", async () => {

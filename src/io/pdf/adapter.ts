@@ -20,26 +20,80 @@ import {
 } from "pdf-lib";
 import type { PDFRef, PDFField, PDFWidgetAnnotation } from "pdf-lib";
 import type { Span, Suit } from "../../render/types.ts";
-import type { CheckboxStyle } from "../../model/index.ts";
+import type { Classification } from "../../model/index.ts";
 import { buildAppearance, type EncodedRun, type FontShop, type FontStyle } from "./appearance.ts";
 import { SOLID_SUIT_PATHS } from "./suitGlyphs.ts";
 import {
   bTwin,
-  CHECKBOX_GLYPH,
   CHECKBOX_OFF,
   CHECKBOX_ON,
+  CLASSIFICATION_RGB,
   D_PREFIX,
   B_PREFIX,
+  Q_BOX,
+  Q_BROWN,
   STAMP_FIELD,
   STAMP_INFO_KEY,
+  STICKER_RGB,
+  WHITE_RGB,
   Z_MY_CLASS,
   Z_STICKER,
 } from "./fieldmap.ts";
+
+type RGB = readonly [number, number, number];
 
 const DEFAULT_SIZE = 10; // gTFz body size
 const encoder = new TextEncoder();
 
 const fmt = (n: number): string => n.toFixed(3).replace(/\.?0+$/, "");
+
+/** A circle as four cubic Béziers (kappa≈0.5523 — the value the form's own
+ *  appearances use), centred at (cx,cy) with radius r. Path ops only; the caller
+ *  supplies the fill/stroke verb. */
+function circlePath(cx: number, cy: number, r: number): string {
+  const k = r * 0.5523;
+  return (
+    `${fmt(cx + r)} ${fmt(cy)} m\n` +
+    `${fmt(cx + r)} ${fmt(cy + k)} ${fmt(cx + k)} ${fmt(cy + r)} ${fmt(cx)} ${fmt(cy + r)} c\n` +
+    `${fmt(cx - k)} ${fmt(cy + r)} ${fmt(cx - r)} ${fmt(cy + k)} ${fmt(cx - r)} ${fmt(cy)} c\n` +
+    `${fmt(cx - r)} ${fmt(cy - k)} ${fmt(cx - k)} ${fmt(cy - r)} ${fmt(cx)} ${fmt(cy - r)} c\n` +
+    `${fmt(cx + k)} ${fmt(cy - r)} ${fmt(cx + r)} ${fmt(cy - k)} ${fmt(cx + r)} ${fmt(cy)} c`
+  );
+}
+
+/** A filled disc (optionally black-ringed) sized to a w×h widget — the static
+ *  twin of the form's runtime-coloured `Z_*` classification/sticker circle. */
+function circleAppearance(width: number, height: number, fill: RGB, ring: boolean): string {
+  const r = Math.min(width, height) / 2;
+  const cx = width / 2;
+  const cy = height / 2;
+  let s = `${fmt(fill[0])} ${fmt(fill[1])} ${fmt(fill[2])} rg\n${circlePath(cx, cy, r)}\nf\n`;
+  // The form keeps the stroke just inside the fill (r-0.5) so the 1pt ring isn't
+  // clipped by the BBox. Stroke is black; fill-only when the ring is off.
+  if (ring) s += `0 G\n1 w\n${circlePath(cx, cy, r - 0.5)}\ns\n`;
+  return s;
+}
+
+/** The form's checkbox-glyph size. Every imitation checkbox — the `Q_*` colour
+ *  boxes and the `B_*` print twins alike — draws its tick at 14pt (the size the
+ *  original/Acrobat uses), so they all look identical. */
+const CHECKBOX_SIZE = 14;
+
+/** Draw one already-encoded glyph centred in a w×h text-field box (the shared
+ *  look of every imitation checkbox). `fontName` is an /AP-resources font key. */
+function boxGlyphAp(width: number, height: number, fontName: string, bytes: number[], glyphWidth: number): string {
+  const gx = (width - glyphWidth) / 2;
+  const gy = (height - CHECKBOX_SIZE * 0.717) / 2; // centre the cap height
+  return (
+    `/Tx BMC\nq\n0 0 ${fmt(width)} ${fmt(height)} re\nW\nn\nBT\n/${fontName} ${CHECKBOX_SIZE} Tf\n0 g\n` +
+    `1 0 0 1 ${fmt(gx)} ${fmt(gy)} Tm\n(${escapeBytes(bytes)}) Tj\nET\nQ\nEMC\n`
+  );
+}
+
+/** A blank (cleared) imitation-checkbox appearance — just the clip, no glyph. */
+function emptyBoxAp(width: number, height: number): string {
+  return `/Tx BMC\nq\n0 0 ${fmt(width)} ${fmt(height)} re\nW\nn\nQ\nEMC\n`;
+}
 
 /** Escape a byte array into the inner body of a PDF literal string `( … )`. */
 function escapeBytes(bytes: number[]): string {
@@ -83,27 +137,20 @@ function encodeRun(font: PDFFont, text: string, size: number): { bytes: number[]
   return { bytes, width };
 }
 
-/** Strict encode (throws if any glyph is unsupported) — used for tick fallback. */
-function encodeStrict(font: PDFFont, text: string, size: number): { bytes: number[]; width: number } {
-  const bytes: number[] = [];
-  let width = 0;
-  for (const ch of text) {
-    const inner = font.encodeText(ch).toString().slice(1, -1);
-    for (let i = 0; i < inner.length; i += 2) bytes.push(parseInt(inner.slice(i, i + 2), 16));
-    width += font.widthOfTextAtSize(ch, size);
-  }
-  return { bytes, width };
-}
-
 export interface PdfTemplate {
   /** Set an editable field's /V (NoView; carries the value for round-trip). */
   setEditableValue(name: string, raw: string): void;
   /** Author a D_ twin's rich /AP from rendered spans. Returns false if absent. */
   writeRichField(dTwinName: string, spans: Span[], multiline: boolean): boolean;
-  /** Set a checkbox editable /V and paint its B_ print twin. */
-  writeCheckbox(editableName: string, on: boolean, style: CheckboxStyle): void;
-  /** Write the Classification literal and toggle the cover class/sticker boxes. */
-  setClassification(literal: string, classified: boolean, sticker: boolean): void;
+  /** Set a checkbox editable /V and paint its B_ print twin (a Helvetica "X"). */
+  writeCheckbox(editableName: string, on: boolean): void;
+  /**
+   * Write the Classification literal and paint the visible classification +
+   * brown-sticker marks: the on-page `Q_*` "X" checkboxes and the top-right
+   * `Z_*` colour circles (the form's JS draws these at runtime; we author them
+   * statically so the card is correct in any viewer).
+   */
+  setClassification(literal: string, classification: Classification, sticker: boolean): void;
   /** Embed our app-state stamp (Info-dict key + a hidden field). */
   addStamp(json: string): void;
   save(): Promise<Uint8Array>;
@@ -119,13 +166,14 @@ export async function loadTemplate(bytes: Uint8Array | ArrayBuffer): Promise<Pdf
   const byName = new Map<string, PDFField>();
   for (const f of fields) byName.set(f.getName(), f);
 
-  // Fonts: embed the Helvetica family + ZapfDingbats (standard-14, no fontkit);
-  // reuse the form's already-embedded /Cards TrueType for suit glyphs.
+  // Fonts: embed the Helvetica family (standard-14, no fontkit); reuse the
+  // form's already-embedded /Cards TrueType for suit glyphs. Checkbox ticks are
+  // a plain Helvetica "X" — no ZapfDingbats, which Chrome's PDF engine can't
+  // reliably render.
   const helv = await doc.embedFont(StandardFonts.Helvetica);
   const helvB = await doc.embedFont(StandardFonts.HelveticaBold);
   const helvO = await doc.embedFont(StandardFonts.HelveticaOblique);
   const helvBO = await doc.embedFont(StandardFonts.HelveticaBoldOblique);
-  const zapf = await doc.embedFont(StandardFonts.ZapfDingbats);
 
   const dr = acro.lookup(PDFName.of("DR"), PDFDict);
   const drFonts = dr.lookup(PDFName.of("Font"), PDFDict);
@@ -140,7 +188,7 @@ export async function loadTemplate(bytes: Uint8Array | ArrayBuffer): Promise<Pdf
   };
 
   const apName = (font: PDFFont): string =>
-    font === helvB ? "Fn1" : font === helvO ? "HeOb" : font === helvBO ? "HeBO" : font === zapf ? "ZaDb" : "F1";
+    font === helvB ? "Fn1" : font === helvO ? "HeOb" : font === helvBO ? "HeBO" : "F1";
 
   const shop: FontShop = {
     encode(text: string, style: FontStyle) {
@@ -164,7 +212,7 @@ export async function loadTemplate(bytes: Uint8Array | ArrayBuffer): Promise<Pdf
   // Shared AP /Resources font dict (all candidates; same shared refs everywhere).
   const apResources = () =>
     ctx.obj({
-      Font: { F1: helv.ref, Fn1: helvB.ref, HeOb: helvO.ref, HeBO: helvBO.ref, Cards: cardsRef, ZaDb: zapf.ref },
+      Font: { F1: helv.ref, Fn1: helvB.ref, HeOb: helvO.ref, HeBO: helvBO.ref, Cards: cardsRef },
     });
 
   const widgetOf = (name: string): PDFWidgetAnnotation | undefined => {
@@ -234,7 +282,7 @@ export async function loadTemplate(bytes: Uint8Array | ArrayBuffer): Promise<Pdf
       return true;
     },
 
-    writeCheckbox(editableName, on, style) {
+    writeCheckbox(editableName, on) {
       setV(editableName, pdfStr(on ? CHECKBOX_ON : CHECKBOX_OFF));
       const bn = bTwin(editableName);
       const w = widgetOf(bn);
@@ -244,37 +292,32 @@ export async function loadTemplate(bytes: Uint8Array | ArrayBuffer): Promise<Pdf
       const height = y1 - y0;
       let content: string;
       if (on) {
-        const g = CHECKBOX_GLYPH[style];
-        const size = Math.min(width, height) * 0.86;
-        let fontName = "Fn1";
-        let enc: { bytes: number[]; width: number };
-        if (g.dingbat) {
-          try {
-            enc = encodeStrict(zapf, g.char, size);
-            fontName = "ZaDb";
-          } catch {
-            enc = encodeRun(helvB, "X", size); // fallback: bold X
-          }
-        } else {
-          enc = encodeRun(helvB, g.char, size);
-        }
-        const gx = (width - enc.width) / 2;
-        const gy = (height - size) / 2 + size * 0.18;
-        content =
-          `/Tx BMC\nq\n0 0 ${fmt(width)} ${fmt(height)} re\nW\nn\nBT\n0 g\n/${fontName} ${fmt(size)} Tf\n` +
-          `1 0 0 1 ${fmt(gx)} ${fmt(gy)} Tm\n(${escapeBytes(enc.bytes)}) Tj\nET\nQ\nEMC\n`;
-        byName.get(bn)?.acroField.dict.set(PDFName.of("V"), pdfStr(g.char));
+        // Drawn exactly like the Q_* classification boxes: a 14pt Helvetica "X"
+        // centred in the box — renders in every viewer (Chrome included).
+        const { bytes, width: gw } = encodeRun(helv, "X", CHECKBOX_SIZE);
+        content = boxGlyphAp(width, height, "F1", bytes, gw);
+        byName.get(bn)?.acroField.dict.set(PDFName.of("V"), pdfStr("X"));
       } else {
-        content = `/Tx BMC\nq\n0 0 ${fmt(width)} ${fmt(height)} re\nW\nn\nQ\nEMC\n`;
+        content = emptyBoxAp(width, height);
         byName.get(bn)?.acroField.dict.set(PDFName.of("V"), pdfStr(" "));
       }
       writeAp(w, content, width, height);
     },
 
-    setClassification(literal, classified, sticker) {
+    setClassification(literal, classification, sticker) {
       setV("Classification", pdfStr(literal));
-      toggleButton(Z_MY_CLASS, classified);
-      toggleButton(Z_STICKER, sticker);
+      const classified = classification !== "unset";
+      // The four colour "imitation checkboxes": the chosen colour shows an X.
+      for (const cls of Object.keys(Q_BOX) as (keyof typeof Q_BOX)[]) {
+        paintQBox(Q_BOX[cls], cls === classification);
+      }
+      paintQBox(Q_BROWN, sticker);
+      // The two top-right circles. Z_MyClass always carries a black ring (the
+      // form draws the outline even when unset); its fill is the colour, or
+      // white when unset. Z_Sticker is brown with a black ring when set, else
+      // a white (invisible) disc with no ring — matching the form's /AA scripts.
+      paintRadioCircle(Z_MY_CLASS, classified ? CLASSIFICATION_RGB[classification] : WHITE_RGB, true, classified);
+      paintRadioCircle(Z_STICKER, sticker ? STICKER_RGB : WHITE_RGB, sticker, sticker);
     },
 
     addStamp(json) {
@@ -307,14 +350,81 @@ export async function loadTemplate(bytes: Uint8Array | ArrayBuffer): Promise<Pdf
     },
   };
 
-  function toggleButton(parentName: string, on: boolean): void {
+  /** Paint a `Q_*` imitation-checkbox text field: a centred "X" when on, blank
+   *  otherwise, plus its /V (so our own import round-trips the visible state). */
+  function paintQBox(name: string, on: boolean): void {
+    const w = widgetOf(name);
+    if (!w) return;
+    const [x0, y0, x1, y1] = rectOf(w);
+    const width = x1 - x0;
+    const height = y1 - y0;
+    let content: string;
+    if (on) {
+      const { bytes, width: gw } = encodeRun(helv, "X", CHECKBOX_SIZE);
+      content = boxGlyphAp(width, height, "F1", bytes, gw);
+    } else {
+      content = emptyBoxAp(width, height);
+    }
+    writeAp(w, content, width, height);
+    byName.get(name)?.acroField.dict.set(PDFName.of("V"), pdfStr(on ? "X" : " "));
+  }
+
+  /** Recolour a `Z_*` classification/sticker radio circle. The blank form's
+   *  on-state appearance is white (it leans on Acrobat JS); we author the
+   *  coloured disc directly so it shows in any viewer.
+   *
+   *  Crucially we mirror Adobe's own regeneration exactly: keep the widget's
+   *  /AS pointing at the normal "Off" state and paint THAT state the chosen
+   *  colour (both states get it, and /D too). Pointing /AS at the empty-name
+   *  "on" state ("/") renders in lax viewers like poppler but is silently
+   *  dropped by Acrobat / PDFium / pdf.js — which is why the circle "didn't
+   *  show". The logical on/off still lives in the field /V. */
+  function paintRadioCircle(parentName: string, fill: RGB, ring: boolean, on: boolean): void {
     const f = byName.get(parentName) ?? fields.find((x) => x.getName().startsWith(parentName + "."));
     if (!f) return;
-    // The "on" appearance state is the empty name ("/"); off is "/Off".
-    const state = PDFName.of(on ? "" : "Off");
+    const w = f.acroField.getWidgets()[0];
+    if (!w) return;
+    const [x0, y0, x1, y1] = rectOf(w);
+    const width = x1 - x0;
+    const height = y1 - y0;
+    const apDict = ctx.obj({
+      Type: "XObject",
+      Subtype: "Form",
+      FormType: 1,
+      BBox: [0, 0, width, height],
+      Matrix: [1, 0, 0, 1, 0, 0],
+      Resources: { ProcSet: [PDFName.of("PDF")] },
+    });
+    const ref = ctx.register(PDFRawStream.of(apDict, encoder.encode(circleAppearance(width, height, fill, ring))));
+    // Both states (and /N + /D) share the one coloured disc, so the result is
+    // the same colour whichever appearance the viewer resolves.
+    const states = () => {
+      const d = ctx.obj({});
+      d.set(PDFName.of(""), ref);
+      d.set(PDFName.of("Off"), ref);
+      return d;
+    };
+    let ap = w.dict.lookup(PDFName.of("AP"));
+    if (!(ap instanceof PDFDict)) {
+      ap = ctx.obj({});
+      w.dict.set(PDFName.of("AP"), ap);
+    }
+    (ap as PDFDict).set(PDFName.of("N"), states());
+    (ap as PDFDict).set(PDFName.of("D"), states());
+    // Mirror the colour into /MK + /DA so a regeneration from MK stays correct.
+    let mk = w.dict.lookup(PDFName.of("MK"));
+    if (!(mk instanceof PDFDict)) {
+      mk = ctx.obj({});
+      w.dict.set(PDFName.of("MK"), mk);
+    }
+    (mk as PDFDict).set(PDFName.of("BG"), ctx.obj([...fill]));
+    if (ring) (mk as PDFDict).set(PDFName.of("BC"), ctx.obj([0]));
+    else (mk as PDFDict).delete(PDFName.of("BC"));
+    w.dict.set(PDFName.of("DA"), PDFString.of(`/ZaDb 0 Tf ${fmt(fill[0])} ${fmt(fill[1])} ${fmt(fill[2])} rg`));
+    // Keep /AS on the safe normal "/Off" state (see above); /V carries on/off.
     try {
-      f.acroField.dict.set(PDFName.of("V"), state);
-      for (const w of f.acroField.getWidgets()) w.dict.set(PDFName.of("AS"), state);
+      f.acroField.dict.set(PDFName.of("V"), PDFName.of(on ? "" : "Off"));
+      for (const ww of f.acroField.getWidgets()) ww.dict.set(PDFName.of("AS"), PDFName.of("Off"));
     } catch {
       /* button mirror is best-effort */
     }

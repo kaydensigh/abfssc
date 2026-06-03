@@ -2,7 +2,7 @@
 // adapter and orchestrator consume these. Every fact is grounded in the live
 // ABF_Card_FORM.pdf (probed against the shipped asset) and the form's own JS.
 
-import type { CheckboxStyle, Classification } from "../../model/index.ts";
+import type { Classification } from "../../model/index.ts";
 
 /** A field's display (print) twin and its checkbox print-mirror prefixes. */
 export const D_PREFIX = "D_";
@@ -43,18 +43,11 @@ export const MERGE_CHILD: Readonly<Record<string, string>> = Object.fromEntries(
   Object.entries(ORPHAN_MERGE).map(([child, parent]) => [parent, child]),
 );
 
-/**
- * The "on" glyph for each tick style. The form's default `My_CheckBoxValues`
- * is the Helvetica letter "X" (Big-X). The other three presets are dingbats
- * (rendered via ZapfDingbats, already in the form's /DR). `dingbat:false` →
- * Helvetica-Bold; `dingbat:true` → ZapfDingbats with a Helvetica-"X" fallback.
- */
-export const CHECKBOX_GLYPH: Readonly<Record<CheckboxStyle, { char: string; dingbat: boolean }>> = {
-  bigX: { char: "X", dingbat: false },
-  cross: { char: "✗", dingbat: true }, // ✗
-  tick: { char: "✔", dingbat: true }, // ✔
-  smallBlack: { char: "■", dingbat: true }, // ■
-};
+// Every imitation checkbox prints a plain Helvetica "X" (drawn by the adapter),
+// matching the Q_* classification boxes and rendering in every viewer. The
+// form's `My_CheckBoxValues` tick-style presets (cross/tick/square) were
+// ZapfDingbats glyphs, which Chrome's PDF engine can't reliably draw, so we no
+// longer use them on export. (The `checkboxStyle` setting still round-trips.)
 
 /** Editable-field "on"/"off" values the form cycles a checkbox through. */
 export const CHECKBOX_ON = "Yes";
@@ -63,6 +56,39 @@ export const CHECKBOX_OFF = "Off";
 /** The front-cover button mirrors for classification + brown sticker. */
 export const Z_MY_CLASS = "Z_MyClass";
 export const Z_STICKER = "Z_Sticker";
+
+/**
+ * Fill RGB for the top-right `Z_MyClass` classification circle, per colour. The
+ * form's blank `Z_*` on-state appearance is *white* (invisible) — the original
+ * relies on Acrobat JS to recolour it at runtime. These are the exact triples
+ * the `Classification` field's own `/AA /F` script applies (probed from the
+ * asset): unset stays white, so the circle is an empty black-ringed outline.
+ */
+export const CLASSIFICATION_RGB: Readonly<Record<Exclude<Classification, "unset">, readonly [number, number, number]>> = {
+  green: [0.03, 0.97, 0.03],
+  blue: [0.03, 0.03, 0.97],
+  red: [0.97, 0.03, 0.03],
+  yellow: [0.97, 0.97, 0.03],
+};
+
+/** Fill RGB for the `Z_Sticker` circle when the brown sticker is set (else white). */
+export const STICKER_RGB: readonly [number, number, number] = [0.937, 0.463, 0.129];
+
+/** White — the "off"/unset circle fill (invisible against the page). */
+export const WHITE_RGB: readonly [number, number, number] = [1, 1, 1];
+
+/**
+ * The on-page "imitation checkbox" text fields that show an "X" for the chosen
+ * classification colour (the `Classification` `/AA /F` script sets the matching
+ * one to "X" and the rest to " "). `Q_Brown` is the brown-sticker tick.
+ */
+export const Q_BOX: Readonly<Record<Exclude<Classification, "unset">, string>> = {
+  green: "Q_Green",
+  blue: "Q_Blue",
+  red: "Q_Red",
+  yellow: "Q_Yellow",
+};
+export const Q_BROWN = "Q_Brown";
 
 /**
  * Swap-to-print (design Flow 3): primaryPlayer is a pointer, not data movement.

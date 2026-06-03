@@ -110,13 +110,13 @@ export async function buildCardPdf(
 
   // ---- checkboxes (text "imitation checkboxes" + their B_ print twins) --------
   for (const flag of FLAG_KEYS) {
-    tpl.writeCheckbox(flag, card.flags[flag], card.settings.checkboxStyle);
+    tpl.writeCheckbox(flag, card.flags[flag]);
   }
 
   // ---- classification + brown-sticker cover boxes -----------------------------
   tpl.setClassification(
     CLASSIFICATION_LITERAL[card.classification],
-    card.classification !== "unset",
+    card.classification,
     card.flags.IsBrownSticker,
   );
 
