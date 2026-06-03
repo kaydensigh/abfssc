@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "ABF System Card — web rebuild (M0: model + render engine + screen form + autosave)",
+  "description": "ABF System Card — web rebuild (model + render engine + screen form + PDF export/import)",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",
-    "idb": "8.0.3",
     "pdf-lib": "^1.17.1",
     "react": "19.2.6",
     "react-dom": "19.2.6",

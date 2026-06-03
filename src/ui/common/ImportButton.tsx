@@ -1,7 +1,6 @@
 import { type ChangeEvent, type ReactElement, useRef, useState } from "react";
 import { useCardStore } from "../../state/index.ts";
-import { classifyImport, type ImportRelation } from "../../state/index.ts";
-import { importCardFile, ImportError, type FileImport } from "../../io/index.ts";
+import { importCardFile, ImportError } from "../../io/index.ts";
 import { renderPlain } from "../../render/index.ts";
 import type { ActionStatus } from "./status.ts";
 
@@ -10,11 +9,11 @@ type ImportButtonProps = {
   onStatus: (status: ActionStatus | null) => void;
 };
 
-// Minimal import entry (M2). Reads an ABF card PDF or FDF, classifies it against
-// what's on screen, and — after a single confirm — replaces the current card.
-// The full resolution UI (Replace / Keep both / Compare, the field-level diff)
-// is M3; here replace-or-cancel is the only choice, but the messaging already
-// uses the real new-vs-newer-vs-fork branch so it reads honestly.
+// Import entry. Reads an ABF card PDF or FDF and replaces the card on screen.
+// The only thing that can be lost is *unsaved on-screen edits* — the card
+// otherwise lives only in this tab and the exported PDF is the durable copy — so
+// we confirm only when the current card is dirty (not based on what the incoming
+// file looks like). A clean (exported or blank) card is replaced silently.
 
 function who(fields: Record<string, string>): string {
   const a = renderPlain(fields.PlayerName_A ?? "").trim();
@@ -23,21 +22,8 @@ function who(fields: Record<string, string>): string {
   return names || "this card";
 }
 
-/** The confirm prompt for each import relation (replace is the only M2 action). */
-function confirmPrompt(rel: ImportRelation, incoming: FileImport): string {
-  const name = who(incoming.imported.card.fields);
-  const src = incoming.source.toUpperCase();
-  switch (rel.kind) {
-    case "new":
-      return `This ${src} looks like a different card (${name}). Replace what's on screen with it?`;
-    case "succession":
-      return rel.newer === "incoming"
-        ? `This ${src} is a newer revision of ${name}. Load it, replacing what's on screen?`
-        : `This ${src} is an older revision of ${name} than what's on screen. Load it anyway?`;
-    case "fork":
-      return `This ${src} and the card on screen have diverged from a shared revision. Load it, replacing what's on screen? (A side-by-side compare is coming in a later version.)`;
-  }
-}
+const UNSAVED_WARNING =
+  "Replace the card on screen? You have unsaved changes that will be lost — export the current card first if you want to keep it.";
 
 export function ImportButton({ onStatus }: ImportButtonProps): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -48,16 +34,18 @@ export function ImportButton({ onStatus }: ImportButtonProps): ReactElement {
     const file = e.target.files?.[0];
     e.target.value = ""; // allow re-choosing the same file
     if (!file || busy) return;
+
+    // Warn only when there are unsaved edits to lose; ask before reading the
+    // file so a cancel does no work.
+    if (useCardStore.getState().dirty && !window.confirm(UNSAVED_WARNING)) {
+      onStatus({ kind: "notice", text: "Import cancelled." });
+      return;
+    }
+
     setBusy(true);
     onStatus(null);
     try {
       const result = await importCardFile(file);
-      const local = useCardStore.getState().card;
-      const relation = classifyImport(local, result.imported.card);
-      if (!window.confirm(confirmPrompt(relation, result))) {
-        onStatus({ kind: "notice", text: "Import cancelled." });
-        return;
-      }
       replaceCard(result.imported.card);
       const warnings = result.imported.warnings;
       if (warnings.length > 0) {

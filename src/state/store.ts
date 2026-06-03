@@ -8,17 +8,17 @@ import {
   type SuitOpening,
   createEmptyCard,
 } from "../model/index.ts";
-import { loadCurrentCard, requestPersistentStorage, saveCard, storageAvailable } from "./persist.ts";
-
-export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 export interface CardStore {
   card: Card;
-  saveStatus: SaveStatus;
-  lastSavedAt: string | null;
-  /** Result of navigator.storage.persist(): true granted, false denied, null unknown. */
-  persistGranted: boolean | null;
-  hydrated: boolean;
+  /**
+   * True when the on-screen card has edits not yet captured in an exported PDF.
+   * There is no local persistence — the card lives only in this browser tab and
+   * the exported PDF is the single durable copy — so this drives both the save
+   * indicator and the before-unload guard. Opening the app in a second tab gives
+   * a fully independent card, which is how two cards are compared side by side.
+   */
+  dirty: boolean;
 
   setField: (key: string, value: string) => void;
   setResponse: (opening: SuitOpening, bid: ResponseBid, value: string) => void;
@@ -29,45 +29,23 @@ export interface CardStore {
   setRevisionLabel: (label: string) => void;
   bumpRevision: () => void;
   setSetting: <K extends keyof CardSettings>(key: K, value: CardSettings[K]) => void;
+  /** Replace the whole card (import). Lands clean: it matches the file just read. */
   replaceCard: (card: Card) => void;
+  /** Clear to a blank card. Lands clean: there is nothing on screen to lose. */
   resetCard: () => void;
-  /** Load the persisted card and request persistent storage (browser only). */
-  hydrate: () => Promise<void>;
+  /** Mark the current card as captured in an exported PDF (clears dirty). */
+  markExported: () => void;
 }
 
-const SAVE_DEBOUNCE_MS = 600;
-let saveTimer: ReturnType<typeof setTimeout> | null = null;
-
-export const useCardStore = create<CardStore>((set, get) => {
-  // Debounced local autosave. Coalesces rapid edits; swallows storage errors
-  // (e.g. private browsing) into the save status rather than throwing.
-  const scheduleSave = () => {
-    if (!storageAvailable()) return;
-    set({ saveStatus: "saving" });
-    if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      void (async () => {
-        try {
-          const savedAt = await saveCard(get().card);
-          set({ saveStatus: "saved", lastSavedAt: savedAt });
-        } catch {
-          set({ saveStatus: "error" });
-        }
-      })();
-    }, SAVE_DEBOUNCE_MS);
-  };
-
-  const mutate = (fn: (c: Card) => Card) => {
-    set((s) => ({ card: fn(s.card) }));
-    scheduleSave();
-  };
+export const useCardStore = create<CardStore>((set) => {
+  // Every field edit flags the card dirty; a wholesale replace/reset/export
+  // clears it. There is no autosave — the exported PDF is the only durable
+  // artifact, and the before-unload guard leans on `dirty` to warn first.
+  const mutate = (fn: (c: Card) => Card) => set((s) => ({ card: fn(s.card), dirty: true }));
 
   return {
     card: createEmptyCard(),
-    saveStatus: "idle",
-    lastSavedAt: null,
-    persistGranted: null,
-    hydrated: false,
+    dirty: false,
 
     setField: (key, value) => mutate((c) => ({ ...c, fields: { ...c.fields, [key]: value } })),
 
@@ -99,26 +77,8 @@ export const useCardStore = create<CardStore>((set, get) => {
 
     setSetting: (key, value) => mutate((c) => ({ ...c, settings: { ...c.settings, [key]: value } })),
 
-    replaceCard: (card) => {
-      set({ card });
-      scheduleSave();
-    },
-    resetCard: () => {
-      set({ card: createEmptyCard() });
-      scheduleSave();
-    },
-
-    hydrate: async () => {
-      if (get().hydrated) return;
-      const granted = await requestPersistentStorage();
-      const existing = storageAvailable() ? await loadCurrentCard() : null;
-      set((s) => ({
-        card: existing ?? s.card,
-        hydrated: true,
-        persistGranted: granted,
-        lastSavedAt: existing?.provenance.savedAt ?? s.lastSavedAt,
-        saveStatus: existing ? "saved" : "idle",
-      }));
-    },
+    replaceCard: (card) => set({ card, dirty: false }),
+    resetCard: () => set({ card: createEmptyCard(), dirty: false }),
+    markExported: () => set({ dirty: false }),
   };
 });

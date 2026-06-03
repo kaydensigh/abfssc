@@ -90,8 +90,8 @@ export function migrate(raw: unknown): Card {
   }
 
   card.settings = sanitizeSettings(r.settings);
-  // Preserve the stored save time so the storage indicator shows when the card
-  // was last persisted, not when it was reloaded. (saveCard re-stamps on write.)
+  // Preserve the card's own savedAt across migration/import so a round-tripped
+  // card keeps its original app-state stamp instead of being reset to load time.
   if (r.provenance && typeof r.provenance === "object") {
     const rp = r.provenance as Record<string, unknown>;
     if (typeof rp.savedAt === "string") card.provenance.savedAt = rp.savedAt;

@@ -8,8 +8,8 @@ import {
   ImportButton,
   NewCardButton,
   PageNav,
-  StorageIndicator,
 } from "./common/index.ts";
+import { useUnloadGuard } from "./useUnloadGuard.ts";
 
 /** The revision-code field (MyRev.) is defined in the masthead section for the
  *  data model / round-trip, but surfaced in the persistent header above the page
@@ -24,6 +24,7 @@ const REV_FIELD = SECTION_BY_ID.masthead.fields.find((f) => f.key === "Date_A")!
  * their own sub-headings.
  */
 export function App(): ReactElement {
+  useUnloadGuard();
   const [activeId, setActiveId] = useState<string>(PAGES[0].id);
   const [importStatus, setImportStatus] = useState<ActionStatus | null>(null);
   const [exportStatus, setExportStatus] = useState<ActionStatus | null>(null);
@@ -44,7 +45,6 @@ export function App(): ReactElement {
             <span className="brand-name">ABF Standard System Card</span>
           </div>
           <div className="actions">
-            <StorageIndicator />
             <NewCardButton />
             <ImportButton onStatus={setImportStatus} />
             <ExportButton onStatus={setExportStatus} />

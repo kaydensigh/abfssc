@@ -1,11 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useCardStore } from "./store.ts";
-import { classifyImport } from "./identity.ts";
 import { createEmptyCard } from "../model/index.ts";
 
-// jsdom has no IndexedDB, so autosave no-ops here — these test pure store logic.
 beforeEach(() => {
-  useCardStore.setState({ card: createEmptyCard({ id: "t", now: "2026-06-01T00:00:00.000Z" }) });
+  useCardStore.setState({ card: createEmptyCard({ id: "t", now: "2026-06-01T00:00:00.000Z" }), dirty: false });
 });
 
 describe("card store mutations", () => {
@@ -51,21 +49,28 @@ describe("card store mutations", () => {
   });
 });
 
-describe("import resolution branch", () => {
-  const base = createEmptyCard({ id: "plan-1", now: "2026-06-01T00:00:00.000Z" });
-  it("treats an unknown id as a new card", () => {
-    const other = createEmptyCard({ id: "plan-2" });
-    expect(classifyImport(base, other)).toEqual({ kind: "new" });
-    expect(classifyImport(null, other)).toEqual({ kind: "new" });
+describe("unsaved-changes tracking", () => {
+  it("an edit flags the card dirty", () => {
+    expect(useCardStore.getState().dirty).toBe(false);
+    useCardStore.getState().setField("Open1NT", "12-14");
+    expect(useCardStore.getState().dirty).toBe(true);
   });
-  it("recognises linear succession via parent", () => {
-    const local = { ...base, revision: { label: "", counter: 5 } };
-    const incoming = { ...base, revision: { label: "", counter: 6, parent: 5 } };
-    expect(classifyImport(local, incoming)).toEqual({ kind: "succession", newer: "incoming" });
+
+  it("markExported clears the dirty flag", () => {
+    useCardStore.getState().setField("Open1NT", "12-14");
+    useCardStore.getState().markExported();
+    expect(useCardStore.getState().dirty).toBe(false);
   });
-  it("routes ambiguous histories to a fork (no timestamp auto-pick)", () => {
-    const local = { ...base, revision: { label: "", counter: 5 } };
-    const incoming = { ...base, revision: { label: "", counter: 6 } }; // no parent link
-    expect(classifyImport(local, incoming)).toEqual({ kind: "fork" });
+
+  it("import (replaceCard) lands clean — it matches the file just read", () => {
+    useCardStore.setState({ dirty: true });
+    useCardStore.getState().replaceCard(createEmptyCard({ id: "imported" }));
+    expect(useCardStore.getState().dirty).toBe(false);
+  });
+
+  it("a new card (resetCard) lands clean — nothing on screen to lose", () => {
+    useCardStore.setState({ dirty: true });
+    useCardStore.getState().resetCard();
+    expect(useCardStore.getState().dirty).toBe(false);
   });
 });
