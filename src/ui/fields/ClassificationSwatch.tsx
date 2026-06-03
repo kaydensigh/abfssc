@@ -1,6 +1,6 @@
 import { type ReactElement, useRef } from "react";
 import { useCardStore } from "../../state/index.ts";
-import { ABF_REGULATIONS_LABEL, ABF_REGULATIONS_URL, CLASSIFICATIONS } from "../../content/classification.ts";
+import { CLASSIFICATIONS } from "../../content/classification.ts";
 
 /**
  * System classification as four colour swatches (a radio group). Clicking the
@@ -51,13 +51,6 @@ export function ClassificationSwatch(): ReactElement {
           </button>
         ))}
       </div>
-      <p className="explain">
-        Colour meaning follows the{" "}
-        <a href={ABF_REGULATIONS_URL} target="_blank" rel="noreferrer">
-          {ABF_REGULATIONS_LABEL}
-        </a>
-        . Click the active colour again to clear it.
-      </p>
     </div>
   );
 }

@@ -20,17 +20,17 @@ export function Masthead({ section }: { section: SectionDef }): ReactElement {
             Swap print order
           </button>
         </div>
-        <div className="abf-grid">
-          <span className="row-lbl">ABF Nos.</span>
-          <TextField def={byKey("PlayerNo_A")} />
-          <TextField def={byKey("PlayerName_A")} />
-          <span className="row-lbl">&amp; Names:</span>
-          <TextField def={byKey("PlayerNo_B")} />
-          <TextField def={byKey("PlayerName_B")} />
-        </div>
+        <fieldset className="group-box">
+          <legend>ABF Numbers &amp; Names</legend>
+          <div className="abf-grid">
+            <TextField def={byKey("PlayerNo_A")} />
+            <TextField def={byKey("PlayerName_A")} />
+            <TextField def={byKey("PlayerNo_B")} />
+            <TextField def={byKey("PlayerName_B")} />
+          </div>
+        </fieldset>
         <div className="field-grid">
           <TextField def={byKey("BasicSystem")} />
-          <TextField def={byKey("Date_A")} />
         </div>
       </div>
 
@@ -39,7 +39,6 @@ export function Masthead({ section }: { section: SectionDef }): ReactElement {
         <ClassificationSwatch />
         <div className="mast-flags">
           <CheckboxField def={byKey("IsBrownSticker")} />
-          <CheckboxField def={byKey("IsCanape")} />
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@ export function PlayPairs({ section }: { section: SectionDef }): ReactElement {
           Versus <strong>Suit</strong> (or both)
         </span>
         <span className="col-head">
-          Versus <strong>NoTrump</strong> (if different)
+          Versus <strong>No Trump</strong> (if different)
         </span>
       </div>
       <div className="pair-cols">
@@ -34,7 +34,7 @@ export function PlayPairs({ section }: { section: SectionDef }): ReactElement {
                   {p.note && <span className="pair-note"> {p.note}</span>}
                 </div>
                 <TextField def={{ key: p.sKey, label: `${p.label} — vs suit` }} />
-                <TextField def={{ key: p.ntKey, label: `${p.label} — vs notrump` }} />
+                <TextField def={{ key: p.ntKey, label: `${p.label} — vs no trump` }} />
               </div>
             </Fragment>
           );

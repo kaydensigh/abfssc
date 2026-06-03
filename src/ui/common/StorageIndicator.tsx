@@ -82,10 +82,9 @@ export function StorageIndicator(): ReactElement {
             {statusText}
           </p>
           <p className="sp-explain">
-            Your card is stored only in <strong>this browser on this device</strong> — not in the cloud and not synced
-            to your partner. It can be lost if you clear site data, switch device, or use private browsing. The real,
-            shareable backup is the official PDF export (a later milestone).
-            {persistGranted === false && " This browser may also evict the data under storage pressure."}
+            This app saves <strong>only to this device</strong>.
+            It can be lost if you open a new card, switch device, clear site data{persistGranted === false && ", or run out of storage"}.
+            Make sure to export the PDF to save the card.
           </p>
         </div>
       )}

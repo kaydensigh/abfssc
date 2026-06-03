@@ -12,7 +12,7 @@ beforeEach(() => {
 describe("App shell", () => {
   it("renders the brand, the storage indicator, and page 1 (masthead) first", () => {
     render(<App />);
-    expect(screen.getByText("ABF System Card")).toBeInTheDocument();
+    expect(screen.getByText("ABF Standard System Card")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /storage/i })).toBeInTheDocument();
     expect(screen.getByText("Partnership")).toBeInTheDocument(); // masthead body
     expect(screen.getByRole("radiogroup", { name: "System classification" })).toBeInTheDocument();
@@ -30,8 +30,8 @@ describe("App shell", () => {
   it("expands the storage indicator to explain device-only storage", async () => {
     const user = userEvent.setup();
     render(<App />);
-    expect(screen.queryByText(/this browser on this device/i)).toBeNull(); // collapsed
+    expect(screen.queryByText(/only to this device/i)).toBeNull(); // collapsed
     await user.click(screen.getByRole("button", { name: /storage/i }));
-    expect(screen.getByText(/this browser on this device/i)).toBeInTheDocument();
+    expect(screen.getByText(/only to this device/i)).toBeInTheDocument();
   });
 });

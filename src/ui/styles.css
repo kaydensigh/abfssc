@@ -65,6 +65,15 @@ a {
   border: 0;
 }
 
+/* The Unicode suit glyphs are drawn small within their em box (and we force the
+   smaller text-presentation form via VS-15 to dodge emoji rendering), so at the
+   same font-size they read as undersized next to letters. Scale them up relative
+   to the surrounding text — labels, headings, and rendered values all carry .suit
+   — and pin line-height so the taller glyph doesn't pad the line. */
+.suit {
+  font-size: 1.15em;
+  line-height: 1;
+}
 .suit-S,
 .suit-C {
   color: #000;
@@ -264,6 +273,16 @@ nav.pages button.active .pg-num {
   display: none;
 }
 
+/* ---- Revision stamp: a single field row above the page tabs ------------- */
+.masthead-rev {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 0 10px;
+}
+.masthead-rev .field {
+  flex: 0 1 320px;
+}
+
 /* ---- Page body: stacked sections (the page nav names the page) ---------- */
 .page {
   margin-top: 14px;
@@ -279,13 +298,24 @@ nav.pages button.active .pg-num {
 section.card-section {
   margin: 0;
 }
-/* Numbered sections: a red banner bar (number badge + title; caption trails) —
-   the printed card's red section headings. */
-section.card-section > .section-banner {
+/* Numbered sections sit under a head row: a red banner bar (number badge +
+   title) — the printed card's red section headings — that shrinks to the title's
+   width, leaving the rest of the row free for header fields (e.g. §1 Canapé) to
+   its right. When the row runs out of width (mobile) those wrap below the bar. */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0 0 10px;
+}
+.section-head > .section-banner {
+  /* Hug the title so adjacent fields can share the row to its right. */
+  flex: 0 1 auto;
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 0 0 10px;
+  margin: 0;
   padding: 7px 14px;
   background: var(--heading);
   color: #fff;
@@ -295,7 +325,7 @@ section.card-section > .section-banner {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-section.card-section > .section-banner .sec-num {
+.section-head > .section-banner .sec-num {
   flex: none;
   display: inline-grid;
   place-items: center;
@@ -305,29 +335,17 @@ section.card-section > .section-banner .sec-num {
   background: rgba(255, 255, 255, 0.2);
   font-size: 13px;
 }
-section.card-section > .section-banner .sec-cap {
+/* Header fields ride beside the title bar; on mobile the flex row wraps them
+   below it. The Canapé checkbox is intrinsically narrow, so it hugs the right
+   end of the row; a promoted text/notes field (each section's Notes) instead
+   grows to fill the row to the right of the banner. */
+.section-head > .checkbox-field {
   margin-left: auto;
-  font-weight: 500;
-  font-size: 12px;
-  text-transform: none;
-  letter-spacing: 0;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.88);
-  text-align: right;
+}
+.section-head > .field:not(.checkbox-field) {
+  flex: 1 1 16rem;
 }
 /* Masthead cover title (no section number). */
-section.card-section > .section-cover {
-  font-size: 22px;
-  font-weight: 700;
-  margin: 0 0 2px;
-}
-section.card-section > .sec-caption {
-  font-size: 13px;
-  font-style: italic;
-  color: var(--muted);
-  margin: 0 0 14px;
-}
-
 /* ---- Storage indicator (icon button + popover) -------------------------- */
 .storage-ind {
   position: relative;
@@ -436,6 +454,28 @@ section.card-section > .sec-caption {
 .field-grid > .field {
   grid-column: span var(--span, 12);
 }
+/* A row that carries a checkbox is laid out with flex rather than fixed columns:
+   the checkbox hugs its content and its text-field row-mate grows to absorb the
+   slack (the printed card sets the box beside its phrase, not at the column
+   edge). The row spans the full grid width and supplies its own gaps. */
+.field-grid > .field-row {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 5px;
+}
+.field-row > .field {
+  /* Grow in proportion to `--span` so a row with several text fields divides its
+     slack the way the grid would (a span-6 field takes 3× a span-2's share); a
+     lone text row-mate still soaks up all the slack. */
+  flex: var(--span, 1) 1 auto;
+  min-width: 0;
+}
+.field-row > .checkbox-field {
+  flex: 0 0 auto;
+}
 .group-head {
   grid-column: 1 / -1;
   font-size: 13px;
@@ -483,7 +523,7 @@ section.card-section > .sec-caption {
   align-items: start;
 }
 .field > label {
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1.35;
   color: var(--ink-soft);
@@ -500,7 +540,7 @@ section.card-section > .sec-caption {
   text-align: left;
   border: 1px solid var(--field-border);
   border-radius: 5px;
-  padding: 4px 7px;
+  padding: 0px 7px;
   background: var(--field-bg);
   cursor: text;
   font: inherit;
@@ -642,20 +682,24 @@ section.card-section > .sec-caption {
 /* Checkbox field: label on the left, box to its right (like the print). It
    carries the .field class, so it's an unruled label-left grid row (no value
    box to shade — the box is the real checkbox). */
+/* The label and box hug each other (two intrinsic columns) rather than spreading
+   to the row edges, so the box reads as "☐ <phrase>" — and the field shrinks to
+   that content, letting a row-mate take the slack (see .field-row). */
 .checkbox-field {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto auto;
+  column-gap: 8px;
+  justify-content: start;
   cursor: pointer;
 }
 .checkbox-field .lbl {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--ink-soft);
 }
 .checkbox-field input {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   accent-color: var(--blue);
-  justify-self: end;
 }
 .classification {
   display: flex;
@@ -705,17 +749,12 @@ section.card-section > .sec-caption {
   align-items: center;
   margin-bottom: 6px;
 }
-/* Two rows of [row-label][ABF number][name] — the printed cover layout. */
+/* Two rows of [ABF number][name] — the printed cover layout. */
 .abf-grid {
   display: grid;
-  grid-template-columns: auto 5.5em minmax(0, 1fr);
+  grid-template-columns: 5.5em minmax(0, 1fr);
   column-gap: 12px;
   align-items: center;
-}
-.abf-grid .row-lbl {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink-soft);
 }
 .abf-grid .field {
   padding: 2px 0;
@@ -785,7 +824,7 @@ section.card-section > .sec-caption {
   padding: 3px 2px;
 }
 .pair-row > .pair-label {
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--ink-soft);
   padding-top: 6px;
@@ -898,6 +937,11 @@ section.card-section > .sec-caption {
   }
   .field-grid > .field {
     grid-column: 1 / -1;
+  }
+  /* Checkbox rows stack too: the text field over its checkbox, both full width. */
+  .field-grid > .field-row {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .masthead-form {

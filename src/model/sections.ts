@@ -30,6 +30,9 @@ export interface FieldDef {
   span?: number;
   /** Render the label visually-hidden (kept for a11y) — for the PDF's unlabelled boxes. */
   labelHidden?: boolean;
+  /** Render in the section's head row (beside the title), not the body grid
+   *  (e.g. §1 Canapé, and each section's primary Notes / pre-alert field). */
+  header?: boolean;
   /** Optional sub-heading rendered once before a run of fields sharing this label. */
   group?: string;
   /**
@@ -59,8 +62,6 @@ export interface SectionDef {
   /** 1..10 for the regulated sections; absent for the masthead. */
   number?: number;
   title: string;
-  /** Faint caption under the title — the PDF's instruction line for the section. */
-  caption?: string;
   layout: SectionLayout;
   /** Fields rendered generically (and enumerated by the empty-card factory). */
   fields: FieldDef[];
@@ -96,7 +97,6 @@ export const SECTIONS: readonly SectionDef[] = [
   {
     id: "masthead",
     title: "Standard System Card",
-    caption: "Australian Bridge Federation Ltd.",
     layout: "masthead",
     // PDF front cover: "ABF Nos." / "& Names:" each a row of [number][name] for a
     // partner, Basic System, and the Classification row. The player fields' own
@@ -107,21 +107,26 @@ export const SECTIONS: readonly SectionDef[] = [
       f("PlayerNo_B", "ABF no. (partner)", { kind: "player", labelHidden: true, hint: "Partner's ABF number" }),
       f("PlayerName_B", "Name (partner)", { kind: "player", labelHidden: true, hint: "Partner's name" }),
       f("BasicSystem", "Basic System"),
+      // MyRev. lives in this section for the data model / round-trip, but the UI
+      // surfaces it in the persistent header (above the page tabs), not the
+      // masthead body — see App.tsx REV_FIELD.
       f("Date_A", "MyRev.", { span: 6, hint: "Optional revision code — date or version number" }),
       cb("IsBrownSticker", "Brown Sticker"),
-      cb("IsCanape", "Canapé"),
     ],
   },
   {
     id: "s1",
     number: 1,
     title: "Opening Bids",
-    caption: "Describe strength, min.length, or specific meaning",
     layout: "generic",
     boxedGroups: ["1NT Responses"],
     // PDF rows: 1♣|1♥, 1♦|1♠, 1NT (+ "may contain 5 card Major"), the boxed
     // "1NT Responses" block, then 2♣/2♦/2♥/2♠ (full), 2NT|3NT, other.
+    // The Canapé flag (a CardFlags boolean, not a §1 PDF box) is surfaced as a
+    // header field: it rides in the section's head row beside the title (wrapping
+    // below it on mobile); the data still lives in Card.flags.IsCanape.
     fields: [
+      cb("IsCanape", "Canapé", { header: true }),
       f("Open1C", "1♣", half),
       f("Open1H", "1♥", half),
       f("Open1D", "1♦", half),
@@ -149,9 +154,10 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 2,
     title: "Pre-Alerts",
     layout: "generic",
-    // PDF: a summary line over a 2-col × 3-row grid of unlabelled boxes.
+    // PDF: a summary line over a 2-col × 3-row grid of unlabelled boxes. The
+    // summary line rides in the section's head row beside the title.
     fields: [
-      notes("PreAlert_0", "Pre-alerts", { labelHidden: true, hint: "Describe your pre-alerts" }),
+      notes("PreAlert_0", "Pre-alerts", { header: true, labelHidden: true, hint: "Describe your pre-alerts" }),
       f("PreAlert_1_1", "Pre-alert 1", { span: 6, labelHidden: true, hint: "Pre-alert" }),
       f("PreAlert_2_1", "Pre-alert 4", { span: 6, labelHidden: true, hint: "Pre-alert" }),
       f("PreAlert_1_2", "Pre-alert 2", { span: 6, labelHidden: true, hint: "Pre-alert" }),
@@ -184,7 +190,7 @@ export const SECTIONS: readonly SectionDef[] = [
       f("Compete1NT_1", "Opponent's 1NT", { hint: "How do you compete over their 1NT opening?" }),
       f("Compete1NT_2", "Opponent's 1NT (continued)", { hint: "How do you compete over their 1NT opening?" }),
       f("Compete1NT_3", "Opponent's 1NT (more)", { hint: "How do you compete over their 1NT opening?" }),
-      notes("Competitive_0", "Notes"),
+      notes("Competitive_0", "Notes", { header: true, labelHidden: true }),
     ],
   },
   {
@@ -193,7 +199,8 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Basic Responses",
     layout: "generic",
     // PDF: six full-width rows. The "…Other" overflow fields (merged into their
-    // parent's print appearance) follow as extra space, then the notes.
+    // parent's print appearance) follow as extra space; the notes ride in the
+    // section's head row beside the title.
     fields: [
       f("JumpRaiseMinor", "Jump raises - minors"),
       f("JumpRaiseMajor", "Jump raises - Majors"),
@@ -203,7 +210,7 @@ export const SECTIONS: readonly SectionDef[] = [
       f("Response2NT", "Responses to 2NT opening", { hint: "Describe responses to your opening 2NT bid" }),
       f("JumpRaiseMinorOther", "Jump raises - minors (more)", { hint: "More space for your minor-suit jump raise" }),
       f("JumpRaiseMajorOther", "Jump raises - Majors (more)", { hint: "More space for your major-suit jump raise" }),
-      notes("BasicResponses_0", "Notes"),
+      notes("BasicResponses_0", "Notes", { header: true, labelHidden: true }),
     ],
   },
   {
@@ -211,7 +218,7 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 5,
     title: "Play Conventions",
     layout: "playPairs",
-    // PDF columns: Show priorities | Versus Suit (or both) | Versus NoTrump
+    // PDF columns: Show priorities | Versus Suit (or both) | Versus No Trump
     // (if different). The lead agreements are grouped under "Leads".
     pairs: [
       { label: "Sequences:", group: "Leads", ntKey: "SeqLead_NT", sKey: "SeqLead_S" },
@@ -225,10 +232,10 @@ export const SECTIONS: readonly SectionDef[] = [
     ],
     fields: [
       f("SignalDeclarerLead", "Signal on declarer's lead:"),
-      notes("PlayConventions_0", "Notes"),
-      notes("PlayNotes_1", "Play notes 1"),
-      notes("PlayNotes_2", "Play notes 2"),
-      notes("PlayNotes_3", "Play notes 3"),
+      notes("PlayConventions_0", "Notes", { header: true, labelHidden: true }),
+      notes("PlayNotes_1", "Notes"),
+      notes("PlayNotes_2", "Play notes 2", { labelHidden: true }),
+      notes("PlayNotes_3", "Play notes 3", { labelHidden: true }),
     ],
   },
   {
@@ -240,14 +247,19 @@ export const SECTIONS: readonly SectionDef[] = [
     fields: [
       cb("IsGerber", "4♣ Gerber", half),
       f("GerberWhen", "Gerber applies when", { span: 6, hint: "When is Gerber used?" }),
-      cb("IsBlackwood", "4NT: Blackwood", half),
-      f("RKCBStyle", "RKCB", half),
-      f("FourNTOther", "Other 4NT meanings", { hint: "4NT other meanings?" }),
-      cb("IsAskingBids", "Asking Bids", half),
-      cb("IsCueBids", "Cue Bids", half),
-      notes("SlamNotes_1", "Slam notes 1"),
-      notes("SlamNotes_2", "Slam notes 2"),
-      notes("SlamNotes_3", "Slam notes 3"),
+      // The Blackwood/RKCB row carries the "Other 4NT meanings" overflow beside
+      // it; the Asking/Cue row carries the first slam-notes box. Spans sum to 12
+      // so each trio groups onto one flex row; within the row the text fields
+      // split the slack by span, so the narrow RKCB (2) sits beside the wider
+      // "Other 4NT meanings" (6).
+      cb("IsBlackwood", "4NT: Blackwood", { span: 4 }),
+      f("RKCBStyle", "RKCB", { span: 2 }),
+      f("FourNTOther", "Other 4NT meanings", { span: 6, hint: "4NT other meanings?" }),
+      cb("IsAskingBids", "Asking Bids", { span: 4 }),
+      cb("IsCueBids", "Cue Bids", { span: 4 }),
+      notes("SlamNotes_1", "Slam notes 1", { span: 4, labelHidden: true }),
+      notes("SlamNotes_2", "Slam notes 2", { labelHidden: true }),
+      notes("SlamNotes_3", "Slam notes 3", { labelHidden: true }),
     ],
   },
   {
@@ -267,21 +279,20 @@ export const SECTIONS: readonly SectionDef[] = [
       f("Other_2_4", "Convention 9", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
       f("Other_1_5", "Convention 5", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
       f("Other_2_5", "Convention 10", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
-      notes("Other_0", "Notes"),
+      notes("Other_0", "Notes", { header: true, labelHidden: true }),
     ],
   },
   {
     id: "s8",
     number: 8,
     title: "Responses to Opening Bids",
-    caption: "Describe strength, minimum length, or specific meaning",
     layout: "grid",
     // The per-opening response blocks are rendered above; the only fields are the
     // closing notes (the 2-level 1NT responses live in §1, strong-two in §4).
     fields: [
-      notes("ResponseNotes_1", "Notes", { group: "Notes", hint: "Space for more notes about responses" }),
-      notes("ResponseNotes_2", "Notes (continued)", { group: "Notes" }),
-      notes("ResponseNotes_3", "Notes (more)", { group: "Notes" }),
+      notes("ResponseNotes_1", "Notes", { group: "Notes", labelHidden: true, hint: "Space for more notes about responses" }),
+      notes("ResponseNotes_2", "Notes (continued)", { group: "Notes", labelHidden: true }),
+      notes("ResponseNotes_3", "Notes (more)", { group: "Notes", labelHidden: true }),
     ],
   },
   {
@@ -293,9 +304,11 @@ export const SECTIONS: readonly SectionDef[] = [
     fields: [
       f("UnusualNoTrump", "Unusual NT:"),
       f("UnusualNTOther", "Unusual NT — more", { hint: "More space for your unusual NT methods" }),
-      cb("Is4thForcing1Round", "One round", { span: 6, group: "4th Suit Forcing" }),
-      cb("Is4thForcingGame", "Game force", { span: 6, group: "4th Suit Forcing" }),
-      f("FourthSuitForcing", "Notes", { group: "4th Suit Forcing", hint: "Additional notes on your use of 4th suit forcing" }),
+      // The 4th-suit-forcing notes box rides between its two flags (4/4/4 split
+      // groups the trio onto one flex row — the checkboxes hug, the box grows).
+      cb("Is4thForcing1Round", "One round", { span: 4, group: "4th Suit Forcing" }),
+      f("FourthSuitForcing", "Notes", { span: 4, group: "4th Suit Forcing", labelHidden: true, hint: "Additional notes on your use of 4th suit forcing" }),
+      cb("Is4thForcingGame", "Game force", { span: 4, group: "4th Suit Forcing" }),
       cb("IsNTCheckback", "NT Checkback", { span: 5 }),
       f("CheckbackPriorities", "Priorities:", { span: 7, hint: "Priority sequence for checkback replies (e.g. 2-way Checkback, NMF, XYZ)" }),
       f("Defence3NT", "Defence to 3NT opening", { hint: "How do you bid after an opponent opens 3NT?" }),
@@ -303,17 +316,17 @@ export const SECTIONS: readonly SectionDef[] = [
       f("DefenceMulti", "Multi 2♦", { hint: "Describe your defence to multi-two opening bids" }),
       f("DefenceRCO", "RCO style 2-s", { hint: "Defence to unanchored two-level openings (R=Rank C=Colour O=Odd)" }),
       f("DefenceOtherTwos", "Other 2-s", { hint: "Describe your defence to other two-level opening bids" }),
-      f("DefenceStrongC_1", "(1♣) :", { group: "Defence to strong 1♣ / 2♣", hint: "Replace with your defence to strong 1♣ openings" }),
-      f("DefenceStrongC_2", "(1♣) — more", { group: "Defence to strong 1♣ / 2♣", hint: "More space for your defence to strong 1♣" }),
-      f("DefenceStrongC_3", "(2♣) :", { group: "Defence to strong 1♣ / 2♣", hint: "Your defence to strong 2♣ openings" }),
-      f("DefenceStrongC_4", "(2♣) — more", { group: "Defence to strong 1♣ / 2♣", hint: "More space for your defence to strong 2♣" }),
+      f("DefenceStrongC_1", "(1♣) :", { group: "Defence to strong 1♣ / 2♣", labelHidden: true, hint: "Replace with your defence to strong 1♣ openings" }),
+      f("DefenceStrongC_2", "(1♣) — more", { group: "Defence to strong 1♣ / 2♣", labelHidden: true, hint: "More space for your defence to strong 1♣" }),
+      f("DefenceStrongC_3", "(2♣) :", { group: "Defence to strong 1♣ / 2♣", labelHidden: true, hint: "Your defence to strong 2♣ openings" }),
+      f("DefenceStrongC_4", "(2♣) — more", { group: "Defence to strong 1♣ / 2♣", labelHidden: true, hint: "More space for your defence to strong 2♣" }),
       f("Over1NTInterf", "Over 1NT Interference"),
       f("Over1NTInterfMore", "Over 1NT Interference — more", { hint: "More space for methods after interference over your 1NT" }),
       f("LebensohlOther", "Lebensohl - other uses", { hint: "Other uses of lebensohl (e.g. vs 2-level openings)" }),
       f("TakeOutOf4C4D", "Take out of 4 level pre-empts — 4♣/4♦", { hint: "Takeout after a 4-minor opening (e.g. DBL and/or 4NT)" }),
       f("TakeOutOf4H", "4♥", { span: 6, hint: "Takeout after 4♥ (e.g. DBL and/or 4NT)" }),
       f("TakeOutOf4S", "4♠", { span: 6, hint: "Takeout after 4♠ (e.g. DBL and/or 4NT)" }),
-      notes("Conventions_0", "Notes"),
+      notes("Conventions_0", "Notes", { header: true, labelHidden: true }),
     ],
   },
   {
@@ -322,14 +335,14 @@ export const SECTIONS: readonly SectionDef[] = [
     title: "Other Notes",
     layout: "generic",
     fields: [
-      notes("OtherNotes_0", "Notes", { hint: "Space for other notes (e.g. define abbreviations used on this side of the card)" }),
-      notes("OtherNotes_1", "Notes 2"),
-      notes("OtherNotes_2", "Notes 3"),
-      notes("OtherNotes_3", "Notes 4"),
-      notes("OtherNotes_4", "Notes 5"),
-      notes("OtherNotes_5", "Notes 6"),
-      notes("OtherNotes_6", "Notes 7"),
-      notes("OtherNotes_7", "Notes 8"),
+      notes("OtherNotes_0", "Notes", { header: true, labelHidden: true, hint: "Space for other notes (e.g. define abbreviations used on this side of the card)" }),
+      notes("OtherNotes_1", "Notes 2", { labelHidden: true }),
+      notes("OtherNotes_2", "Notes 3", { labelHidden: true }),
+      notes("OtherNotes_3", "Notes 4", { labelHidden: true }),
+      notes("OtherNotes_4", "Notes 5", { labelHidden: true }),
+      notes("OtherNotes_5", "Notes 6", { labelHidden: true }),
+      notes("OtherNotes_6", "Notes 7", { labelHidden: true }),
+      notes("OtherNotes_7", "Notes 8", { labelHidden: true }),
       notes("MoreNotes_1", "More notes 1"),
       notes("MoreNotes_2", "More notes 2"),
       notes("MoreNotes_3", "More notes 3"),
