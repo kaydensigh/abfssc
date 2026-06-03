@@ -2,6 +2,7 @@ import { type ReactElement, useEffect, useId, useLayoutEffect, useRef, useState 
 import { CodedText } from "../../render/index.ts";
 import type { CodeOption } from "../../content/codelists.ts";
 import { MarkupToolbar } from "./MarkupToolbar.tsx";
+import type { QuickAction } from "./quickActions.ts";
 
 interface Props {
   value: string;
@@ -13,6 +14,9 @@ interface Props {
   options?: CodeOption[];
   /** Layer-A map so a bare code renders expanded in the preview/display. */
   codeList?: Record<string, string>;
+  /** Computed quick-insert shortcuts (e.g. "Today" → current date); clicking
+   *  replaces the field value with the freshly computed string. */
+  actions?: QuickAction[];
 }
 
 // The dual-mode field editor (design §04): the value shows rendered by default;
@@ -20,7 +24,7 @@ interface Props {
 // and — for coded fields — an autocomplete. The editor is a POPOVER floating over
 // the card: the display box stays in the layout (same height) so editing one
 // field never reflows the page.
-export function CodedInput({ value, onChange, ariaLabel, multiline, options, codeList }: Props): ReactElement {
+export function CodedInput({ value, onChange, ariaLabel, multiline, options, codeList, actions }: Props): ReactElement {
   const [editing, setEditing] = useState(false);
   // The popover opens downward, left-aligned by default; on open we measure and
   // flip to right-aligned if a left-aligned box would spill past the viewport
@@ -125,6 +129,25 @@ export function CodedInput({ value, onChange, ariaLabel, multiline, options, cod
             <input ref={inputRef} id={id} aria-label={ariaLabel} value={value} onChange={(e) => onChange(e.target.value)} />
           )}
           <MarkupToolbar onInsert={insertAtCaret} />
+          {actions && actions.length > 0 && (
+            <div className="quick-actions" role="group" aria-label="Quick insert">
+              {actions.map((a) => (
+                <button
+                  key={a.label}
+                  type="button"
+                  className="quick-action"
+                  title={a.title}
+                  // preventDefault keeps focus in the field; onClick replaces the
+                  // value with the freshly computed string (faithful to the PDF's
+                  // "Set Dates", which set the value rather than appending).
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => onChange(a.run())}
+                >
+                  {a.label}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="field-preview" aria-hidden="true">
             <span className="lbl">Preview</span>
             {value ? <CodedText value={value} opts={opts} /> : <span className="empty">nothing yet</span>}

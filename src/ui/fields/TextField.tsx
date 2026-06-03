@@ -4,6 +4,7 @@ import { type FieldDef, fieldKind, fieldSpan } from "../../model/index.ts";
 import { CODE_LISTS, codeMap } from "../../content/codelists.ts";
 import { SuitText } from "../../render/index.ts";
 import { CodedInput } from "./CodedInput.tsx";
+import { fieldActions } from "./quickActions.ts";
 
 /** A rich / coded / notes / player text field bound to Card.fields[key].
  *  Laid out label-left: the label sits in an intrinsic-width gutter, the control
@@ -29,6 +30,7 @@ export function TextField({ def }: { def: FieldDef }): ReactElement {
         multiline={multiline}
         options={isCoded ? list?.codes : undefined}
         codeList={isCoded ? codeMap(def.key) : undefined}
+        actions={fieldActions(def.key)}
       />
     </div>
   );

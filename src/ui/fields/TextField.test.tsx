@@ -34,4 +34,19 @@ describe("TextField", () => {
     await user.type(screen.getByRole("textbox", { name: "Gerber when" }), "over 1NT");
     expect(useCardStore.getState().card.fields.GerberWhen).toBe("over 1NT");
   });
+
+  it("MyRev. (Date_A) offers a Today quick action that stamps an ISO date", async () => {
+    const user = userEvent.setup();
+    render(<TextField def={{ key: "Date_A", label: "MyRev." }} />);
+    await user.click(screen.getByRole("textbox", { name: "MyRev." }));
+    await user.click(screen.getByRole("button", { name: "Today" }));
+    expect(useCardStore.getState().card.fields.Date_A).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it("does not show quick actions for an ordinary field", async () => {
+    const user = userEvent.setup();
+    render(<TextField def={{ key: "GerberWhen", label: "Gerber when" }} />);
+    await user.click(screen.getByRole("textbox", { name: "Gerber when" }));
+    expect(screen.queryByRole("button", { name: "Today" })).toBeNull();
+  });
 });

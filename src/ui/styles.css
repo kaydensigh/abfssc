@@ -590,6 +590,28 @@ section.card-section {
   margin: 2px 3px;
 }
 
+/* ---- Quick-insert actions (computed shortcuts, e.g. MyRev. "Today") ------ */
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.quick-action {
+  height: 26px;
+  padding: 0 9px;
+  border: 1px solid var(--line-strong);
+  background: var(--card);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12.5px;
+  line-height: 1;
+  color: var(--blue);
+}
+.quick-action:hover {
+  background: var(--blue-soft);
+}
+
 /* ---- Autocomplete ------------------------------------------------------- */
 .autocomplete {
   list-style: none;
