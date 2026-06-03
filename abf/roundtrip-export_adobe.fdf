@@ -1,0 +1,269 @@
+%FDF-1.2
+1 0 obj
+<</FDF<</Fields[
+<< /T (aaNote_00)	/V(Parameter: --*_FiL_SkipDV_)	>>
+<< /T (aaNote_dV)	/V(   SKIP if match default value)	>>
+<< /T (aaNote_nS)	/V(   35 fields with default value were omitted )	>>
+<< /T (aaNote_nO)	/V(   127 empty old fields were omitted )	>>
+<<   /T (I_LastSave)	/V(21E29.2115 202606032308 f:26.00121563 v:26.00121563 T:Reader V:Full o:WIN n:? R:4)	>>
+<<   /T (PlayerName_A)	/V(v PlayerName_A)	>>
+<<   /T (PlayerName_B)	/V(v PlayerName_B)	>>
+<<   /T (PlayerNo_A)	/V(v PlayerNo_A)	>>
+<<   /T (PlayerNo_B)	/V(v PlayerNo_B)	>>
+<<  /T (BasicResponses_0)	/V(v BasicResponses_0)	>>
+<<  /T (BasicSystem)	/V(v BasicSystem)	>>
+<<  /T (CheckbackPriorities)	/V(v CheckbackPriorities)	>>
+<<  /T (Classification)	/V(Yellow)	>>
+<<  /T (Compete1NT_1)	/V(v Compete1NT_1)	>>
+<<  /T (Compete1NT_2)	/V(v Compete1NT_2)	>>
+<<  /T (Compete1NT_3)	/V(v Compete1NT_3)	>>
+<<  /T (CompeteOpen3)	/V(v CompeteOpen3)	>>
+<<  /T (CompeteWeak2)	/V(v CompeteWeak2)	>>
+<<  /T (Competitive_0)	/V(v Competitive_0)	>>
+<<  /T (Conventions_0)	/V(v Conventions_0)	>>
+<<  /T (CountType_NT)	/V(v CountType_NT)	>>
+<<  /T (CountType_S)	/V(v CountType_S)	>>
+<<  /T (Date_A)	/V(v Date_A)	>>
+<<  /T (Defence3NT)	/V(v Defence3NT)	>>
+<<  /T (DefenceMulti)	/V(v DefenceMulti)	>>
+<<  /T (DefenceOpening2)	/V(v DefenceOpening2)	>>
+<<  /T (DefenceOtherTwos)	/V(v DefenceOtherTwos)	>>
+<<  /T (DefenceRCO)	/V(v DefenceRCO)	>>
+<<  /T (DefenceStrongC_1)	/V(v DefenceStrongC_1)	>>
+<<  /T (DefenceStrongC_2)	/V(v DefenceStrongC_2)	>>
+<<  /T (DefenceStrongC_3)	/V(v DefenceStrongC_3)	>>
+<<  /T (DefenceStrongC_4)	/V(v DefenceStrongC_4)	>>
+<<  /T (DiscardType_NT)	/V(v DiscardType_NT)	>>
+<<  /T (DiscardType_S)	/V(v DiscardType_S)	>>
+<<  /T (Doubles_1)	/V(v Doubles_1)	>>
+<<  /T (Doubles_2)	/V(v Doubles_2)	>>
+<<  /T (FourHonourLead_NT)	/V(v FourHonourLead_NT)	>>
+<<  /T (FourHonourLead_S)	/V(v FourHonourLead_S)	>>
+<<  /T (FourNTOther)	/V(v FourNTOther)	>>
+<<  /T (FourSmallLead_NT)	/V(v FourSmallLead_NT)	>>
+<<  /T (FourSmallLead_S)	/V(v FourSmallLead_S)	>>
+<<  /T (FourthSuitForcing)	/V(v FourthSuitForcing)	>>
+<<  /T (GerberWhen)	/V(v GerberWhen)	>>
+<<  /T (ImmedCueMajor)	/V(v ImmedCueMajor)	>>
+<<  /T (ImmedCueMinor)	/V(v ImmedCueMinor)	>>
+<<  /T (Is4thForcing1Round)	/V(Yes)	>>
+<<  /T (Is4thForcingGame)	/V(Yes)	>>
+<<  /T (IsAskingBids)	/V(Yes)	>>
+<<  /T (IsBlackwood)	/V(Yes)	>>
+<<  /T (IsBrownSticker)	/V(Yes)	>>
+<<  /T (IsCanape)	/V(Yes)	>>
+<<  /T (IsCueBids)	/V(Yes)	>>
+<<  /T (IsGerber)	/V(Yes)	>>
+<<  /T (IsNTCheckback)	/V(Yes)	>>
+<<  /T (JumpOvercall)	/V(v JumpOvercall)	>>
+<<  /T (JumpRaiseMajor)	/V(v JumpRaiseMajor)	>>
+<<  /T (JumpRaiseMinor)	/V(v JumpRaiseMinor)	>>
+<<  /T (LeadPartnersSuit_NT)	/V(v LeadPartnersSuit_NT)	>>
+<<  /T (LeadPartnersSuit_S)	/V(v LeadPartnersSuit_S)	>>
+<<  /T (LebensohlOther)	/V(v LebensohlOther)	>>
+<<  /T (MajorJumpShift)	/V(v MajorJumpShift)	>>
+<<  /T (MinorJumpShift)	/V(v MinorJumpShift)	>>
+<<  /T (MoreNotes_1)	/V(v MoreNotes_1)	>>
+<<  /T (MoreNotes_2)	/V(v MoreNotes_2)	>>
+<<  /T (MoreNotes_3)	/V(v MoreNotes_3)	>>
+<<  /T (MoreNotes_4)	/V(v MoreNotes_4)	>>
+<<  /T (NegXLimit)	/V(v NegXLimit)	>>
+<<  /T (OneNTMayHave5Major)	/V(Yes)	>>
+<<  /T (Open1C)	/V(v Open1C)	>>
+<<  /T (Open1D)	/V(v Open1D)	>>
+<<  /T (Open1H)	/V(v Open1H)	>>
+<<  /T (Open1NT)	/V(v Open1NT)	>>
+<<  /T (Open1S)	/V(v Open1S)	>>
+<<  /T (Open2C)	/V(v Open2C)	>>
+<<  /T (Open2D)	/V(v Open2D)	>>
+<<  /T (Open2H)	/V(v Open2H)	>>
+<<  /T (Open2NT)	/V(v Open2NT)	>>
+<<  /T (Open2S)	/V(v Open2S)	>>
+<<  /T (Open3NT)	/V(v Open3NT)	>>
+<<  /T (OpenOther)	/V(v OpenOther)	>>
+<<  /T (OtherNotes_0)	/V(v OtherNotes_0)	>>
+<<  /T (OtherNotes_1)	/V(v OtherNotes_1)	>>
+<<  /T (OtherNotes_2)	/V(v OtherNotes_2)	>>
+<<  /T (OtherNotes_3)	/V(v OtherNotes_3)	>>
+<<  /T (OtherNotes_4)	/V(v OtherNotes_4)	>>
+<<  /T (OtherNotes_5)	/V(v OtherNotes_5)	>>
+<<  /T (OtherNotes_6)	/V(v OtherNotes_6)	>>
+<<  /T (OtherNotes_7)	/V(v OtherNotes_7)	>>
+<<  /T (Other_0)	/V(v Other_0)	>>
+<<  /T (Other_1_1)	/V(v Other_1_1)	>>
+<<  /T (Other_1_2)	/V(v Other_1_2)	>>
+<<  /T (Other_1_3)	/V(v Other_1_3)	>>
+<<  /T (Other_1_4)	/V(v Other_1_4)	>>
+<<  /T (Other_1_5)	/V(v Other_1_5)	>>
+<<  /T (Other_2_1)	/V(v Other_2_1)	>>
+<<  /T (Other_2_2)	/V(v Other_2_2)	>>
+<<  /T (Other_2_3)	/V(v Other_2_3)	>>
+<<  /T (Other_2_4)	/V(v Other_2_4)	>>
+<<  /T (Other_2_5)	/V(v Other_2_5)	>>
+<<  /T (Over1NTInterf)	/V(v Over1NTInterf)	>>
+<<  /T (Overcall1NT)	/V(v Overcall1NT)	>>
+<<  /T (PlayConventions_0)	/V(v PlayConventions_0)	>>
+<<  /T (PlayNotes_1)	/V(v PlayNotes_1)	>>
+<<  /T (PlayNotes_2)	/V(v PlayNotes_2)	>>
+<<  /T (PlayNotes_3)	/V(v PlayNotes_3)	>>
+<<  /T (PreAlert_0)	/V(v PreAlert_0)	>>
+<<  /T (PreAlert_1_1)	/V(v PreAlert_1_1)	>>
+<<  /T (PreAlert_1_2)	/V(v PreAlert_1_2)	>>
+<<  /T (PreAlert_1_3)	/V(v PreAlert_1_3)	>>
+<<  /T (PreAlert_2_1)	/V(v PreAlert_2_1)	>>
+<<  /T (PreAlert_2_2)	/V(v PreAlert_2_2)	>>
+<<  /T (PreAlert_2_3)	/V(v PreAlert_2_3)	>>
+<<  /T (RKCBStyle)	/V(v RKCBStyle)	>>
+<<  /T (Reopen1NT)	/V(v Reopen1NT)	>>
+<<  /T (Resp1C_1D)	/V(r 1C 1D)	>>
+<<  /T (Resp1C_1H)	/V(r 1C 1H)	>>
+<<  /T (Resp1C_1NT)	/V(r 1C 1NT)	>>
+<<  /T (Resp1C_1S)	/V(r 1C 1S)	>>
+<<  /T (Resp1C_2C)	/V(r 1C 2C)	>>
+<<  /T (Resp1C_2D)	/V(r 1C 2D)	>>
+<<  /T (Resp1C_2H)	/V(r 1C 2H)	>>
+<<  /T (Resp1C_2NT)	/V(r 1C 2NT)	>>
+<<  /T (Resp1C_2S)	/V(r 1C 2S)	>>
+<<  /T (Resp1C_3C)	/V(r 1C 3C)	>>
+<<  /T (Resp1C_3D)	/V(r 1C 3D)	>>
+<<  /T (Resp1C_3H)	/V(r 1C 3H)	>>
+<<  /T (Resp1C_3NT)	/V(r 1C 3NT)	>>
+<<  /T (Resp1C_3S)	/V(r 1C 3S)	>>
+<<  /T (Resp1C_4C)	/V(r 1C 4C)	>>
+<<  /T (Resp1C_Other)	/V(r 1C Other)	>>
+<<  /T (Resp1D_1H)	/V(r 1D 1H)	>>
+<<  /T (Resp1D_1NT)	/V(r 1D 1NT)	>>
+<<  /T (Resp1D_1S)	/V(r 1D 1S)	>>
+<<  /T (Resp1D_2C)	/V(r 1D 2C)	>>
+<<  /T (Resp1D_2D)	/V(r 1D 2D)	>>
+<<  /T (Resp1D_2H)	/V(r 1D 2H)	>>
+<<  /T (Resp1D_2NT)	/V(r 1D 2NT)	>>
+<<  /T (Resp1D_2S)	/V(r 1D 2S)	>>
+<<  /T (Resp1D_3C)	/V(r 1D 3C)	>>
+<<  /T (Resp1D_3D)	/V(r 1D 3D)	>>
+<<  /T (Resp1D_3H)	/V(r 1D 3H)	>>
+<<  /T (Resp1D_3NT)	/V(r 1D 3NT)	>>
+<<  /T (Resp1D_3S)	/V(r 1D 3S)	>>
+<<  /T (Resp1D_4C)	/V(r 1D 4C)	>>
+<<  /T (Resp1D_4D)	/V(r 1D 4D)	>>
+<<  /T (Resp1D_Other)	/V(r 1D Other)	>>
+<<  /T (Resp1H_1NT)	/V(r 1H 1NT)	>>
+<<  /T (Resp1H_1S)	/V(r 1H 1S)	>>
+<<  /T (Resp1H_2C)	/V(r 1H 2C)	>>
+<<  /T (Resp1H_2D)	/V(r 1H 2D)	>>
+<<  /T (Resp1H_2H)	/V(r 1H 2H)	>>
+<<  /T (Resp1H_2NT)	/V(r 1H 2NT)	>>
+<<  /T (Resp1H_2S)	/V(r 1H 2S)	>>
+<<  /T (Resp1H_3C)	/V(r 1H 3C)	>>
+<<  /T (Resp1H_3D)	/V(r 1H 3D)	>>
+<<  /T (Resp1H_3H)	/V(r 1H 3H)	>>
+<<  /T (Resp1H_3NT)	/V(r 1H 3NT)	>>
+<<  /T (Resp1H_3S)	/V(r 1H 3S)	>>
+<<  /T (Resp1H_Other)	/V(r 1H Other)	>>
+<<  /T (Resp1NT2CStyle)	/V(v Resp1NT2CStyle)	>>
+<<  /T (Resp1NT2D)	/V(v Resp1NT2D)	>>
+<<  /T (Resp1NT2H)	/V(v Resp1NT2H)	>>
+<<  /T (Resp1NT2NT)	/V(v Resp1NT2NT)	>>
+<<  /T (Resp1NT2S)	/V(v Resp1NT2S)	>>
+<<  /T (Resp1NTDoubled)	/V(v Resp1NTDoubled)	>>
+<<  /T (Resp1NTOther)	/V(v Resp1NTOther)	>>
+<<  /T (Resp1NT_3C)	/V(r 1NT 3C)	>>
+<<  /T (Resp1NT_3D)	/V(r 1NT 3D)	>>
+<<  /T (Resp1NT_3H)	/V(r 1NT 3H)	>>
+<<  /T (Resp1NT_3NT)	/V(r 1NT 3NT)	>>
+<<  /T (Resp1NT_3S)	/V(r 1NT 3S)	>>
+<<  /T (Resp1NT_4C)	/V(r 1NT 4C)	>>
+<<  /T (Resp1NT_4D)	/V(r 1NT 4D)	>>
+<<  /T (Resp1NT_4H)	/V(r 1NT 4H)	>>
+<<  /T (Resp1NT_4S)	/V(r 1NT 4S)	>>
+<<  /T (Resp1NT_Other)	/V(r 1NT Other)	>>
+<<  /T (Resp1S_1NT)	/V(r 1S 1NT)	>>
+<<  /T (Resp1S_2C)	/V(r 1S 2C)	>>
+<<  /T (Resp1S_2D)	/V(r 1S 2D)	>>
+<<  /T (Resp1S_2H)	/V(r 1S 2H)	>>
+<<  /T (Resp1S_2NT)	/V(r 1S 2NT)	>>
+<<  /T (Resp1S_2S)	/V(r 1S 2S)	>>
+<<  /T (Resp1S_3C)	/V(r 1S 3C)	>>
+<<  /T (Resp1S_3D)	/V(r 1S 3D)	>>
+<<  /T (Resp1S_3H)	/V(r 1S 3H)	>>
+<<  /T (Resp1S_3NT)	/V(r 1S 3NT)	>>
+<<  /T (Resp1S_3S)	/V(r 1S 3S)	>>
+<<  /T (Resp1S_4C)	/V(r 1S 4C)	>>
+<<  /T (Resp1S_Other)	/V(r 1S Other)	>>
+<<  /T (Resp2C_2D)	/V(r 2C 2D)	>>
+<<  /T (Resp2C_2H)	/V(r 2C 2H)	>>
+<<  /T (Resp2C_2NT)	/V(r 2C 2NT)	>>
+<<  /T (Resp2C_2S)	/V(r 2C 2S)	>>
+<<  /T (Resp2C_3C)	/V(r 2C 3C)	>>
+<<  /T (Resp2C_3D)	/V(r 2C 3D)	>>
+<<  /T (Resp2C_3H)	/V(r 2C 3H)	>>
+<<  /T (Resp2C_3NT)	/V(r 2C 3NT)	>>
+<<  /T (Resp2C_3S)	/V(r 2C 3S)	>>
+<<  /T (Resp2C_Other)	/V(r 2C Other)	>>
+<<  /T (Resp2D_2H)	/V(r 2D 2H)	>>
+<<  /T (Resp2D_2NT)	/V(r 2D 2NT)	>>
+<<  /T (Resp2D_2S)	/V(r 2D 2S)	>>
+<<  /T (Resp2D_3C)	/V(r 2D 3C)	>>
+<<  /T (Resp2D_3D)	/V(r 2D 3D)	>>
+<<  /T (Resp2D_3H)	/V(r 2D 3H)	>>
+<<  /T (Resp2D_3NT)	/V(r 2D 3NT)	>>
+<<  /T (Resp2D_3S)	/V(r 2D 3S)	>>
+<<  /T (Resp2D_4C)	/V(r 2D 4C)	>>
+<<  /T (Resp2D_Other)	/V(r 2D Other)	>>
+<<  /T (Resp2H_2NT)	/V(r 2H 2NT)	>>
+<<  /T (Resp2H_2S)	/V(r 2H 2S)	>>
+<<  /T (Resp2H_3C)	/V(r 2H 3C)	>>
+<<  /T (Resp2H_3D)	/V(r 2H 3D)	>>
+<<  /T (Resp2H_3H)	/V(r 2H 3H)	>>
+<<  /T (Resp2H_3NT)	/V(r 2H 3NT)	>>
+<<  /T (Resp2H_3S)	/V(r 2H 3S)	>>
+<<  /T (Resp2H_4C)	/V(r 2H 4C)	>>
+<<  /T (Resp2H_4H)	/V(r 2H 4H)	>>
+<<  /T (Resp2H_Other)	/V(r 2H Other)	>>
+<<  /T (Resp2NT_3C)	/V(r 2NT 3C)	>>
+<<  /T (Resp2NT_3D)	/V(r 2NT 3D)	>>
+<<  /T (Resp2NT_3H)	/V(r 2NT 3H)	>>
+<<  /T (Resp2NT_3NT)	/V(r 2NT 3NT)	>>
+<<  /T (Resp2NT_3S)	/V(r 2NT 3S)	>>
+<<  /T (Resp2NT_4C)	/V(r 2NT 4C)	>>
+<<  /T (Resp2NT_4D)	/V(r 2NT 4D)	>>
+<<  /T (Resp2NT_4H)	/V(r 2NT 4H)	>>
+<<  /T (Resp2NT_4S)	/V(r 2NT 4S)	>>
+<<  /T (Resp2NT_Other)	/V(r 2NT Other)	>>
+<<  /T (Resp2S_2NT)	/V(r 2S 2NT)	>>
+<<  /T (Resp2S_3C)	/V(r 2S 3C)	>>
+<<  /T (Resp2S_3D)	/V(r 2S 3D)	>>
+<<  /T (Resp2S_3H)	/V(r 2S 3H)	>>
+<<  /T (Resp2S_3NT)	/V(r 2S 3NT)	>>
+<<  /T (Resp2S_3S)	/V(r 2S 3S)	>>
+<<  /T (Resp2S_4C)	/V(r 2S 4C)	>>
+<<  /T (Resp2S_4H)	/V(r 2S 4H)	>>
+<<  /T (Resp2S_4S)	/V(r 2S 4S)	>>
+<<  /T (Resp2S_Other)	/V(r 2S Other)	>>
+<<  /T (RespXLimit)	/V(v RespXLimit)	>>
+<<  /T (Response2NT)	/V(v Response2NT)	>>
+<<  /T (ResponseNotes_1)	/V(v ResponseNotes_1)	>>
+<<  /T (ResponseNotes_2)	/V(v ResponseNotes_2)	>>
+<<  /T (ResponseNotes_3)	/V(v ResponseNotes_3)	>>
+<<  /T (ResponseStrong2)	/V(v ResponseStrong2)	>>
+<<  /T (SeqLead_NT)	/V(v SeqLead_NT)	>>
+<<  /T (SeqLead_S)	/V(v SeqLead_S)	>>
+<<  /T (SignalDeclarerLead)	/V(v SignalDeclarerLead)	>>
+<<  /T (SignalPartnerLead_NT)	/V(v SignalPartnerLead_NT)	>>
+<<  /T (SignalPartnerLead_S)	/V(v SignalPartnerLead_S)	>>
+<<  /T (SlamNotes_1)	/V(v SlamNotes_1)	>>
+<<  /T (SlamNotes_2)	/V(v SlamNotes_2)	>>
+<<  /T (SlamNotes_3)	/V(v SlamNotes_3)	>>
+<<  /T (TakeOutOf4C4D)	/V(v TakeOutOf4C4D)	>>
+<<  /T (TakeOutOf4H)	/V(v TakeOutOf4H)	>>
+<<  /T (TakeOutOf4S)	/V(v TakeOutOf4S)	>>
+<<  /T (ThreeSmallLead_NT)	/V(v ThreeSmallLead_NT)	>>
+<<  /T (ThreeSmallLead_S)	/V(v ThreeSmallLead_S)	>>
+<<  /T (Transfers_1)	/V(v Transfers_1)	>>
+<<  /T (UnusualNT)	/V(v UnusualNT)	>>
+<<  /T (UnusualNoTrump)	/V(v UnusualNoTrump)	>>
+]>>/Type/Catalog>>
+endobj
+trailer
+<</Root 1 0 R>>
+%%EOF
