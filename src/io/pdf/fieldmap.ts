@@ -24,24 +24,15 @@ export const CLASSIFICATION_LITERAL: Readonly<Record<Classification, string>> = 
   unset: "not set",
 };
 
-/**
- * Five "Other/More" fields exist as editable inputs but have NO D_ print twin:
- * the form merges each into a parent's display (gRtFL merge rules — the source
- * `…Other>Parent` pairs). On export we write the child's own /V (so our import
- * round-trips it) AND append its rendered content to the parent's D_ appearance
- * so it prints. Keyed child → parent. (Resp1NT2COther is not in our model.)
- */
-export const ORPHAN_MERGE: Readonly<Record<string, string>> = {
-  JumpRaiseMinorOther: "JumpRaiseMinor",
-  JumpRaiseMajorOther: "JumpRaiseMajor",
-  UnusualNTOther: "UnusualNoTrump",
-  Over1NTInterfMore: "Over1NTInterf",
-};
-
-/** Reverse of ORPHAN_MERGE: parent display field → the child merged into it. */
-export const MERGE_CHILD: Readonly<Record<string, string>> = Object.fromEntries(
-  Object.entries(ORPHAN_MERGE).map(([child, parent]) => [parent, child]),
-);
+// The four "…Other / …More" overflow inputs (JumpRaiseMinorOther,
+// JumpRaiseMajorOther, UnusualNTOther, Over1NTInterfMore) used to be merged into
+// their parent's D_ appearance here. They are now dropped from the model
+// entirely (see src/model/sections.ts §4): the real form keeps them off-page,
+// Hidden, with no D_ twin and never displays them, so rendering them would print
+// content that no Adobe-opened card shows — i.e. data a user could not recover.
+// Export simply never touches them; import folds any legacy value into the
+// parent via rename.ts. (Resp1NT2COther was the fifth such rule, never in our
+// model.)
 
 // Every imitation checkbox prints a plain Helvetica "X" (drawn by the adapter),
 // matching the Q_* classification boxes and rendering in every viewer. The

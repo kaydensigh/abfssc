@@ -50,12 +50,20 @@ names below are the real ones from [`../abf/extracted/field_names.txt`](../abf/e
 
 ### §3 Competitive Bids / Overcalls
 `Doubles_1` `Doubles_2` `JumpOvercall` `Overcall1NT` `Reopen1NT` `ImmedCueMajor` `ImmedCueMinor`
-`UnusualNT` `Over1NTInterf` `Over1NTInterfMore` `Compete1NT_1…_3` `CompeteWeak2` `CompeteOpen3`
+`UnusualNT` `Over1NTInterf` `Compete1NT_1…_3` `CompeteWeak2` `CompeteOpen3`
 `Transfers_1` `NegXLimit` `Competitive_0`. (Doubles, jump overcalls, 1NT overcall/re-open, cue bids, defences over our/their 1NT, etc.)
 
 ### §4 Basic Responses
-`JumpRaiseMinor` (+`JumpRaiseMinorOther`), `JumpRaiseMajor` (+`JumpRaiseMajorOther`),
-`MinorJumpShift`, `MajorJumpShift`, `BasicResponses_0`.
+`JumpRaiseMinor`, `JumpRaiseMajor`, `MinorJumpShift`, `MajorJumpShift`, `BasicResponses_0`.
+
+> **Dropped: the four "…Other / …More" overflow inputs** — `JumpRaiseMinorOther`,
+> `JumpRaiseMajorOther`, `UnusualNTOther` (§9), `Over1NTInterfMore` (§9). In the real
+> form these sit **off-page, Hidden, with no `D_` print twin**, so the original never
+> displays them (Adobe shows nothing; the form's `gRtFL` DSL treats them as legacy
+> aliases that fold into the parent). Modelling them would let a user type content
+> that no Adobe-rendered card can show back — unrecoverable data. We omit them; the
+> parent field (`JumpRaiseMinor`, …) is the home for that text. On import a legacy
+> value under an old `…Other` name is folded into the parent rather than lost.
 
 ### §5 Play Conventions — opening leads & carding
 *Each comes in a `_NT` (vs notrump) and `_S` (vs suit) variant:*
@@ -76,7 +84,7 @@ names below are the real ones from [`../abf/extracted/field_names.txt`](../abf/e
 is a **2-D matrix** — model it as `responses[opening][bid]`, not 142 flat fields.
 
 ### §9 Conventions
-`UnusualNT` / `UnusualNoTrump` (+`UnusualNTOther`), `Is4thForcing1Round` & `Is4thForcingGame` *(cb)* / `FourthSuitForcing`,
+`UnusualNT` / `UnusualNoTrump`, `Is4thForcing1Round` & `Is4thForcingGame` *(cb)* / `FourthSuitForcing`,
 `IsNTCheckback` *(cb)* / `CheckbackPriorities`, `Defence3NT`, `DefenceOpening2`, `DefenceMulti`, `DefenceRCO`,
 `DefenceOtherTwos`, `DefenceStrongC_1…_4`, `Over1NTInterf`, `LebensohlOther`, `TakeOutOf4C4D`, `TakeOutOf4H`, `TakeOutOf4S`, `Conventions_0`.
 

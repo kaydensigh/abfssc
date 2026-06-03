@@ -62,8 +62,7 @@ function populated(): Card {
   card.fields.Open1C = "!1better minor!S"; // red text + a spade glyph
   card.fields.PlayerName_A = "Smith";
   card.fields.PlayerName_B = "Jones";
-  card.fields.JumpRaiseMinor = "limit"; // parent of a merge child…
-  card.fields.JumpRaiseMinorOther = "splinter"; // …no D_ twin; merges into D_JumpRaiseMinor
+  card.fields.JumpRaiseMinor = "limit"; // a normal field with a D_ twin
   card.flags.IsBlackwood = true;
   card.flags.IsBrownSticker = true;
   card.classification = "green";
@@ -127,11 +126,23 @@ describe("buildCardPdf (export half of the round-trip)", () => {
     expect(ap).toContain("(C) Tj");
   });
 
-  it("merges an Other field with no twin into the parent's appearance", () => {
+  it("does not render or write the dropped …Other overflow fields", () => {
+    // JumpRaiseMinorOther is off-page/Hidden with no D_ twin in the real form, so
+    // we drop it from the model and never display it (see fieldmap.ts). The parent
+    // renders normally; nothing of the overflow field leaks into the print.
     const ap = readAp(out, "D_JumpRaiseMinor");
-    expect(ap).toContain("(limit)");
-    expect(ap).toContain("(splinter)");
-    expect(readV(out, "JumpRaiseMinorOther")).toBe("splinter"); // child /V still round-trips
+    expect(ap).toContain("(limit)"); // parent still prints
+    // Even if a stray value were set on the (non-model) overflow key, export must
+    // not author it. Confirm we leave the field exactly as the blank template
+    // ships it — never the value, and no D_ twin exists for it.
+    const card2 = populated();
+    card2.fields.JumpRaiseMinorOther = "splinter"; // a non-model key
+    return buildCardPdf(card2, TEMPLATE.slice(0), { now: "2026-06-02T00:00:00.000Z" }).then(async (r) => {
+      const d = await PDFDocument.load(r.bytes, { ignoreEncryption: true, updateMetadata: false });
+      expect(readV(d, "JumpRaiseMinorOther")).not.toBe("splinter"); // never written
+      expect(readAp(d, "D_JumpRaiseMinor")).not.toContain("(splinter)"); // never merged in
+      expect(readAp(d, "D_JumpRaiseMinorOther")).toBe(""); // no D_ twin to author
+    });
   });
 
   it("sets a checkbox to Yes and paints its B_ print twin", () => {

@@ -198,9 +198,19 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 4,
     title: "Basic Responses",
     layout: "generic",
-    // PDF: six full-width rows. The "…Other" overflow fields (merged into their
-    // parent's print appearance) follow as extra space; the notes ride in the
-    // section's head row beside the title.
+    // PDF: six full-width rows, then the notes ride in the section's head row
+    // beside the title.
+    //
+    // OMITTED — the four "…Other / …More" overflow inputs (JumpRaiseMinorOther
+    // and JumpRaiseMajorOther here; UnusualNTOther and Over1NTInterfMore in §9)
+    // are deliberately NOT modelled. In the real form they sit OFF-PAGE, are
+    // Hidden, and have NO D_ print twin, so the original simply never shows them:
+    // Adobe renders nothing for them, and the form's own gRtFL DSL treats them as
+    // legacy aliases that fold into the parent field. If we surfaced them as
+    // editable fields, a user could type content that no Adobe-rendered card can
+    // ever display back — data they couldn't recover. So we drop them; the parent
+    // (JumpRaiseMinor / …) is the home for that text. (Import still rescues a
+    // legacy value: rename.ts folds the old "…Other" name into the parent.)
     fields: [
       f("JumpRaiseMinor", "Jump raises - minors"),
       f("JumpRaiseMajor", "Jump raises - Majors"),
@@ -208,8 +218,6 @@ export const SECTIONS: readonly SectionDef[] = [
       f("MajorJumpShift", "Jump shifts after Major opening"),
       f("ResponseStrong2", "Responses to strong 2 suit open.", { hint: "Responses to any strong 2-level suit opening in your system" }),
       f("Response2NT", "Responses to 2NT opening", { hint: "Describe responses to your opening 2NT bid" }),
-      f("JumpRaiseMinorOther", "Jump raises - minors (more)", { hint: "More space for your minor-suit jump raise" }),
-      f("JumpRaiseMajorOther", "Jump raises - Majors (more)", { hint: "More space for your major-suit jump raise" }),
       notes("BasicResponses_0", "Notes", { header: true, labelHidden: true }),
     ],
   },
@@ -303,7 +311,8 @@ export const SECTIONS: readonly SectionDef[] = [
     boxedGroups: ["Defence to strong 1♣ / 2♣"],
     fields: [
       f("UnusualNoTrump", "Unusual NT:"),
-      f("UnusualNTOther", "Unusual NT — more", { hint: "More space for your unusual NT methods" }),
+      // UnusualNTOther omitted — an off-page/Hidden overflow field with no D_
+      // twin; see the §4 "Basic Responses" note. Its home is UnusualNoTrump.
       // The 4th-suit-forcing notes box rides between its two flags (4/4/4 split
       // groups the trio onto one flex row — the checkboxes hug, the box grows).
       cb("Is4thForcing1Round", "One round", { span: 4, group: "4th Suit Forcing" }),
@@ -321,7 +330,8 @@ export const SECTIONS: readonly SectionDef[] = [
       f("DefenceStrongC_3", "(2♣) :", { group: "Defence to strong 1♣ / 2♣", labelHidden: true, hint: "Your defence to strong 2♣ openings" }),
       f("DefenceStrongC_4", "(2♣) — more", { group: "Defence to strong 1♣ / 2♣", labelHidden: true, hint: "More space for your defence to strong 2♣" }),
       f("Over1NTInterf", "Over 1NT Interference"),
-      f("Over1NTInterfMore", "Over 1NT Interference — more", { hint: "More space for methods after interference over your 1NT" }),
+      // Over1NTInterfMore omitted — off-page/Hidden overflow, no D_ twin (see the
+      // §4 "Basic Responses" note). Its home is Over1NTInterf.
       f("LebensohlOther", "Lebensohl - other uses", { hint: "Other uses of lebensohl (e.g. vs 2-level openings)" }),
       f("TakeOutOf4C4D", "Take out of 4 level pre-empts — 4♣/4♦", { hint: "Takeout after a 4-minor opening (e.g. DBL and/or 4NT)" }),
       f("TakeOutOf4H", "4♥", { span: 6, hint: "Takeout after 4♥ (e.g. DBL and/or 4NT)" }),

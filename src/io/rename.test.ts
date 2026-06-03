@@ -14,13 +14,14 @@ describe("gRtFL rename port (gMRFL)", () => {
     expect(RENAME_MAP.get("Resp1NT2COther")).toBe("Resp1NT2CStyle");
   });
 
-  it("DROPS the four …Other/More merges whose old name is a distinct model field", () => {
-    // These overflow inputs round-trip on their own /V — folding them would
-    // corrupt the round-trip, so they must not appear in the rename map.
-    expect(RENAME_MAP.has("JumpRaiseMinorOther")).toBe(false);
-    expect(RENAME_MAP.has("JumpRaiseMajorOther")).toBe(false);
-    expect(RENAME_MAP.has("UnusualNTOther")).toBe(false);
-    expect(RENAME_MAP.has("Over1NTInterfMore")).toBe(false);
+  it("folds the four …Other/More overflow fields into their parent (they are not model fields)", () => {
+    // The overflow inputs are dropped from the model (off-page/Hidden, no D_
+    // twin — src/model/sections.ts §4), so their gRtFL merge rules are active:
+    // a legacy value under the old name lands on the visible parent, not lost.
+    expect(RENAME_MAP.get("JumpRaiseMinorOther")).toBe("JumpRaiseMinor");
+    expect(RENAME_MAP.get("JumpRaiseMajorOther")).toBe("JumpRaiseMajor");
+    expect(RENAME_MAP.get("UnusualNTOther")).toBe("UnusualNoTrump");
+    expect(RENAME_MAP.get("Over1NTInterfMore")).toBe("Over1NTInterf");
   });
 
   it("never self-maps a current canonical name", () => {

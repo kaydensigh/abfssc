@@ -28,8 +28,7 @@ function populated(): Card {
   card.fields.PlayerName_A = "Smith";
   card.fields.PlayerName_B = "Jones";
   card.fields.PlayerNo_A = "12345";
-  card.fields.JumpRaiseMinor = "limit"; // parent of a merge child…
-  card.fields.JumpRaiseMinorOther = "splinter"; // …distinct field, must round-trip on its own
+  card.fields.JumpRaiseMinor = "limit"; // a normal field with a D_ twin
   card.fields.Doubles_1 = "2S) transfer (4+) a\\b :)"; // stray parens / backslash
   card.flags.IsBlackwood = true;
   card.flags.IsBrownSticker = true;

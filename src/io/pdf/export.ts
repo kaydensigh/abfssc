@@ -10,20 +10,9 @@ import type { Span } from "../../render/index.ts";
 import { renderCoded } from "../../render/index.ts";
 import { codeMap } from "../../content/codelists.ts";
 import { loadTemplate } from "./adapter.ts";
-import { CLASSIFICATION_LITERAL, MERGE_CHILD, ORPHAN_MERGE, PLAYER_SWAP, dTwin } from "./fieldmap.ts";
+import { CLASSIFICATION_LITERAL, PLAYER_SWAP, dTwin } from "./fieldmap.ts";
 
 const BASE = { fieldDefaults: { sizePt: 10 } } as const;
-
-/** Separator placed between a parent field and a merged "Other" child. */
-const SEP_SPAN: Span = {
-  text: "  ",
-  color: "#000000",
-  bold: false,
-  italic: false,
-  underline: false,
-  vshift: 0,
-  sizePt: 10,
-};
 
 export interface ExportResult {
   bytes: Uint8Array;
@@ -68,25 +57,14 @@ export async function buildCardPdf(
     const raw = card.fields[key] ?? "";
     tpl.setEditableValue(key, raw); // editable /V stays canonical for re-import
 
-    // The "Other" merge children have no D_ twin: their value rides into the
-    // parent's appearance below, so skip authoring one here.
-    if (key in ORPHAN_MERGE) continue;
-
     // Swap-to-print: when slot B is primary, a player twin shows the other
     // slot's value (the editable /V above is unchanged). Non-player fields and
     // primaryPlayer === 0 leave the source key untouched.
     const sourceKey = swap && PLAYER_SWAP[key] ? PLAYER_SWAP[key] : key;
     const displayRaw = card.fields[sourceKey] ?? "";
+    if (displayRaw === "") continue;
 
-    const childKey = MERGE_CHILD[key];
-    const childRaw = childKey ? card.fields[childKey] ?? "" : "";
-    if (displayRaw === "" && childRaw === "") continue;
-
-    let spans = displayRaw ? render(displayRaw, sourceKey, multiline) : [];
-    if (childKey && childRaw) {
-      if (spans.length) spans = [...spans, SEP_SPAN];
-      spans = [...spans, ...render(childRaw, childKey, multiline)];
-    }
+    const spans = render(displayRaw, sourceKey, multiline);
     if (!tpl.writeRichField(dTwin(key), spans, multiline)) {
       warnings.push(`no D_ twin for field "${key}"`);
     }

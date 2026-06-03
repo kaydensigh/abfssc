@@ -36,10 +36,16 @@ export function currentModelNames(): string[] {
  *  • a rule is only registered if its NEW name exists in the current set
  *    (gARFE bails when `getField(new)` is null);
  *  • we additionally DROP any rule whose OLD name is itself a current model
- *    field. Those four `…Other/More>parent` rules are *merges* in the original,
- *    but in our model the overflow inputs (JumpRaiseMinorOther, …) are distinct
- *    fields that round-trip on their own /V — folding them would corrupt the
- *    round-trip. Only true legacy aliases (old name absent from the model) stay.
+ *    field — we never rename away a value that has its own editable home (this
+ *    is what keeps our dotted legacy mirrors from clobbering the flat cells).
+ *
+ * The four `…Other/More>parent` rules ARE active here, on purpose: the overflow
+ * inputs (JumpRaiseMinorOther, …) are NOT model fields — we drop them because
+ * the real form keeps them off-page/Hidden and never displays them (see
+ * src/model/sections.ts §4). So a legacy value found under an old `…Other` name
+ * folds into the visible parent (the original form's own gMRFL merge) instead of
+ * being lost. Our own exports never write those fields, so the round-trip is
+ * unaffected.
  */
 export function buildRenameMap(currentNames: string[]): Map<string, string> {
   const nameSet = new Set(currentNames);
@@ -48,7 +54,7 @@ export function buildRenameMap(currentNames: string[]): Map<string, string> {
   const add = (oldName: string, newName: string): void => {
     if (oldName === newName) return;
     if (!nameSet.has(newName)) return; // gARFE: the new (target) field must exist
-    if (nameSet.has(oldName)) return; // keep distinct model fields separate (see doc)
+    if (nameSet.has(oldName)) return; // never rename a value off its own home (see doc)
     map.set(oldName, newName);
   };
 

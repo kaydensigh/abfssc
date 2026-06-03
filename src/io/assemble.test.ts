@@ -83,6 +83,28 @@ describe("assembleCard (the shared PDF/FDF → Card step)", () => {
     expect(card.responses["1C"]).toEqual({ "1H": "legacy value" });
   });
 
+  it("folds a legacy '…Other' overflow value into its parent field", () => {
+    // The overflow inputs (JumpRaiseMajorOther, …) are NOT model fields — the
+    // real form keeps them off-page and never shows them (sections.ts §4). A
+    // legacy value under the old name lands on the visible parent rather than
+    // being lost, and never appears as a key of its own.
+    const { card } = assembleCard({
+      fields: m({ JumpRaiseMajorOther: "splinter", UnusualNTOther: "vs strong NT" }),
+      stampJson: null,
+    });
+    expect(card.fields.JumpRaiseMajor).toBe("splinter");
+    expect(card.fields.UnusualNoTrump).toBe("vs strong NT");
+    expect("JumpRaiseMajorOther" in card.fields).toBe(false); // dropped, not a model field
+  });
+
+  it("keeps a native parent value over a legacy '…Other' overflow", () => {
+    const { card } = assembleCard({
+      fields: m({ JumpRaiseMajor: "limit", JumpRaiseMajorOther: "stale overflow" }),
+      stampJson: null,
+    });
+    expect(card.fields.JumpRaiseMajor).toBe("limit"); // native parent wins
+  });
+
   it("normalises legacy dotted player names", () => {
     const { card } = assembleCard({
       fields: m({ "PlayerName.A": "Smith", "PlayerNo.B": "12345" }),
