@@ -221,7 +221,7 @@ a {
   color: var(--red);
 }
 
-/* ---- Page navigation (four tabs / mobile select) ------------------------ */
+/* ---- Page navigation (four tabs; collapse to numbers when narrow) ------- */
 nav.pages {
   display: flex;
   gap: 6px;
@@ -270,9 +270,6 @@ nav.pages button.active {
 nav.pages button.active .pg-num {
   background: rgba(255, 255, 255, 0.18);
   color: #fff;
-}
-.mobile-page-select {
-  display: none;
 }
 
 /* ---- Export status: its own right-aligned row below the buttons --------- */
@@ -739,23 +736,21 @@ section.card-section {
 .classification .swatch {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  border: 2px solid var(--line-strong);
+  /* Unselected: a muted, desaturated take on the swatch colour so the
+     buttons read as quiet options until one is chosen. */
+  border: 2px solid color-mix(in srgb, var(--swatch, var(--line-strong)) 45%, #fff);
   border-radius: 999px;
-  padding: 5px 12px 5px 8px;
-  background: var(--card);
+  padding: 5px 14px;
+  background: transparent;
+  color: var(--muted);
   cursor: pointer;
   font-size: 14px;
 }
 .classification .swatch[aria-checked="true"] {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 1px var(--ink);
-}
-.classification .chip {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  /* Selected: full-colour border and fill, with a white label for contrast. */
+  border-color: var(--swatch);
+  background: var(--swatch);
+  color: #fff;
 }
 .explain {
   font-size: 12.5px;
@@ -923,21 +918,32 @@ section.card-section {
   min-width: 2.4em;
 }
 
-@media (max-width: 900px) {
-  /* Below ~900px four full tab titles truncate to ambiguous stubs (iPad
-     portrait ~768px), so switch to the readable page <select> here. The field
-     layout keeps its own 720px breakpoint below. */
-  nav.pages {
-    display: none;
+@media (max-width: 800px) {
+  /* Below ~800px four full titles truncate to ambiguous stubs (iPad portrait
+     ~768px). Rather than swap to a <select>, collapse the unselected tabs to
+     just their number; the active tab takes the remaining width and truncates
+     its title only when that still isn't enough. The titles stay in the DOM
+     (visually hidden) so every tab keeps its accessible name. */
+  nav.pages button {
+    flex: 0 0 auto;
+    gap: 0;
+    padding: 7px;
   }
-  .mobile-page-select {
-    display: block;
-    width: 100%;
-    margin: 10px 0;
-    padding: 9px;
-    font-size: 15px;
-    border-radius: 8px;
-    border: 1px solid var(--line-strong);
+  nav.pages button:not(.active) .pg-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  nav.pages button.active {
+    flex: 1 1 auto;
+    gap: 8px;
+    padding: 7px 12px;
   }
 }
 

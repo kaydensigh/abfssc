@@ -40,13 +40,13 @@ export function ClassificationSwatch(): ReactElement {
             role="radio"
             aria-checked={value === c.value}
             tabIndex={i === tabStop ? 0 : -1}
+            style={{ "--swatch": c.swatch } as React.CSSProperties}
             ref={(el) => {
               refs.current[i] = el;
             }}
             onClick={() => toggle(c.value)}
             onKeyDown={(e) => onKeyDown(e, i)}
           >
-            <span className="chip" style={{ background: c.swatch }} aria-hidden="true" />
             {c.label}
           </button>
         ))}
