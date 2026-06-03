@@ -137,7 +137,18 @@ describe("buildCardPdf (export half of the round-trip)", () => {
   it("sets a checkbox to Yes and paints its B_ print twin", () => {
     expect(readV(out, "IsBlackwood")).toBe("Yes");
     expect(readAp(out, "B_IsBlackwood")).toContain("(X)"); // bigX default tick
+    expect(readAp(out, "B_IsBlackwood")).toContain("/F1"); // Helvetica, not ZapfDingbats
     expect(readV(out, "IsGerber")).toBe("Off"); // untouched flag cleared
+  });
+
+  it("rewrites the B_ twin /DA off ZapfDingbats so Chrome regenerates a real X", () => {
+    // Chrome's PDFium regenerates from /DA, ignoring our /AP. The template ships
+    // these as /ZaDb (so a regenerated "X" is a ZapfDingbats glyph); we must
+    // point /DA at Helvetica (/Helv, like the Q_* boxes) instead.
+    const w = out.getForm().getFields().find((x) => x.getName() === "B_IsBlackwood")?.acroField.getWidgets()[0];
+    const da = w?.dict.lookup(PDFName.of("DA"));
+    expect(da?.toString()).toContain("/Helv");
+    expect(da?.toString()).not.toContain("ZaDb");
   });
 
   it("writes the classification literal and turns on the cover boxes", () => {

@@ -287,6 +287,13 @@ export async function loadTemplate(bytes: Uint8Array | ArrayBuffer): Promise<Pdf
       const bn = bTwin(editableName);
       const w = widgetOf(bn);
       if (!w) return;
+      // The template's B_ twins carry /DA "/ZaDb …" (ZapfDingbats). Chrome's
+      // PDFium regenerates a field's appearance from /DA, ignoring our /AP, so
+      // it would draw the value "X" as a ZapfDingbats glyph (wrong/blank). Point
+      // /DA at the form's Helvetica (/Helv, the same font the Q_* boxes use, in
+      // the AcroForm /DR) so a regeneration still yields a plain "X". Adobe does
+      // the same (it rewrites these to /HeBo).
+      w.dict.set(PDFName.of("DA"), PDFString.of("/Helv 14 Tf 0 g"));
       const [x0, y0, x1, y1] = rectOf(w);
       const width = x1 - x0;
       const height = y1 - y0;
