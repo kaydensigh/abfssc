@@ -23,8 +23,9 @@ export function NewCardButton(): ReactElement {
       aria-label="Start a new blank card"
       title="Clear every field and start a blank card. Export first if you want to keep the current one."
     >
-      <span aria-hidden="true">＋</span>
-      <span>New card</span>
+      <span className="btn-label-long" aria-hidden="true">＋</span>
+      <span className="btn-label-long">New card</span>
+      <span className="btn-label-short">New</span>
     </button>
   );
 }

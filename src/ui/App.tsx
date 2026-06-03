@@ -2,7 +2,14 @@ import { type ReactElement, useState } from "react";
 import { PAGES, PAGE_BY_ID, SECTION_BY_ID } from "../model/index.ts";
 import { Section } from "./sections/index.ts";
 import { TextField } from "./fields/index.ts";
-import { ExportButton, ImportButton, NewCardButton, PageNav, StorageIndicator } from "./common/index.ts";
+import {
+  type ActionStatus,
+  ExportButton,
+  ImportButton,
+  NewCardButton,
+  PageNav,
+  StorageIndicator,
+} from "./common/index.ts";
 
 /** The revision-code field (MyRev.) is defined in the masthead section for the
  *  data model / round-trip, but surfaced in the persistent header above the page
@@ -18,10 +25,14 @@ const REV_FIELD = SECTION_BY_ID.masthead.fields.find((f) => f.key === "Date_A")!
  */
 export function App(): ReactElement {
   const [activeId, setActiveId] = useState<string>(PAGES[0].id);
+  const [importStatus, setImportStatus] = useState<ActionStatus | null>(null);
+  const [exportStatus, setExportStatus] = useState<ActionStatus | null>(null);
   const page = PAGE_BY_ID[activeId] ?? PAGES[0];
   return (
     <div className="app">
       <header className="masthead-bar">
+        {/* On narrow screens this row wraps: the brand stays on the first line and
+            the save indicator + action buttons flow onto the next as needed. */}
         <div className="masthead-top">
           <div className="brand">
             <span className="suits">
@@ -31,15 +42,38 @@ export function App(): ReactElement {
               <span>♣</span>
             </span>
             <span className="brand-name">ABF Standard System Card</span>
-            <StorageIndicator />
           </div>
           <div className="actions">
+            <StorageIndicator />
             <NewCardButton />
-            <ImportButton />
-            <ExportButton />
+            <ImportButton onStatus={setImportStatus} />
+            <ExportButton onStatus={setExportStatus} />
           </div>
         </div>
+        {/* The export result sits on its own right-aligned row below the buttons,
+            so a long message never squashes them. The import result rides the
+            revision row below — beside MyRev. when the line has room. */}
+        {exportStatus && (
+          <div className="masthead-status">
+            <span
+              className={exportStatus.kind === "error" ? "export-error" : "export-notice"}
+              role={exportStatus.kind === "error" ? "alert" : "status"}
+            >
+              {exportStatus.text}
+            </span>
+          </div>
+        )}
+        {/* The revision stamp hugs the right; the import result (when present)
+            sits just to its left on the same row, wrapping above it when narrow. */}
         <div className="masthead-rev">
+          {importStatus && (
+            <span
+              className={`rev-status ${importStatus.kind === "error" ? "export-error" : "export-notice"}`}
+              role={importStatus.kind === "error" ? "alert" : "status"}
+            >
+              {importStatus.text}
+            </span>
+          )}
           <TextField def={REV_FIELD} />
         </div>
         <PageNav activeId={activeId} onSelect={setActiveId} />

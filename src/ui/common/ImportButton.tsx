@@ -3,6 +3,12 @@ import { useCardStore } from "../../state/index.ts";
 import { classifyImport, type ImportRelation } from "../../state/index.ts";
 import { importCardFile, ImportError, type FileImport } from "../../io/index.ts";
 import { renderPlain } from "../../render/index.ts";
+import type { ActionStatus } from "./status.ts";
+
+type ImportButtonProps = {
+  /** Called with the import outcome (or null when a fresh attempt starts). */
+  onStatus: (status: ActionStatus | null) => void;
+};
 
 // Minimal import entry (M2). Reads an ABF card PDF or FDF, classifies it against
 // what's on screen, and — after a single confirm — replaces the current card.
@@ -33,39 +39,42 @@ function confirmPrompt(rel: ImportRelation, incoming: FileImport): string {
   }
 }
 
-export function ImportButton(): ReactElement {
+export function ImportButton({ onStatus }: ImportButtonProps): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null);
   const replaceCard = useCardStore((s) => s.replaceCard);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
 
   const onPick = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = e.target.files?.[0];
     e.target.value = ""; // allow re-choosing the same file
     if (!file || busy) return;
     setBusy(true);
-    setError(null);
-    setNotice(null);
+    onStatus(null);
     try {
       const result = await importCardFile(file);
       const local = useCardStore.getState().card;
       const relation = classifyImport(local, result.imported.card);
       if (!window.confirm(confirmPrompt(relation, result))) {
-        setNotice("Import cancelled.");
+        onStatus({ kind: "notice", text: "Import cancelled." });
         return;
       }
       replaceCard(result.imported.card);
       const warnings = result.imported.warnings;
       if (warnings.length > 0) {
         console.warn("Import warnings:", warnings);
-        setNotice(`Imported ${who(result.imported.card.fields)} — with ${warnings.length} note${warnings.length === 1 ? "" : "s"}.`);
+        onStatus({
+          kind: "notice",
+          text: `Imported ${who(result.imported.card.fields)} — with ${warnings.length} note${warnings.length === 1 ? "" : "s"}.`,
+        });
       } else {
-        setNotice(`Imported ${who(result.imported.card.fields)} (from ${result.source.toUpperCase()}).`);
+        onStatus({
+          kind: "notice",
+          text: `Imported ${who(result.imported.card.fields)} (from ${result.source.toUpperCase()}).`,
+        });
       }
     } catch (err) {
-      if (err instanceof ImportError) setError(err.message);
-      else setError(err instanceof Error ? err.message : "Import failed.");
+      if (err instanceof ImportError) onStatus({ kind: "error", text: err.message });
+      else onStatus({ kind: "error", text: err instanceof Error ? err.message : "Import failed." });
     } finally {
       setBusy(false);
     }
@@ -91,19 +100,10 @@ export function ImportButton(): ReactElement {
         aria-label="Import card from a PDF or FDF file"
         title="Open an ABF System Card you (or a partner) exported earlier — a filled official PDF, or an FDF."
       >
-        <span aria-hidden="true">⬆</span>
-        <span>{busy ? "Reading…" : "Import card"}</span>
+        <span className="btn-label-long" aria-hidden="true">⬆</span>
+        <span className="btn-label-long">{busy ? "Reading…" : "Import card"}</span>
+        <span className="btn-label-short">{busy ? "Reading…" : "Import"}</span>
       </button>
-      {error && (
-        <span className="export-error" role="alert">
-          {error}
-        </span>
-      )}
-      {!error && notice && (
-        <span className="export-notice" role="status">
-          {notice}
-        </span>
-      )}
     </div>
   );
 }

@@ -99,9 +99,13 @@ a {
 }
 .masthead-top {
   display: flex;
+  /* Wrap on narrow screens: the brand keeps the first line and the action
+     cluster (save indicator + buttons) drops to the next row instead of
+     squashing onto one line. The cluster is pushed right (margin-left:auto on
+     .actions) so it stays right-aligned whether or not it wraps. */
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 10px 12px;
 }
 .brand {
   display: flex;
@@ -109,10 +113,6 @@ a {
   gap: 10px;
   font-weight: 700;
   font-size: 18px;
-}
-/* The save indicator sits just after the title; nudge it off the wordmark. */
-.brand .storage-ind {
-  margin-left: 2px;
 }
 
 /* ---- Export ("the real save") ------------------------------------------- */
@@ -157,19 +157,15 @@ a {
   color: var(--amber);
   max-width: 26ch;
 }
-@media (max-width: 560px) {
-  .export-btn span:last-child {
-    display: none;
-  }
-  .export-btn {
-    padding: 8px 11px;
-  }
-}
 /* ---- Import (secondary to the green "real save") ----------------------- */
 .actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
+  /* Hug the right edge, and stay there when the cluster wraps to its own row. */
+  margin-left: auto;
 }
 .import {
   display: flex;
@@ -202,12 +198,18 @@ a {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
+
+/* Import/Export carry a full label on wide screens ("Import card", "Export card
+   (PDF)") and a short one when space is tight ("Import", "Export"). */
+.btn-label-short {
+  display: none;
+}
 @media (max-width: 560px) {
-  .import-btn span:last-child {
+  .btn-label-long {
     display: none;
   }
-  .import-btn {
-    padding: 8px 11px;
+  .btn-label-short {
+    display: inline;
   }
 }
 
@@ -273,14 +275,41 @@ nav.pages button.active .pg-num {
   display: none;
 }
 
-/* ---- Revision stamp: a single field row above the page tabs ------------- */
+/* ---- Export status: its own right-aligned row below the buttons --------- */
+.masthead-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 8px 0 0;
+  text-align: right;
+}
+/* In a dedicated row the message has the full width, so drop the inline caps. */
+.masthead-status .export-error,
+.masthead-status .export-notice {
+  max-width: none;
+}
+
+/* ---- Revision stamp: a field row above the page tabs; the import result
+        rides alongside it (to the left) when the row has room -------------- */
 .masthead-rev {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
+  gap: 8px 14px;
   padding: 12px 0 10px;
 }
 .masthead-rev .field {
   flex: 0 1 320px;
+}
+/* The import result sits just left of the field, with both right-aligned
+   (justify-content:flex-end on the row); when the line is too tight to hold
+   both, it wraps onto its own line above the field, still right-aligned. */
+.masthead-rev .rev-status {
+  flex: 0 1 auto;
+  max-width: none;
+  text-align: right;
 }
 
 /* ---- Page body: stacked sections (the page nav names the page) ---------- */
@@ -747,7 +776,7 @@ section.card-section {
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-  margin-bottom: 6px;
+  margin-top: 8px;
 }
 /* Two rows of [ABF number][name] — the printed cover layout. */
 .abf-grid {

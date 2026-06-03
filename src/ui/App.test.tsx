@@ -14,7 +14,7 @@ describe("App shell", () => {
     render(<App />);
     expect(screen.getByText("ABF Standard System Card")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /storage/i })).toBeInTheDocument();
-    expect(screen.getByText("Partnership")).toBeInTheDocument(); // masthead body
+    expect(screen.getByText("ABF Numbers & Names")).toBeInTheDocument(); // masthead body
     expect(screen.getByRole("radiogroup", { name: "System classification" })).toBeInTheDocument();
   });
 

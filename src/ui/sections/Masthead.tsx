@@ -13,13 +13,6 @@ export function Masthead({ section }: { section: SectionDef }): ReactElement {
   return (
     <div className="masthead-form">
       <div className="mast-players">
-        <div className="players-head">
-          <strong>Partnership</strong>
-          <span className="primary-tag">Player {primary === 0 ? "A" : "B"} prints first</span>
-          <button className="btn" type="button" onClick={swap}>
-            Swap print order
-          </button>
-        </div>
         <fieldset className="group-box">
           <legend>ABF Numbers &amp; Names</legend>
           <div className="abf-grid">
@@ -27,6 +20,12 @@ export function Masthead({ section }: { section: SectionDef }): ReactElement {
             <TextField def={byKey("PlayerName_A")} />
             <TextField def={byKey("PlayerNo_B")} />
             <TextField def={byKey("PlayerName_B")} />
+          </div>
+          <div className="players-head">
+            <span className="primary-tag">Player {primary === 0 ? "A" : "B"} prints first</span>
+            <button className="btn" type="button" onClick={swap}>
+              Swap print order
+            </button>
           </div>
         </fieldset>
         <div className="field-grid">
