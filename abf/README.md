@@ -21,6 +21,7 @@ look up exact field names, function bodies, shortcut codes, and palette values.
 | `*.js` (this folder) | The extraction + analysis scripts. Run with Node (see below). |
 | [extracted/](extracted/) | Everything the scripts produce: decompressed JavaScript, field/tooltip/bookmark lists, guide text. |
 | [extracted/research/](extracted/research/) | The seven verified deep‑dive reports + critique that `architecture.html` synthesises. |
+| roundtrip-export_ours.pdf roundtrip-export_adobe.pdf | Forms with all fields filled so we can validate import/export losslessness and compatibility. `ours` is exported from the web app, `adobe` is saved by Adobe Acrobat |
 
 ---
 
