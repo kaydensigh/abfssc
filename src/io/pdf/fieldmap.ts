@@ -95,6 +95,9 @@ export const CLASSIFICATION_BY_LITERAL: Readonly<Record<string, Classification>>
  * parks `^ ` in 231 fields and a lone space in the four "Other/More" overflow
  * inputs; our own export writes a true empty string. These three are the only
  * blanks that ever sit on a native field, so they normalise to "" universally.
+ * (`^ ` is also covered after normalizeFieldValue strips the leading guard caret,
+ * leaving a lone space; it stays listed here so blanks survive even if that strip
+ * is ever removed.)
  */
 export const NATIVE_EMPTY_VALUES: ReadonlySet<string> = new Set(["", " ", "^ "]);
 
@@ -122,10 +125,20 @@ export const LEGACY_EMPTY_VALUES: ReadonlySet<string> = new Set([
  * (un-renamed) field only ever blanks to "", " ", or "^ " in the real form, so
  * for those we must NOT strip legacy-migration sentinels like "!+" / "!- " —
  * they are legitimate values a current field can hold and must round-trip.
+ *
+ * First, strip a leading '^': it is the form's leading-space GUARD, never
+ * content. AcroForm trims a value's leading whitespace, so the form prepends '^'
+ * whenever a value would start with a space and strips it back off on read
+ * (clean_0_block36.js:1353/1375, clean_2_block20.js:613/777; documented
+ * "cosmetic, nothing to worry about" in the usage guide p.28). We are that
+ * reader here: skipping the strip leaks the caret into the model, the on-screen
+ * render (a bare '^' is literal text — only `!^` is the superscript code), and
+ * the /V we re-export, where Acrobat then quietly drops it on the next refresh.
  */
 export function normalizeFieldValue(raw: string, native: boolean): string {
+  const unguarded = raw.startsWith("^") ? raw.slice(1) : raw;
   const set = native ? NATIVE_EMPTY_VALUES : LEGACY_EMPTY_VALUES;
-  return set.has(raw) ? "" : raw;
+  return set.has(unguarded) ? "" : unguarded;
 }
 
 /**

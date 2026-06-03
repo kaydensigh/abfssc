@@ -16,6 +16,19 @@ describe("assembleCard (the shared PDF/FDF → Card step)", () => {
     expect(card.fields.Open1H).toBe("real");
   });
 
+  it("strips the leading-space guard caret from content (the '^' never leaks into a field)", () => {
+    // The form prepends '^' to any value that would start with a space (AcroForm
+    // trims leading whitespace) and strips it on read. We must do the same, or a
+    // bare '^' leaks into the model, the on-screen render, and the re-exported /V.
+    const { card } = assembleCard({
+      fields: m({ BasicSystem: "^ 2NT", Open1C: "^!S2", Open1H: "plain" }),
+      stampJson: null,
+    });
+    expect(card.fields.BasicSystem).toBe(" 2NT"); // guard gone, leading space preserved
+    expect(card.fields.Open1C).toBe("!S2"); // guard gone, the !S suit code intact
+    expect(card.fields.Open1H).toBe("plain"); // no guard, untouched
+  });
+
   it("preserves legacy-migration sentinels as content on a NATIVE field (round-trip safety)", () => {
     // `!+` `!-` `!=` `!n` and multi-space runs are real rich-code / user content
     // on a current field; the form only blanks them when migrating RETIRED fields.
