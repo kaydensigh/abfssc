@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { type CSSProperties, type ReactElement, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { CodedText } from "../../render/index.ts";
 import type { CodeOption } from "../../content/codelists.ts";
 import { MarkupToolbar } from "./MarkupToolbar.tsx";
@@ -27,12 +27,16 @@ interface Props {
 // so opening a field never reflows the page.
 export function CodedInput({ value, onChange, ariaLabel, multiline, options, codeList, actions }: Props): ReactElement {
   const [editing, setEditing] = useState(false);
-  // The popover drops below the field, left-aligned by default; on open we measure
-  // and flip to right-aligned if a left-aligned box would spill past the viewport
-  // (narrow fields in the right column), and flip it ABOVE the field if dropping
-  // below would run off the bottom of the viewport.
+  // The popover always drops below the field, left-aligned by default; on open we
+  // measure and flip to right-aligned if a left-aligned box would spill past the
+  // viewport's right edge (narrow fields in the right column).
   const [alignEnd, setAlignEnd] = useState(false);
-  const [placeAbove, setPlaceAbove] = useState(false);
+  // On mobile the popover breaks out of its (possibly narrow/nested) value box to
+  // span ~full viewport width; null on desktop. Measured per-open below.
+  const [bleed, setBleed] = useState<{ left: number; width: number } | null>(null);
+  // On mobile, a height cap so the field + popover both fit above the soft keyboard;
+  // null when uncapped (desktop). The preset list scrolls within it (see CSS).
+  const [maxH, setMaxH] = useState<number | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const displayRef = useRef<HTMLDivElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
@@ -44,8 +48,8 @@ export function CodedInput({ value, onChange, ariaLabel, multiline, options, cod
   const id = useId();
 
   // Keep the popover on-screen: right-align when a left-aligned box would overflow
-  // the right edge, and place it above the field when dropping below would run off
-  // the bottom (and there's room above). Runs before paint to avoid a flash.
+  // the right edge, and on mobile stretch it to ~full viewport width (a narrow or
+  // nested field's box is too cramped to edit in). Runs before paint to avoid a flash.
   useLayoutEffect(() => {
     if (!editing) return;
     const anchor = wrapRef.current;
@@ -53,26 +57,71 @@ export function CodedInput({ value, onChange, ariaLabel, multiline, options, cod
     if (!anchor || !pop) return;
     const a = anchor.getBoundingClientRect();
     const vw = document.documentElement.clientWidth;
-    const vh = document.documentElement.clientHeight;
     setAlignEnd(a.left + pop.offsetWidth > vw - 8);
-    const overflowsBelow = a.bottom + 4 + pop.offsetHeight > vh - 8;
-    const roomAbove = a.top - 4 - pop.offsetHeight > 8;
-    setPlaceAbove(overflowsBelow && roomAbove);
+    // Full-bleed on mobile (viewport ≤ 720px, matching the CSS breakpoint): break
+    // out of the value box — its left edge sits a.left from the viewport — so the
+    // editor spans the screen with an 8px margin each side. The offset is relative
+    // to .coded-input (the popover's containing block), so it survives page scroll.
+    const MARGIN = 8;
+    setBleed(vw <= 720 ? { left: MARGIN - a.left, width: vw - MARGIN * 2 } : null);
   }, [editing]);
 
   useEffect(() => {
     if (editing) {
       inputRef.current?.focus({ preventScroll: true });
-      // Bring the whole editor into view (tall coded popovers near the fold).
-      try {
-        popRef.current?.scrollIntoView({ block: "nearest" });
-      } catch {
-        /* jsdom / unsupported — positioning is best-effort */
+      // Desktop: bring the whole editor into view (tall coded popovers near the
+      // fold). Mobile scrolling is handled by the keyboard-aware effect below.
+      if (document.documentElement.clientWidth > 720) {
+        try {
+          popRef.current?.scrollIntoView({ block: "nearest" });
+        } catch {
+          /* jsdom / unsupported — positioning is best-effort */
+        }
       }
     } else if (restoreFocus.current) {
       restoreFocus.current = false;
       displayRef.current?.focus();
     }
+  }, [editing]);
+
+  // Mobile: keep the field and its popover visible above the soft keyboard. The
+  // keyboard shrinks window.visualViewport; lift a too-low field up so the popover
+  // below it has room, then cap the popover to the space that's actually left (its
+  // preset list scrolls within the cap — see CSS). No visualViewport (desktop /
+  // older browsers) → skip; the effect above covers it.
+  useEffect(() => {
+    if (!editing) return;
+    const vv = window.visualViewport;
+    const wrap = wrapRef.current;
+    if (!vv || !wrap) return;
+    if (document.documentElement.clientWidth > 720) return;
+    const fit = () => {
+      const visTop = vv.offsetTop;
+      const visBottom = visTop + vv.height;
+      const before = (displayRef.current ?? wrap).getBoundingClientRect();
+      // Only scroll when the room below the field is too tight for a comfortable
+      // popover, and only as far as the top of the visible area — a field with room
+      // to spare stays put ("a bit" of scroll, not a jump every time). While editing
+      // the field floats above the sticky header (see CSS), so the top is safe.
+      const room = visBottom - before.bottom - 12;
+      if (room < 240) {
+        const lift = Math.min(240 - room, before.top - (visTop + 8));
+        // behavior:"instant" overrides the global `scroll-behavior: smooth`, so the
+        // scroll lands now and the cap below reflects the field's new position.
+        if (lift > 2) window.scrollBy({ top: lift, behavior: "instant" });
+      }
+      // Cap the popover to the room actually left below the field, so it never runs
+      // under the keyboard; its preset list scrolls within the cap (see CSS).
+      const after = (displayRef.current ?? wrap).getBoundingClientRect();
+      setMaxH(Math.max(140, Math.round(visBottom - after.bottom - 12)));
+    };
+    fit();
+    // The keyboard animates in after focus → re-fit when the viewport resizes.
+    vv.addEventListener("resize", fit);
+    return () => {
+      vv.removeEventListener("resize", fit);
+      setMaxH(null);
+    };
   }, [editing]);
 
   // Close on Escape, returning focus to the display box it grew from.
@@ -112,8 +161,15 @@ export function CodedInput({ value, onChange, ariaLabel, multiline, options, cod
     if (!wrapRef.current?.contains(e.relatedTarget as Node | null)) setEditing(false);
   };
 
+  // Mobile-only geometry CSS can't express: the horizontal bleed to ~full viewport
+  // width (right/maxWidth reset so left+width position it and override align-end),
+  // and the keyboard-aware height cap. Both empty on desktop.
+  const popStyle: CSSProperties = {};
+  if (bleed) Object.assign(popStyle, { left: bleed.left, width: bleed.width, right: "auto", maxWidth: "none" });
+  if (maxH != null) popStyle.maxHeight = maxH;
+
   return (
-    <div className="coded-input" ref={wrapRef} onBlur={onBlur}>
+    <div className={`coded-input${editing ? " is-editing" : ""}`} ref={wrapRef} onBlur={onBlur}>
       {/* The display box always occupies the layout — it anchors the popover and
           keeps the row's height stable while editing. */}
       <div
@@ -131,10 +187,11 @@ export function CodedInput({ value, onChange, ariaLabel, multiline, options, cod
 
       {editing && (
         <div
-          className={`field-pop${alignEnd ? " align-end" : ""}${placeAbove ? " place-above" : ""}`}
+          className={`field-pop${alignEnd ? " align-end" : ""}`}
           ref={popRef}
           role="group"
           aria-label={`Edit ${ariaLabel}`}
+          style={popStyle}
         >
           {multiline ? (
             <textarea ref={inputRef} id={id} aria-label={ariaLabel} value={value} onChange={(e) => onChange(e.target.value)} />

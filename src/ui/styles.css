@@ -529,12 +529,6 @@ section.card-section {
   left: auto;
   right: 0;
 }
-/* Flip above the field when a downward drop would run off the bottom of the
-   viewport (set by measurement on open). */
-.field-pop.place-above {
-  top: auto;
-  bottom: calc(100% + 4px);
-}
 /* Even 6px gap between stacked sections (editor, toolbar, shortcuts, autocomplete)
    — order-independent, so reordering the JSX needs no CSS change. */
 .field-pop > * + * {
@@ -894,15 +888,34 @@ section.card-section {
     gap: 18px;
   }
 
-  /* On a phone the layout is already one column, so the editor flows inline below
-     the field (no reflow to avoid) — simpler and safe from a fixed-width popover
-     spilling off a narrow viewport. The field stays visible above it as the live
-     preview, the same as on desktop. */
+  /* On mobile the popover still floats (absolute, no reflow), but it's stretched to
+     ~full viewport width so a field in a narrow/nested column doesn't get a cramped,
+     left-shifted editor. A field's width is unknown to CSS, so the horizontal bleed
+     (left + width, breaking out of the value box to the viewport edges) is measured
+     per-open in JS — see CodedInput. It still sits below the field, so the label
+     stays readable. max-width here is just a fallback cap if that JS hasn't run.
+
+     The popover is also a column capped in height (max-height set per-open in JS to
+     the space above the soft keyboard): the editor, toolbar and shortcuts keep their
+     size and the preset list absorbs the slack and scrolls, so the controls stay
+     visible rather than pushed off-screen. */
   .field-pop {
-    position: static;
-    width: auto;
-    margin-top: 4px;
-    box-shadow: none;
+    max-width: calc(100vw - 16px);
+    display: flex;
+    flex-direction: column;
+  }
+  .field-pop > * {
+    flex: none;
+  }
+  .field-pop > .autocomplete {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  /* While editing, lift the whole field (preview box + popover) above the sticky
+     masthead (z-index:20), so a field scrolled to the top of the viewport to clear
+     the keyboard floats over the header rather than tucking behind it. */
+  .coded-input.is-editing {
+    z-index: 41;
   }
 
   /* Every field claims the full width; spans collapse to one column. */
