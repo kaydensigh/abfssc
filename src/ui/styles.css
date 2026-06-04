@@ -932,6 +932,41 @@ section.card-section {
     align-items: stretch;
   }
 
+  /* Wide-label fields: drop the value box below its label when the label would
+     otherwise squeeze the box too narrow to read (the §5 stacked-leads look). The
+     field becomes a wrapping flex row: the box wants at least ~12rem, so when the
+     label leaves less than that the box falls onto its own full-width line below
+     it; a short label keeps the box inline, filling the rest of the row. Because
+     the wrap point depends on each label's width, the threshold varies field to
+     field — wider labels stack sooner. Checkbox fields keep their own "label ☐"
+     layout (excluded), as do §5 pair rows and §8 cells (different containers). */
+  .field-grid > .field:not(.checkbox-field),
+  .field-row > .field:not(.checkbox-field) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 3px;
+  }
+  .field-grid > .field:not(.checkbox-field) > label,
+  .field-row > .field:not(.checkbox-field) > label {
+    /* Hug the label text, but let a very long label wrap rather than overflow. */
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  .field-grid > .field:not(.checkbox-field) > .coded-input,
+  .field-row > .field:not(.checkbox-field) > .coded-input {
+    /* Grow to fill the row; 12rem is the box's minimum comfortable width — below
+       it the box wraps onto its own line and spans the full width. */
+    flex: 1 1 12rem;
+    min-width: 0;
+  }
+  /* Multiline boxes are tall — top-align the label beside them when inline. */
+  .field-grid > .field.multiline:not(.checkbox-field),
+  .field-row > .field.multiline:not(.checkbox-field) {
+    align-items: start;
+  }
+
   .masthead-form {
     grid-template-columns: 1fr;
     gap: 18px;
