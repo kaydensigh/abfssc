@@ -1,3 +1,4 @@
+export { BrandTitle } from "./BrandTitle.tsx";
 export { PageNav } from "./PageNav.tsx";
 export { ExportButton } from "./ExportButton.tsx";
 export { ImportButton } from "./ImportButton.tsx";

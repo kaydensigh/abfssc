@@ -4,6 +4,7 @@ import { Section } from "./sections/index.ts";
 import { TextField } from "./fields/index.ts";
 import {
   type ActionStatus,
+  BrandTitle,
   ExportButton,
   ImportButton,
   NewCardButton,
@@ -35,15 +36,7 @@ export function App(): ReactElement {
         {/* On narrow screens this row wraps: the brand stays on the first line and
             the save indicator + action buttons flow onto the next as needed. */}
         <div className="masthead-top">
-          <div className="brand">
-            <span className="suits">
-              <span>♠</span>
-              <span className="r">♥</span>
-              <span className="r">♦</span>
-              <span>♣</span>
-            </span>
-            <span className="brand-name">ABF Standard System Card</span>
-          </div>
+          <BrandTitle />
           <div className="actions">
             <NewCardButton />
             <ImportButton onStatus={setImportStatus} />

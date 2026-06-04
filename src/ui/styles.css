@@ -108,11 +108,50 @@ a {
   gap: 10px 12px;
 }
 .brand {
+  position: relative; /* anchor for the about popover */
   display: flex;
   align-items: center;
   gap: 10px;
   font-weight: 700;
   font-size: 18px;
+}
+/* The title doubles as an "about" button: plain title text, but clickable, with
+   a hover cue and a focus ring. */
+.brand-name {
+  font: inherit;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.brand-name:hover {
+  color: var(--heading);
+}
+.brand-name:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+/* The note that drops below the title — same floating card as the field editor,
+   but reset to body weight/size (the brand row is bold 18px). */
+.brand-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 40;
+  width: max-content;
+  max-width: min(360px, calc(100vw - 32px));
+  background: var(--card);
+  border: 1px solid var(--focus);
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(27, 27, 33, 0.22);
+  padding: 12px 14px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-soft);
 }
 
 /* ---- Export ("the real save") ------------------------------------------- */
