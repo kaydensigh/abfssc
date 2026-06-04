@@ -20,16 +20,19 @@ interface Props {
 }
 
 // The dual-mode field editor (design §04): the value shows rendered by default;
-// clicking opens the raw monospace source with a live preview, a markup toolbar,
-// and — for coded fields — an autocomplete. The editor is a POPOVER floating over
-// the card: the display box stays in the layout (same height) so editing one
-// field never reflows the page.
+// clicking drops a POPOVER just below the box, holding the raw monospace source, a
+// markup toolbar, and — for coded fields — an autocomplete. The display box stays
+// in place and IS the live preview: as you edit the raw source the rendered value
+// above the editor updates in step. The popover floats over the card (absolute),
+// so opening a field never reflows the page.
 export function CodedInput({ value, onChange, ariaLabel, multiline, options, codeList, actions }: Props): ReactElement {
   const [editing, setEditing] = useState(false);
-  // The popover opens downward, left-aligned by default; on open we measure and
-  // flip to right-aligned if a left-aligned box would spill past the viewport
-  // (narrow fields in the right column), then scroll it fully into view.
+  // The popover drops below the field, left-aligned by default; on open we measure
+  // and flip to right-aligned if a left-aligned box would spill past the viewport
+  // (narrow fields in the right column), and flip it ABOVE the field if dropping
+  // below would run off the bottom of the viewport.
   const [alignEnd, setAlignEnd] = useState(false);
+  const [placeAbove, setPlaceAbove] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const displayRef = useRef<HTMLDivElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
@@ -40,8 +43,9 @@ export function CodedInput({ value, onChange, ariaLabel, multiline, options, cod
   const restoreFocus = useRef(false);
   const id = useId();
 
-  // Keep the popover on-screen: right-align when a left-aligned box would
-  // overflow the viewport. Runs before paint to avoid a wrong-side flash.
+  // Keep the popover on-screen: right-align when a left-aligned box would overflow
+  // the right edge, and place it above the field when dropping below would run off
+  // the bottom (and there's room above). Runs before paint to avoid a flash.
   useLayoutEffect(() => {
     if (!editing) return;
     const anchor = wrapRef.current;
@@ -49,7 +53,11 @@ export function CodedInput({ value, onChange, ariaLabel, multiline, options, cod
     if (!anchor || !pop) return;
     const a = anchor.getBoundingClientRect();
     const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
     setAlignEnd(a.left + pop.offsetWidth > vw - 8);
+    const overflowsBelow = a.bottom + 4 + pop.offsetHeight > vh - 8;
+    const roomAbove = a.top - 4 - pop.offsetHeight > 8;
+    setPlaceAbove(overflowsBelow && roomAbove);
   }, [editing]);
 
   useEffect(() => {
@@ -122,7 +130,12 @@ export function CodedInput({ value, onChange, ariaLabel, multiline, options, cod
       </div>
 
       {editing && (
-        <div className={`field-pop${alignEnd ? " align-end" : ""}`} ref={popRef} role="group" aria-label={`Edit ${ariaLabel}`}>
+        <div
+          className={`field-pop${alignEnd ? " align-end" : ""}${placeAbove ? " place-above" : ""}`}
+          ref={popRef}
+          role="group"
+          aria-label={`Edit ${ariaLabel}`}
+        >
           {multiline ? (
             <textarea ref={inputRef} id={id} aria-label={ariaLabel} value={value} onChange={(e) => onChange(e.target.value)} />
           ) : (
@@ -148,10 +161,6 @@ export function CodedInput({ value, onChange, ariaLabel, multiline, options, cod
               ))}
             </div>
           )}
-          <div className="field-preview" aria-hidden="true">
-            <span className="lbl">Preview</span>
-            {value ? <CodedText value={value} opts={opts} /> : <span className="empty">nothing yet</span>}
-          </div>
           {options && options.length > 0 && (
             <ul className="autocomplete" aria-label="Preset answers">
               {options.map((o) => (
