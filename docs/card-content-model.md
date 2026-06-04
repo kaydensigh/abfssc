@@ -75,7 +75,7 @@ names below are the real ones from [`../abf/extracted/field_names.txt`](../abf/e
 `IsBlackwood` *(cb)*, `RKCBStyle`, `IsAskingBids` *(cb)*, `IsCueBids` *(cb)*, `IsGerber` *(cb)*, `GerberWhen`, `FourNTOther`, `SlamNotes_1…_3`.
 
 ### §7 Other Conventions
-`Other_0`, `Other_1_1…1_5`, `Other_2_1…2_5`, plus a layered &ldquo;extra notes&rdquo; area. (Some `*Notes_*` fields blur between §7 and §10 on the paper card.)
+`Other_0`, `Other_1_1…1_5`, `Other_2_1…2_5`, plus `MoreNotes_1…_4`. The four `MoreNotes_*` boxes are printed on **page 1**, directly beneath the §7 grid (the `BoxMN14`/`BoxMN34` outlines beside the footer) — so they belong to §7, *not* §10. We surface them in a boxed &ldquo;More notes&rdquo; group.
 
 ### §8 Responses to Opening Bids — the big grid (page 2)
 142 fields named `Resp<opening>_<response>`: rows are each opening bid (`Resp1C`, `Resp1D`,
@@ -89,7 +89,7 @@ is a **2-D matrix** — model it as `responses[opening][bid]`, not 142 flat fiel
 `DefenceOtherTwos`, `DefenceStrongC_1…_4`, `Over1NTInterf`, `LebensohlOther`, `TakeOutOf4C4D`, `TakeOutOf4H`, `TakeOutOf4S`, `Conventions_0`.
 
 ### §10 Other Notes
-`OtherNotes_0…_7`, `MoreNotes_1…_4` — free ruled text with full code support.
+`OtherNotes_0…_7` — free ruled text with full code support. The bottom-right panel on **page 2**. (`MoreNotes_1…_4` are free notes too, but the form prints them under the §7 grid on page 1 — see §7.)
 
 ---
 

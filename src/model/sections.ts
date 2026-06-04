@@ -275,7 +275,13 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 7,
     title: "Other Conventions",
     layout: "generic",
-    // PDF: a 2-col × 5-row grid of unlabelled boxes plus overflow notes.
+    boxedGroups: ["More notes"],
+    // PDF (page 1, front): a 2-col × 5-row grid of unlabelled boxes, then four
+    // full-width "More notes" boxes printed directly beneath the grid (the
+    // BoxMN14/BoxMN34 outlines, beside the page footer). Those MoreNotes_* boxes
+    // physically belong to §7 here — NOT to the §10 "Other Notes" block, which is
+    // a separate panel on page 2 (the back). We surface them in a boxed "More
+    // notes" group so they read as the distinct overflow area the form prints.
     fields: [
       f("Other_1_1", "Convention 1", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
       f("Other_2_1", "Convention 6", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
@@ -288,6 +294,14 @@ export const SECTIONS: readonly SectionDef[] = [
       f("Other_1_5", "Convention 5", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
       f("Other_2_5", "Convention 10", { span: 6, labelHidden: true, hint: "Space for other conventions" }),
       notes("Other_0", "Notes", { header: true, labelHidden: true }),
+      notes("MoreNotes_1", "More notes 1", {
+        group: "More notes",
+        labelHidden: true,
+        hint: "Space for more notes (e.g. define your abbreviations used on this side of the card)",
+      }),
+      notes("MoreNotes_2", "More notes 2", { group: "More notes", labelHidden: true }),
+      notes("MoreNotes_3", "More notes 3", { group: "More notes", labelHidden: true }),
+      notes("MoreNotes_4", "More notes 4", { group: "More notes", labelHidden: true }),
     ],
   },
   {
@@ -344,6 +358,9 @@ export const SECTIONS: readonly SectionDef[] = [
     number: 10,
     title: "Other Notes",
     layout: "generic",
+    // PDF (page 2, back): the bottom-right "10. Other Notes" panel — eight ruled
+    // boxes. The MoreNotes_* overflow boxes are NOT here: the form prints those
+    // on page 1 beneath the §7 grid, so they live in §7 above.
     fields: [
       notes("OtherNotes_0", "Notes", { header: true, labelHidden: true, hint: "Space for other notes (e.g. define abbreviations used on this side of the card)" }),
       notes("OtherNotes_1", "Notes 2", { labelHidden: true }),
@@ -353,10 +370,6 @@ export const SECTIONS: readonly SectionDef[] = [
       notes("OtherNotes_5", "Notes 6", { labelHidden: true }),
       notes("OtherNotes_6", "Notes 7", { labelHidden: true }),
       notes("OtherNotes_7", "Notes 8", { labelHidden: true }),
-      notes("MoreNotes_1", "More notes 1"),
-      notes("MoreNotes_2", "More notes 2"),
-      notes("MoreNotes_3", "More notes 3"),
-      notes("MoreNotes_4", "More notes 4"),
     ],
   },
 ];
