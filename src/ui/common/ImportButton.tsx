@@ -2,6 +2,7 @@ import { type ChangeEvent, type ReactElement, useRef, useState } from "react";
 import { useCardStore } from "../../state/index.ts";
 import { importCardFile, ImportError } from "../../io/index.ts";
 import { renderPlain } from "../../render/index.ts";
+import { track } from "../../analytics.ts";
 import type { ActionStatus } from "./status.ts";
 
 type ImportButtonProps = {
@@ -48,6 +49,7 @@ export function ImportButton({ onStatus }: ImportButtonProps): ReactElement {
       const result = await importCardFile(file);
       replaceCard(result.imported.card);
       const warnings = result.imported.warnings;
+      track("import_card", { source: result.source, warnings: warnings.length });
       if (warnings.length > 0) {
         console.warn("Import warnings:", warnings);
         onStatus({
