@@ -74,6 +74,25 @@ describe("importCardFromFdf", () => {
   it("rejects an FDF with no recognisable fields", () => {
     expect(() => importCardFromFdf("%FDF-1.2\n%%EOF")).toThrow(ImportError);
   });
+
+  it("rejects a structurally valid FDF that is not an ABF card", () => {
+    // Real /Fields with real values, but no name maps onto the model — it must be
+    // refused (not-abf) rather than silently producing a blank card.
+    const foreign = FDF("<< /T (FullName) /V (Jane Doe) >>\n<< /T (TaxYear) /V (2026) >>");
+    let code: string | undefined;
+    try {
+      importCardFromFdf(foreign);
+    } catch (e) {
+      code = e instanceof ImportError ? e.code : "(not an ImportError)";
+    }
+    expect(code).toBe("not-abf");
+  });
+
+  it("accepts an FDF carrying even a single recognisable model field", () => {
+    // The signature gate must not reject a sparse-but-genuine card.
+    const sparse = FDF("<< /T (Open1C) /V (better minor) >>");
+    expect(importCardFromFdf(sparse).card.fields.Open1C).toBe("better minor");
+  });
 });
 
 describe("parseFdf hardening (untrusted input)", () => {
